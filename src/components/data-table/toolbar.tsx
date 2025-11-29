@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
 import { DataTableViewOptions } from './view-options'
+import { DataTableDateFilter } from './date-filtering'
+import { DataTableModelFilter } from './data-table-model-filter'
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>
@@ -18,6 +20,15 @@ type DataTableToolbarProps<TData> = {
       icon?: React.ComponentType<{ className?: string }>
     }[]
   }[]
+  dateFilters?: {
+    columnId: string
+    title: string
+    multiple?: boolean
+  }[]
+  modelFilters?: {
+    columnId: string
+    title: string
+  }[]
 }
 
 export function DataTableToolbar<TData>({
@@ -25,6 +36,8 @@ export function DataTableToolbar<TData>({
   searchPlaceholder = 'Filter...',
   searchKey,
   filters = [],
+  dateFilters = [],
+  modelFilters = [],
 }: DataTableToolbarProps<TData>) {
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter
@@ -61,6 +74,29 @@ export function DataTableToolbar<TData>({
                 column={column}
                 title={filter.title}
                 options={filter.options}
+              />
+            )
+          })}
+          {dateFilters.map((filter) => {
+            const column = table.getColumn(filter.columnId)
+            if (!column) return null
+            return (
+              <DataTableDateFilter
+                key={filter.columnId}
+                column={column}
+                title={filter.title}
+                multiple={filter.multiple}
+              />
+            )
+          })}
+          {modelFilters.map((filter) => {
+            const column = table.getColumn(filter.columnId)
+            if (!column) return null
+            return (
+              <DataTableModelFilter
+                key={filter.columnId}
+                column={column}
+                title={filter.title}
               />
             )
           })}

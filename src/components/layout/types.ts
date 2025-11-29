@@ -6,7 +6,7 @@ type User = {
   avatar: string
 }
 
-type Team = {
+type Program = {
   name: string
   logo: React.ElementType
   plan: string
@@ -37,7 +37,7 @@ type NavGroup = {
 
 type SidebarData = {
   user: User
-  teams: Team[]
+  programs: Program[]
   navGroups: NavGroup[]
 }
 

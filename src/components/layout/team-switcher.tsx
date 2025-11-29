@@ -17,16 +17,16 @@ import {
 } from '@/components/ui/sidebar'
 
 type TeamSwitcherProps = {
-  teams: {
+  programs: {
     name: string
     logo: React.ElementType
     plan: string
   }[]
 }
 
-export function TeamSwitcher({ teams }: TeamSwitcherProps) {
+export function ProgramSwitcher({ programs }: TeamSwitcherProps) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const [activeTeam, setActiveTeam] = React.useState(programs[0])
 
   return (
     <SidebarMenu>
@@ -58,16 +58,16 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
             <DropdownMenuLabel className='text-muted-foreground text-xs'>
               Teams
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {programs.map((program, index) => (
               <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
+                key={program.name}
+                onClick={() => setActiveTeam(program)}
                 className='gap-2 p-2'
               >
                 <div className='flex size-6 items-center justify-center rounded-sm border'>
-                  <team.logo className='size-4 shrink-0' />
+                  <program.logo className='size-4 shrink-0' />
                 </div>
-                {team.name}
+                {program.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}
@@ -76,7 +76,9 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               <div className='bg-background flex size-6 items-center justify-center rounded-md border'>
                 <Plus className='size-4' />
               </div>
-              <div className='text-muted-foreground font-medium'>Add team</div>
+              <div className='text-muted-foreground font-medium'>
+                Add Program
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
