@@ -7,7 +7,8 @@ import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
 import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
-import { sleep, cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { authApi } from '@/lib/api/auth.api'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -51,34 +52,45 @@ export function UserAuthForm({
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
 
-    toast.promise(sleep(2000), {
-      loading: 'Signing in...',
-      success: () => {
-        setIsLoading(false)
+    try {
+      const response = await authApi.signin({
+        email: data.email,
+        password: data.password,
+      })
 
-        // Mock successful authentication with expiry computed at success time
+      if (response.data) {
+        const { access_token, refresh_token } = response.data
+        
+        // Store tokens in localStorage
+        localStorage.setItem('access_token', access_token)
+        localStorage.setItem('refresh_token', refresh_token)
+        
+        // Update store
+        auth.setTokens(access_token, refresh_token)
+        
+        // Mock user data for now since signin response only returns tokens
+        // In a real app, you might decode the token or fetch user profile here
         const mockUser = {
-          accountNo: 'ACC001',
+          id: 1, // Placeholder
           email: data.email,
-          role: ['user'],
-          exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours from now
         }
-
-        // Set user and access token
         auth.setUser(mockUser)
-        auth.setAccessToken('mock-access-token')
 
+        toast.success(`Welcome back, ${data.email}!`)
+        
         // Redirect to the stored location or default to dashboard
         const targetPath = redirectTo || '/'
         navigate({ to: targetPath, replace: true })
-
-        return `Welcome back, ${data.email}!`
-      },
-      error: 'Error',
-    })
+      }
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.response?.data?.message || 'Invalid credentials')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

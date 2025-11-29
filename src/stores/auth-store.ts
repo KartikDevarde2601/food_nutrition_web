@@ -1,51 +1,62 @@
 import { create } from 'zustand'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
-const ACCESS_TOKEN = 'thisisjustarandomstring'
+const ACCESS_TOKEN = 'access_token'
+const REFRESH_TOKEN = 'refresh_token'
 
 interface AuthUser {
-  accountNo: string
+  id: number
   email: string
-  role: string[]
-  exp: number
+  // Add other fields as needed
 }
 
 interface AuthState {
   auth: {
     user: AuthUser | null
     setUser: (user: AuthUser | null) => void
-    accessToken: string
-    setAccessToken: (accessToken: string) => void
-    resetAccessToken: () => void
+    accessToken: string | null
+    refreshToken: string | null
+    setTokens: (accessToken: string, refreshToken: string) => void
+    resetTokens: () => void
     reset: () => void
   }
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
-  const cookieState = getCookie(ACCESS_TOKEN)
-  const initToken = cookieState ? JSON.parse(cookieState) : ''
+  const accessToken = localStorage.getItem(ACCESS_TOKEN)
+  const refreshToken = localStorage.getItem(REFRESH_TOKEN)
+
   return {
     auth: {
       user: null,
       setUser: (user) =>
         set((state) => ({ ...state, auth: { ...state.auth, user } })),
-      accessToken: initToken,
-      setAccessToken: (accessToken) =>
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      setTokens: (accessToken, refreshToken) =>
         set((state) => {
-          setCookie(ACCESS_TOKEN, JSON.stringify(accessToken))
-          return { ...state, auth: { ...state.auth, accessToken } }
+          localStorage.setItem(ACCESS_TOKEN, accessToken)
+          localStorage.setItem(REFRESH_TOKEN, refreshToken)
+          return {
+            ...state,
+            auth: { ...state.auth, accessToken, refreshToken },
+          }
         }),
-      resetAccessToken: () =>
+      resetTokens: () =>
         set((state) => {
-          removeCookie(ACCESS_TOKEN)
-          return { ...state, auth: { ...state.auth, accessToken: '' } }
+          localStorage.removeItem(ACCESS_TOKEN)
+          localStorage.removeItem(REFRESH_TOKEN)
+          return {
+            ...state,
+            auth: { ...state.auth, accessToken: null, refreshToken: null },
+          }
         }),
       reset: () =>
         set((state) => {
-          removeCookie(ACCESS_TOKEN)
+          localStorage.removeItem(ACCESS_TOKEN)
+          localStorage.removeItem(REFRESH_TOKEN)
           return {
             ...state,
-            auth: { ...state.auth, user: null, accessToken: '' },
+            auth: { ...state.auth, user: null, accessToken: null, refreshToken: null },
           }
         }),
     },

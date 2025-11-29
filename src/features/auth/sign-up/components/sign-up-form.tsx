@@ -15,9 +15,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { authApi } from '@/lib/api/auth.api'
+import { toast } from 'sonner'
+// import { useNavigate } from '@tanstack/react-router'
 
 const formSchema = z
   .object({
+    fullName: z.string().min(1, 'Please enter your full name'),
     email: z.email({
       error: (iss) =>
         iss.input === '' ? 'Please enter your email' : undefined,
@@ -38,24 +42,43 @@ export function SignUpForm({
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
+  // const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullName: '',
       email: '',
       password: '',
       confirmPassword: '',
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    try {
+      const response = await authApi.signup({
+        email: data.email,
+        password: data.password,
+        full_name: data.fullName,
+      })
+      
+      // Store tokens in localStorage
+      if (response.data) {
+        localStorage.setItem('access_token', response.data.access_token)
+        localStorage.setItem('refresh_token', response.data.refresh_token)
+      }
 
-    setTimeout(() => {
+      toast.success('Account created successfully!')
+      // Navigate to dashboard or login page
+      // navigate({ to: '/dashboard' }) 
+      // For now, let's just log success as we might not have dashboard route set up or want to auto-login
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error.response?.data?.message || 'Something went wrong')
+    } finally {
       setIsLoading(false)
-    }, 3000)
+    }
   }
 
   return (
@@ -65,6 +88,19 @@ export function SignUpForm({
         className={cn('grid gap-3', className)}
         {...props}
       >
+        <FormField
+          control={form.control}
+          name='fullName'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input placeholder='John Doe' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name='email'
