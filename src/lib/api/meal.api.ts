@@ -57,4 +57,9 @@ export const mealsApi = {
   async deleteMeal(id: number | string): Promise<void> {
     await apiClient.delete(`/meals/${id}`)
   },
+
+  // Run models on meals
+  async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
+    await apiClient.post('/meals/run-models', { mealIds, modelIds })
+  },
 }

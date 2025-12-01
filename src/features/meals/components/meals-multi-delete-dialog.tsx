@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import { type Table } from '@tanstack/react-table'
 import { AlertTriangle } from 'lucide-react'
@@ -45,9 +43,8 @@ export function MealsMultiDeleteDialog<TData extends Meal>({
       loading: 'Deleting meals...',
       success: () => {
         table.resetRowSelection()
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? 'meals' : 'meal'
-        }`
+        return `Deleted ${selectedRows.length} ${selectedRows.length > 1 ? 'meals' : 'meal'
+          }`
       },
       error: 'Failed to delete some meals',
     })
