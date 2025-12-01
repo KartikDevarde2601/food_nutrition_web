@@ -1,4 +1,4 @@
-import { type Meal, type MealForm } from '@/features/meals/data/schema'
+import { type Meal, type MealForm, type MealDetail } from '@/features/meals/data/schema'
 import { apiClient } from './client'
 
 // ---------- Helpers ----------
@@ -61,5 +61,11 @@ export const mealsApi = {
   // Run models on meals
   async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
     await apiClient.post('/meals/run-models', { mealIds, modelIds })
+  },
+
+  // Get meal details
+  async getMealDetails(id: number | string): Promise<MealDetail[]> {
+    const response = await apiClient.get<MealDetail[]>(`/meals/details?meals=${id}`)
+    return response.data
   },
 }

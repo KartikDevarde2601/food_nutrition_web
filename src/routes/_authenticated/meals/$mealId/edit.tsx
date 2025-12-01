@@ -47,7 +47,7 @@ function EditMeal() {
         </div>
 
         <div className="mx-auto w-full max-w-2xl">
-    
+          <EditMeal />
         </div>
       </Main>
 

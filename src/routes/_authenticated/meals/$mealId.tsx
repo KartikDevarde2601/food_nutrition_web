@@ -6,6 +6,7 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { Search } from '@/components/search'
 import { MealsProvider } from '@/features/meals/components/meals-provider'
+import { EditMeal } from '@/features/meals/components/edit-meal'
 
 export const Route = createFileRoute('/_authenticated/meals/$mealId')({
   component: MealShow,
@@ -25,7 +26,7 @@ function MealShow() {
       </Header>
 
       <Main>
-        
+        <EditMeal />
       </Main>
     </MealsProvider>
   )

@@ -31,3 +31,43 @@ export const MealFormSchema = z.object({
 })
 
 export type MealForm = z.infer<typeof MealFormSchema>
+
+// Types for Meal Details
+export const IdentifierSchema = z.object({
+  dishId: z.union([z.string(), z.number()]),
+  weight: z.union([z.string(), z.number()]),
+  position: z.string(),
+})
+
+export const UserIdentifierSchema = IdentifierSchema.extend({
+  dishName: z.string(),
+})
+
+export type Identifier = z.infer<typeof IdentifierSchema>
+export type UserIdentifier = z.infer<typeof UserIdentifierSchema>
+
+export const ModelResultDishSchema = z.object({
+  dish_id: z.number(),
+  weight: z.number(),
+  position: z.string(),
+})
+
+export type ModelResultDish = z.infer<typeof ModelResultDishSchema>
+
+export const ModelResultSchema = z.object({
+  model_id: z.string(),
+  dishes: z.array(ModelResultDishSchema),
+})
+
+export type ModelResult = z.infer<typeof ModelResultSchema>
+
+export const MealDetailSchema = z.object({
+  mealId: z.number(),
+  image: z.string(),
+  modelsResult: z.array(ModelResultSchema),
+  adminIdentifierIds: z.array(IdentifierSchema),
+  userIdentifiersIds: z.array(IdentifierSchema),
+  userIdentifiersNames: z.array(UserIdentifierSchema), 
+})
+
+export type MealDetail = z.infer<typeof MealDetailSchema>

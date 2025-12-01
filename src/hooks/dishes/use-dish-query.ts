@@ -1,6 +1,6 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { dishesApi } from '@/lib/api/dishes.api'
-import { Dish } from '../data/schema'
+import { Dish } from '@/features/dishes/data/schema'
 
 export const dishesKeys = {
   all: ['dishes'] as const,
@@ -21,7 +21,7 @@ export function useDishesQuery(
   })
 }
 
-// Hook to fetch a single program by ID
+
 export function useDishQuery(
   id: string | number,
   options?: Omit<UseQueryOptions<Dish, Error>, 'queryKey' | 'queryFn'>
