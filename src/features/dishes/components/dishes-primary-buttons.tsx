@@ -10,7 +10,7 @@ export function DishesPrimaryButtons() {
       <Button
         variant='outline'
         size='sm'
-        className='ml-auto hidden h-8 lg:flex'
+        className='flex h-8 items-center lg:flex'
         onClick={() => setOpen('import')}
       >
         <Download size={14} className='mr-2' strokeWidth={1.5} />
@@ -19,7 +19,7 @@ export function DishesPrimaryButtons() {
       <Button
         variant='default'
         size='sm'
-        className='ml-auto hidden h-8 lg:flex'
+        className='flex h-8 items-center lg:flex'
         asChild
       >
         <Link to='/dishes/create'>
