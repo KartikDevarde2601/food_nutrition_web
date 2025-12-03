@@ -1,21 +1,21 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useParams } from '@tanstack/react-router'
-import { useMealDetailsQuery } from '../api/use-meal-details-query'
+import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
 import { useDishesQuery } from '@/hooks/dishes/use-dish-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Identifier } from '../data/schema'
+import { MealNutritionSummary } from './meal-nutrition-summary'
+import { MealModelResults } from './meal-model-results'
 
 export function EditMeal() {
     const { mealId } = useParams({ from: '/_authenticated/meals/$mealId' })
     const { data: mealDetails, isLoading: isLoadingMeal, error: mealError } = useMealDetailsQuery(mealId)
     const { data: dishes, isLoading: isLoadingDishes } = useDishesQuery()
-    const [selectedModelId, setSelectedModelId] = useState<string>('')
 
     const meal = mealDetails?.[0]
 
@@ -47,25 +47,6 @@ export function EditMeal() {
             }
         }).filter(Boolean) as (Identifier & { isAdmin: boolean; isUser: boolean })[]
     }, [meal])
-
-    // Get unique models
-    const models = useMemo(() => {
-        if (!meal?.modelsResult) return []
-        return meal.modelsResult.map(m => m.model_id)
-    }, [meal])
-
-    // Set default selected model
-    useMemo(() => {
-        if (models.length > 0 && !selectedModelId) {
-            setSelectedModelId(models[0])
-        }
-    }, [models, selectedModelId])
-
-    // Get results for selected model
-    const selectedModelResult = useMemo(() => {
-        if (!meal?.modelsResult || !selectedModelId) return null
-        return meal.modelsResult.find(m => m.model_id === selectedModelId)
-    }, [meal, selectedModelId])
 
     const getDishName = (dishId: string | number) => {
         if (!dishes) return 'Loading...'
@@ -105,7 +86,7 @@ export function EditMeal() {
     }
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
 
             {/* Left Column: Image & user identifiers dishnames */}
             <div className='space-y-6'>
@@ -114,13 +95,18 @@ export function EditMeal() {
                         <CardTitle>Meal Image</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="aspect-square relative rounded-md overflow-hidden bg-muted w-[70%] mx-auto">
+                        <div className="aspect-square relative rounded-md overflow-hidden bg-muted max-w-xs mx-auto">
                             <img
                                 src={meal.image}
                                 alt={`Meal ${meal.mealId}`}
                                 className="object-cover w-full h-full"
                             />
                         </div>
+
+                        <MealNutritionSummary
+                            mergedIdentifiers={mergedIdentifiers}
+                            dishes={dishes}
+                        />
                     </CardContent>
                 </Card>
 
@@ -145,49 +131,10 @@ export function EditMeal() {
             <div className="space-y-6">
                 {/* Merged Identifiers */}
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle>Model Results</CardTitle>
-                        <Select value={selectedModelId} onValueChange={setSelectedModelId}>
-                            <SelectTrigger className="w-[180px]">
-                                <SelectValue placeholder="Select Model" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {models.map(modelId => (
-                                    <SelectItem key={modelId} value={modelId}>
-                                        Model {modelId}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </CardHeader>
-                    <CardContent className="mt-4">
-                        {selectedModelResult ? (
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Dish</TableHead>
-                                        <TableHead>Weight (g)</TableHead>
-                                        <TableHead>Position</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {selectedModelResult.dishes.map((dish, index) => (
-                                        <TableRow key={`${dish.dish_id}-${index}`}>
-                                            <TableCell>{getDishName(dish.dish_id)}</TableCell>
-                                            <TableCell>{dish.weight}</TableCell>
-                                            <TableCell>{dish.position}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <div className="text-center text-muted-foreground py-4">
-                                No model selected or no results available.
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                <MealModelResults
+                    modelsResult={meal.modelsResult}
+                    dishes={dishes}
+                />
 
                 <Card>
                     <CardHeader>
@@ -224,9 +171,6 @@ export function EditMeal() {
                         </Table>
                     </CardContent>
                 </Card>
-
-                {/* Model Results */}
-
             </div>
         </div>
     )
