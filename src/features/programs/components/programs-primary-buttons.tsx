@@ -9,7 +9,7 @@ export function ProgramsPrimaryButtons() {
       <Button
         variant='default'
         size='sm'
-        className='ml-auto hidden h-8 lg:flex'
+        className='flex  h-8 lg:flex'
         onClick={() => setOpen('create')}
       >
         <Plus size={14} className='mr-2' strokeWidth={1.5} />
