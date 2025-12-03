@@ -50,5 +50,15 @@ export const sidebarData: SidebarData = {
         },
       ],
     },
+    {
+      title: 'Models Performance',
+      items: [
+        {
+          title: 'Performance',
+          url: '/performance',
+          icon: ListTodo,
+        },
+      ],
+    },
   ],
 }
