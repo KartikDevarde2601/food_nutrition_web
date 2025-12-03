@@ -61,7 +61,7 @@ export function DataTableToolbar<TData>({
             placeholder={searchPlaceholder}
             value={table.getState().globalFilter ?? ''}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className='h-8 w-[150px] lg:w-[250px]'
+            className='h-8 w-[250px] lg:w-[300px]'
           />
         )}
         <div className='flex gap-x-2'>
