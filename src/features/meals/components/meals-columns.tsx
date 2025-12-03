@@ -14,6 +14,14 @@ import { DataTableColumnHeader } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { formatDate } from '@/lib/formatdate'
 
+const colors = [
+  "bg-blue-300",
+  "bg-green-300",
+  "bg-purple-300",
+  "bg-orange-300",
+  "bg-pink-300",
+];
+
 
 
 const filterBaseCreatedAt = (row: Row<Meal>, columnId: string, filterValue: any) => {
@@ -162,13 +170,21 @@ export const mealsColumns: ColumnDef<Meal>[] = [
     cell: ({ row }) => {
       const mealInferences = row.original.mealInferences
       return (
-        <div className='flex flex-wrap gap-2'>
-          {mealInferences.map((inference) => (
+        <div className="flex flex-wrap gap-2">
+          {mealInferences.map((inference, index) => {
 
-            <Badge key={inference.model.model_id} variant='secondary' className='hover:bg-secondary/80 flex items-center gap-1 pr-1'>
-              {inference.model.name}
-            </Badge>
-          ))}
+            const colorClass = colors[index % colors.length];
+
+            return (
+              <Badge
+                key={inference.model.model_id}
+                variant="secondary"
+                className={`hover:bg-secondary/80 flex items-center gap-1 pr-1 ${colorClass}`}
+              >
+                {inference.model.name}
+              </Badge>
+            );
+          })}
         </div>
       )
     },

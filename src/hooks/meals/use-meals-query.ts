@@ -1,6 +1,8 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { mealsApi } from '@/lib/api/meal.api'
 import { Meal } from '@/features/meals/data/schema'
+import { MealDetail } from '@/features/meals/data/schema'
+
 
 export const mealsKeys = {
   all: ['meals'] as const,
@@ -29,6 +31,20 @@ export function useMealQuery(
   return useQuery<Meal, Error>({
     queryKey: mealsKeys.detail(id),
     queryFn: () => mealsApi.getMeal(id),
+    enabled: !!id,
+    ...options,
+  })
+}
+
+
+
+export function useMealDetailsQuery(
+  id: string | number,
+  options?: Omit<UseQueryOptions<MealDetail[], Error>, 'queryKey' | 'queryFn'>
+) {
+  return useQuery<MealDetail[], Error>({
+    queryKey: mealsKeys.detail(id),
+    queryFn: () => mealsApi.getMealDetails(id),
     enabled: !!id,
     ...options,
   })
