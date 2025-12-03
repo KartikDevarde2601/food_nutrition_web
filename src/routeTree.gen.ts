@@ -23,6 +23,7 @@ import { Route as authOtpRouteImport } from './routes/(auth)/otp'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 import { Route as AuthenticatedProgramsIndexRouteImport } from './routes/_authenticated/programs/index'
+import { Route as AuthenticatedPerformanceIndexRouteImport } from './routes/_authenticated/performance/index'
 import { Route as AuthenticatedMealsIndexRouteImport } from './routes/_authenticated/meals/index'
 import { Route as AuthenticatedDishesIndexRouteImport } from './routes/_authenticated/dishes/index'
 import { Route as AuthenticatedProgramsIdRouteImport } from './routes/_authenticated/programs/$id'
@@ -104,6 +105,12 @@ const AuthenticatedProgramsIndexRoute =
     path: '/programs/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPerformanceIndexRoute =
+  AuthenticatedPerformanceIndexRouteImport.update({
+    id: '/performance/',
+    path: '/performance/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMealsIndexRoute = AuthenticatedMealsIndexRouteImport.update({
   id: '/meals/',
   path: '/meals/',
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/dishes': typeof AuthenticatedDishesIndexRoute
   '/meals': typeof AuthenticatedMealsIndexRoute
+  '/performance': typeof AuthenticatedPerformanceIndexRoute
   '/programs': typeof AuthenticatedProgramsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
@@ -206,6 +214,7 @@ export interface FileRoutesByTo {
   '/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/dishes': typeof AuthenticatedDishesIndexRoute
   '/meals': typeof AuthenticatedMealsIndexRoute
+  '/performance': typeof AuthenticatedPerformanceIndexRoute
   '/programs': typeof AuthenticatedProgramsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
@@ -233,6 +242,7 @@ export interface FileRoutesById {
   '/_authenticated/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/_authenticated/dishes/': typeof AuthenticatedDishesIndexRoute
   '/_authenticated/meals/': typeof AuthenticatedMealsIndexRoute
+  '/_authenticated/performance/': typeof AuthenticatedPerformanceIndexRoute
   '/_authenticated/programs/': typeof AuthenticatedProgramsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/programs/$id'
     | '/dishes'
     | '/meals'
+    | '/performance'
     | '/programs'
     | '/users'
     | '/dishes/edit/$id'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/programs/$id'
     | '/dishes'
     | '/meals'
+    | '/performance'
     | '/programs'
     | '/users'
     | '/dishes/edit/$id'
@@ -311,6 +323,7 @@ export interface FileRouteTypes {
     | '/_authenticated/programs/$id'
     | '/_authenticated/dishes/'
     | '/_authenticated/meals/'
+    | '/_authenticated/performance/'
     | '/_authenticated/programs/'
     | '/_authenticated/users/'
     | '/_authenticated/dishes/edit/$id'
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgramsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/performance/': {
+      id: '/_authenticated/performance/'
+      path: '/performance'
+      fullPath: '/performance'
+      preLoaderRoute: typeof AuthenticatedPerformanceIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/meals/': {
       id: '/_authenticated/meals/'
       path: '/meals'
@@ -528,6 +548,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProgramsIdRoute: typeof AuthenticatedProgramsIdRoute
   AuthenticatedDishesIndexRoute: typeof AuthenticatedDishesIndexRoute
   AuthenticatedMealsIndexRoute: typeof AuthenticatedMealsIndexRoute
+  AuthenticatedPerformanceIndexRoute: typeof AuthenticatedPerformanceIndexRoute
   AuthenticatedProgramsIndexRoute: typeof AuthenticatedProgramsIndexRoute
   AuthenticatedUsersIndexRoute: typeof AuthenticatedUsersIndexRoute
   AuthenticatedDishesEditIdRoute: typeof AuthenticatedDishesEditIdRoute
@@ -543,6 +564,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProgramsIdRoute: AuthenticatedProgramsIdRoute,
   AuthenticatedDishesIndexRoute: AuthenticatedDishesIndexRoute,
   AuthenticatedMealsIndexRoute: AuthenticatedMealsIndexRoute,
+  AuthenticatedPerformanceIndexRoute: AuthenticatedPerformanceIndexRoute,
   AuthenticatedProgramsIndexRoute: AuthenticatedProgramsIndexRoute,
   AuthenticatedUsersIndexRoute: AuthenticatedUsersIndexRoute,
   AuthenticatedDishesEditIdRoute: AuthenticatedDishesEditIdRoute,
