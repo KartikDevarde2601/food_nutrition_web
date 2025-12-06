@@ -1,5 +1,6 @@
 import { useQuery, type UseQueryOptions } from '@tanstack/react-query'
-import { programsApi, type ProgramResponse } from '@/lib/api/programs.api'
+import { programsApi, type ProgramResponse, } from '@/lib/api/programs.api'
+import { type ProgramDetail } from '@/features/programs/data/schema'
 
 // Query keys factory for better cache management
 export const programsKeys = {
@@ -28,11 +29,11 @@ export function useProgramsQuery(
 export function useProgramQuery(
   id: string | number,
   options?: Omit<
-    UseQueryOptions<ProgramResponse, Error>,
+    UseQueryOptions<ProgramDetail, Error>,
     'queryKey' | 'queryFn'
   >
 ) {
-  return useQuery<ProgramResponse, Error>({
+  return useQuery<ProgramDetail, Error>({
     queryKey: programsKeys.detail(id),
     queryFn: () => programsApi.getProgram(id),
     enabled: !!id,

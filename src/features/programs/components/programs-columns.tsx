@@ -1,7 +1,6 @@
-import { format } from 'date-fns'
 import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -76,46 +75,15 @@ export const programsColumns: ColumnDef<Program>[] = [
     },
   },
   {
-    accessorKey: 'meals',
+    id: 'meals',
+    accessorFn: (row) => row._count?.meals ?? 0,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Meals' />
     ),
     cell: ({ row }) => {
       return (
         <div className='flex w-[80px] items-center'>
-          <span>{row.getValue('meals') || 0}</span>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'earliestDate',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Start Date' />
-    ),
-    cell: ({ row }) => {
-      const date = row.getValue('earliestDate')
-      return (
-        <div className='flex w-[120px] items-center'>
-          <span>
-            {date ? format(new Date(date as string), 'MMM dd, yyyy') : 'N/A'}
-          </span>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'latestDate',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='End Date' />
-    ),
-    cell: ({ row }) => {
-      const date = row.getValue('latestDate')
-      return (
-        <div className='flex w-[120px] items-center'>
-          <span>
-            {date ? format(new Date(date as string), 'MMM dd, yyyy') : 'N/A'}
-          </span>
+          <span>{row.original._count?.meals || 0}</span>
         </div>
       )
     },
@@ -128,24 +96,6 @@ export const programsColumns: ColumnDef<Program>[] = [
 
       return (
         <div className='flex items-center justify-center gap-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='ghost' size='icon' className='h-8 w-8' asChild>
-                  <Link
-                    to='/programs/$id'
-                    params={{ id: String(program.program_id) }}
-                  >
-                    <Eye className='h-4 w-4' />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View details</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

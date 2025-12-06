@@ -1,4 +1,4 @@
-import { Program } from '@/features/programs/data/schema'
+import { Program ,ProgramDetail} from '@/features/programs/data/schema'
 import { apiClient } from './client'
 
 // Types based on backend DTOs
@@ -32,8 +32,8 @@ export const programsApi = {
   },
 
   // Get single program by ID
-  async getProgram(id: string | number): Promise<ProgramResponse> {
-    const response = await apiClient.get<ProgramResponse>(`/programs/${id}`)
+  async getProgram(id: string | number): Promise<ProgramDetail> {
+    const response = await apiClient.get<ProgramDetail>(`/programs/${id}`)
     return response.data
   },
 
