@@ -33,9 +33,11 @@ const route = getRouteApi('/_authenticated/meals/')
 
 
 
+
 export function MealsTable() {
+  const program_id = route.useSearch().program_id
   const { setOpen, setCurrentRow } = useMeals()
-  const { data: meals = [], isLoading, isError } = useMealsQuery()
+  const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id })
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
@@ -90,7 +92,7 @@ export function MealsTable() {
     onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,
-  
+
   })
 
   const pageCount = table.getPageCount()
@@ -174,9 +176,9 @@ export function MealsTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -220,7 +222,7 @@ export function MealsTable() {
         </Table>
       </div>
       <DataTablePagination table={table} className='mt-auto' />
-      <MealsBulkActions table={table} />
+      <MealsBulkActions table={table} program_id={program_id!!} />
     </div>
   )
 }

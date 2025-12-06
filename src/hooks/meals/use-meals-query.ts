@@ -14,11 +14,12 @@ export const mealsKeys = {
 
 // Hook to fetch all meals
 export function useMealsQuery(
+  params?: { program_id?: number },
   options?: Omit<UseQueryOptions<Meal[], Error>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<Meal[], Error>({
-    queryKey: mealsKeys.list(),
-    queryFn: () => mealsApi.getMeals(),
+    queryKey: [...mealsKeys.list(), params?.program_id] as const,
+    queryFn: () => mealsApi.getMeals(params),
     ...options,
   })
 }

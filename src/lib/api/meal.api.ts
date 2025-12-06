@@ -17,8 +17,12 @@ function buildMealFormData(data: Partial<MealForm>) {
 // ---------- API Service ----------
 export const mealsApi = {
   // Get all meals
-  async getMeals(): Promise<Meal[]> {
-    const response = await apiClient.get<Meal[]>('/meals')
+  async getMeals(params?: { program_id?: number }): Promise<Meal[]> {
+    const queryParams = params?.program_id 
+      ? { programs: params.program_id }
+      : {}
+    
+    const response = await apiClient.get<Meal[]>('/meals', { params: queryParams })
     return response.data
   },
 
