@@ -12,8 +12,14 @@ interface PerformanceContextType {
         endDate: string
     }
     setDateRange: (range: { startDate: string; endDate: string }) => void
-    groupSimilar: boolean
-    setGroupSimilar: (value: boolean) => void
+    groupSimilarDishes: boolean
+    setGroupSimilarDishes: (value: boolean) => void
+    groupSimilarMeals: boolean
+    setGroupSimilarMeals: (value: boolean) => void
+    selectedModelOne: number
+    setSelectedModelOne: (model: number) => void
+    selectedModelTwo: number
+    setSelectedModelTwo: (model: number) => void
 }
 
 const PerformanceContext = React.createContext<PerformanceContextType | null>(null)
@@ -29,7 +35,10 @@ export function PerformanceProvider({ children }: PerformanceProviderProps) {
         startDate: '2025-01-01',
         endDate: '2025-12-31',
     })
-    const [groupSimilar, setGroupSimilar] = useState(true)
+    const [groupSimilarDishes, setGroupSimilarDishes] = useState(true)
+    const [groupSimilarMeals, setGroupSimilarMeals] = useState(true)
+    const [selectedModelOne, setSelectedModelOne] = useState<number>(1)
+    const [selectedModelTwo, setSelectedModelTwo] = useState<number>(2)
 
     return (
         <PerformanceContext.Provider
@@ -40,8 +49,14 @@ export function PerformanceProvider({ children }: PerformanceProviderProps) {
                 setActiveMetric,
                 dateRange,
                 setDateRange,
-                groupSimilar,
-                setGroupSimilar,
+                groupSimilarDishes,
+                setGroupSimilarDishes,
+                groupSimilarMeals,
+                setGroupSimilarMeals,
+                selectedModelOne,
+                setSelectedModelOne,
+                selectedModelTwo,
+                setSelectedModelTwo,
             }}
         >
             {children}

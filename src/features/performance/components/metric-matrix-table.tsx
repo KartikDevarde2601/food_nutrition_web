@@ -17,15 +17,21 @@ import {
 import { usePerformanceMatrixQuery } from '@/hooks/performance/use-performance-matrix-query'
 import { useModelsQuery } from '@/hooks/programs/use-models-query'
 import { usePerformance } from './performance-provider'
+import { getRouteApi } from '@tanstack/react-router'
+
 
 export function MetricMatrixTable() {
-    const { activeMetric, dateRange, groupSimilar } = usePerformance()
+    const route = getRouteApi('/_authenticated/performance/')
+    const search = route.useSearch()
+    const { activeMetric, dateRange, groupSimilarMeals } = usePerformance()
 
     // Fetch Matrix Data
     const { data: matrixData, isLoading: isMatrixLoading } = usePerformanceMatrixQuery({
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
-        groupSimilar,
+        groupSimilar: groupSimilarMeals,
+        programs: search.program_id,
+        meals: search.meal_ids,
     })
 
     // Fetch Models for Names

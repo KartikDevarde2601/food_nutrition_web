@@ -11,7 +11,7 @@ export function MetricSelector() {
     const { activeMetric, setActiveMetric } = usePerformance()
 
     return (
-        <div className='w-60'>
+        <div className="flex items-center space-x-2">
             <Select value={activeMetric} onValueChange={setActiveMetric}>
                 <SelectTrigger>
                     <SelectValue placeholder='Select Metric' />
