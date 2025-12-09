@@ -86,92 +86,74 @@ export function EditMeal() {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+        <div className="p-4 space-y-4">
+            {/* Main grid: image + table side by side on desktop, stacked on mobile */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Image card */}
+                <div className="lg:col-span-1">
+                    <Card className="h-full">
+                        <CardContent className="p-0 h-full">
+                            <div className="w-full h-64 sm:h-80 md:h-96 lg:h-full overflow-hidden rounded-md">
+                                <img
+                                    src={meal.image}
+                                    alt={`Meal ${meal.mealId}`}
+                                    className="w-full h-full object-cover p-2 rounded-md"
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-            {/* Left Column: Image & user identifiers dishnames */}
-            <div className='space-y-6'>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Meal Image</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="aspect-square relative rounded-md overflow-hidden bg-muted max-w-xs mx-auto">
-                            <img
-                                src={meal.image}
-                                alt={`Meal ${meal.mealId}`}
-                                className="object-cover w-full h-full"
-                            />
-                        </div>
+                {/* Table + Nutrition Summary */}
+                <div className="lg:col-span-2 space-y-4">
+                    <MealNutritionSummary mergedIdentifiers={mergedIdentifiers} dishes={dishes} />
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Identified Dishes</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Dish</TableHead>
+                                        <TableHead>Weight (g)</TableHead>
+                                        <TableHead>Position</TableHead>
+                                        <TableHead>Added By</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {mergedIdentifiers.map((item, index) => (
+                                        <TableRow key={`${item.dishId}-${index}`}>
+                                            <TableCell>{getDishName(item.dishId)}</TableCell>
+                                            <TableCell>{item.weight}</TableCell>
+                                            <TableCell>{item.position}</TableCell>
+                                            <TableCell className="space-x-2">
+                                                {item.isUser && <Badge variant="secondary">User</Badge>}
+                                                {item.isAdmin && <Badge>Admin</Badge>}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {mergedIdentifiers.length === 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={4} className="text-center">
+                                                No dishes identified
+                                            </TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
 
-                        <MealNutritionSummary
-                            mergedIdentifiers={mergedIdentifiers}
-                            dishes={dishes}
-                        />
-                    </CardContent>
-                </Card>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>User Identifiers Dish Names</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-2">
-                            {meal.userIdentifiersNames.map((identifier, index) => (
-                                <div key={index} className="flex items-center justify-between">
-                                    <span className="font-medium">{identifier.dishName}</span>
-                                    <span className="text-muted-foreground">{identifier.weight}g</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
 
-            {/* Right Column: Details */}
-            <div className="space-y-6">
-                {/* Merged Identifiers */}
-
-                <MealModelResults
-                    modelsResult={meal.modelsResult}
-                    dishes={dishes}
-                />
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Identified Dishes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Dish</TableHead>
-                                    <TableHead>Weight (g)</TableHead>
-                                    <TableHead>Position</TableHead>
-                                    <TableHead>Added By</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {mergedIdentifiers.map((item, index) => (
-                                    <TableRow key={`${item.dishId}-${index}`}>
-                                        <TableCell>{getDishName(item.dishId)}</TableCell>
-                                        <TableCell>{item.weight}</TableCell>
-                                        <TableCell>{item.position}</TableCell>
-                                        <TableCell className="space-x-2">
-                                            {item.isUser && <Badge variant="secondary">User</Badge>}
-                                            {item.isAdmin && <Badge>Admin</Badge>}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {mergedIdentifiers.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="text-center">No dishes identified</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+            {/* Model Results Section */}
+            <div>
+                <MealModelResults modelsResult={meal.modelsResult} dishes={dishes} />
             </div>
         </div>
+
     )
 }

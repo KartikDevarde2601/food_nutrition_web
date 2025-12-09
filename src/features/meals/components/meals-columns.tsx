@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { Row, type ColumnDef } from '@tanstack/react-table'
-import { Eye, Pencil } from 'lucide-react'
+import { Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
@@ -214,24 +214,6 @@ export const mealsColumns: ColumnDef<Meal>[] = [
               </TooltipTrigger>
               <TooltipContent>
                 <p>View details</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='ghost' size='icon' className='h-8 w-8' asChild>
-                  <Link
-                    to='/meals/$mealId/edit'
-                    params={{ mealId: String(meal.mealId) }}
-                  >
-                    <Pencil className='h-4 w-4' />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit meal</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
