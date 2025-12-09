@@ -1,15 +1,6 @@
-import { Link } from '@tanstack/react-router'
 import { Row, type ColumnDef } from '@tanstack/react-table'
-import { Eye } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { formatDate } from '@/lib/formatdate'
@@ -191,36 +182,5 @@ export const mealsColumns: ColumnDef<Meal>[] = [
     enableSorting: false,
     enableColumnFilter: true,
     filterFn: (row, _columnId, filterValue) => filterBaseModels(row, filterValue)
-  },
-  {
-    id: 'actions',
-    header: () => <div className='text-center'>Actions</div>,
-    cell: ({ row }) => {
-      const meal = row.original
-
-      return (
-        <div className='flex items-center justify-center gap-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant='ghost' size='icon' className='h-8 w-8' asChild>
-                  <Link
-                    to='/meals/$mealId'
-                    params={{ mealId: String(meal.mealId) }}
-                  >
-                    <Eye className='h-4 w-4' />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View details</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false,
   },
 ]

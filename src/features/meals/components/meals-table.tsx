@@ -3,31 +3,24 @@ import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
   type VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { DataTableToolbar } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
 import { mealsColumns as columns } from './meals-columns'
 import { useMeals } from './meals-provider'
+import { MealCard } from './meal-card'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { EditMeal } from './edit-meal'
 
 const route = getRouteApi('/_authenticated/meals/')
 
@@ -44,19 +37,18 @@ export function MealsTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
+  const [selectedMealId, setSelectedMealId] = useState<string | null>(null)
+  const [lastSelectedMealId, setLastSelectedMealId] = useState<string | null>(null)
+
   // Synced with URL states (updated to match route search schema defaults)
   const {
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
     onColumnFiltersChange,
-    pagination,
-    onPaginationChange,
-    ensurePageInRange,
   } = useTableUrlState({
     search: route.useSearch(),
     navigate: route.useNavigate(),
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [],
   })
@@ -71,7 +63,6 @@ export function MealsTable() {
       rowSelection,
       columnFilters,
       globalFilter,
-      pagination,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -85,20 +76,15 @@ export function MealsTable() {
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    onPaginationChange,
     onGlobalFilterChange,
     onColumnFiltersChange,
 
   })
 
-  const pageCount = table.getPageCount()
-  useEffect(() => {
-    ensurePageInRange(pageCount)
-  }, [pageCount, ensurePageInRange])
+
 
   // Listen for delete meal events from action buttons
   useEffect(() => {
@@ -141,88 +127,57 @@ export function MealsTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='Filter by ID...'
-        dateFilters={[
-          {
-            columnId: 'createdAt',
-            title: 'Created At',
-            multiple: true,
-          },
-        ]}
-        modelFilters={[
-          {
-            columnId: 'mealInferences',
-            title: 'Models',
-          },
-        ]}
-      />
-      <div className='overflow-hidden rounded-md border'>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={cn(
-                        header.column.columnDef.meta?.className,
-                        header.column.columnDef.meta?.thClassName
-                      )}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.columnDef.meta?.className,
-                        cell.column.columnDef.meta?.tdClassName
-                      )}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className='h-24 text-center'
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className='sticky top-0 z-10 bg-background pb-4'>
+        <DataTableToolbar
+          table={table}
+          searchPlaceholder='Filter by ID...'
+          dateFilters={[
+            {
+              columnId: 'createdAt',
+              title: 'Created At',
+              multiple: true,
+            },
+          ]}
+          modelFilters={[
+            {
+              columnId: 'mealInferences',
+              title: 'Models',
+            },
+          ]}
+        />
       </div>
-      <DataTablePagination table={table} className='mt-auto' />
+
+      <div className='flex-1 overflow-y-auto min-h-0'>
+        {table.getRowModel().rows?.length ? (
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-8'>
+            {table.getRowModel().rows.map((row) => (
+              <MealCard
+                key={row.id}
+                row={row}
+                onClick={() => setSelectedMealId(String(row.original.mealId))}
+                isLastSelected={lastSelectedMealId === String(row.original.mealId)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
+            No results.
+          </div>
+        )}
+      </div>
+
       <MealsBulkActions table={table} program_id={program_id!!} />
+
+      <Dialog open={!!selectedMealId} onOpenChange={(open) => {
+        if (!open) {
+          setLastSelectedMealId(selectedMealId)
+          setSelectedMealId(null)
+        }
+      }}>
+        <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[95vw] max-h-[90vh] overflow-y-auto">
+          {selectedMealId && <EditMeal mealId={selectedMealId} />}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

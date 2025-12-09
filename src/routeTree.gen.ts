@@ -27,12 +27,10 @@ import { Route as AuthenticatedPerformanceIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedMealsIndexRouteImport } from './routes/_authenticated/meals/index'
 import { Route as AuthenticatedDishesIndexRouteImport } from './routes/_authenticated/dishes/index'
 import { Route as AuthenticatedProgramsIdRouteImport } from './routes/_authenticated/programs/$id'
-import { Route as AuthenticatedMealsMealIdRouteImport } from './routes/_authenticated/meals/$mealId'
 import { Route as AuthenticatedErrorsErrorRouteImport } from './routes/_authenticated/errors/$error'
 import { Route as AuthenticatedDishesCreateRouteImport } from './routes/_authenticated/dishes/create'
 import { Route as AuthenticatedDishesIdRouteImport } from './routes/_authenticated/dishes/$id'
 import { Route as AuthenticatedDishesSimilarityIndexRouteImport } from './routes/_authenticated/dishes/similarity/index'
-import { Route as AuthenticatedMealsMealIdEditRouteImport } from './routes/_authenticated/meals/$mealId/edit'
 import { Route as AuthenticatedDishesEditIdRouteImport } from './routes/_authenticated/dishes/edit.$id'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -127,12 +125,6 @@ const AuthenticatedProgramsIdRoute = AuthenticatedProgramsIdRouteImport.update({
   path: '/programs/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMealsMealIdRoute =
-  AuthenticatedMealsMealIdRouteImport.update({
-    id: '/meals/$mealId',
-    path: '/meals/$mealId',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedErrorsErrorRoute =
   AuthenticatedErrorsErrorRouteImport.update({
     id: '/errors/$error',
@@ -156,12 +148,6 @@ const AuthenticatedDishesSimilarityIndexRoute =
     path: '/dishes/similarity/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMealsMealIdEditRoute =
-  AuthenticatedMealsMealIdEditRouteImport.update({
-    id: '/edit',
-    path: '/edit',
-    getParentRoute: () => AuthenticatedMealsMealIdRoute,
-  } as any)
 const AuthenticatedDishesEditIdRoute =
   AuthenticatedDishesEditIdRouteImport.update({
     id: '/dishes/edit/$id',
@@ -184,7 +170,6 @@ export interface FileRoutesByFullPath {
   '/dishes/$id': typeof AuthenticatedDishesIdRoute
   '/dishes/create': typeof AuthenticatedDishesCreateRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/meals/$mealId': typeof AuthenticatedMealsMealIdRouteWithChildren
   '/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/dishes': typeof AuthenticatedDishesIndexRoute
   '/meals': typeof AuthenticatedMealsIndexRoute
@@ -192,7 +177,6 @@ export interface FileRoutesByFullPath {
   '/programs': typeof AuthenticatedProgramsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
-  '/meals/$mealId/edit': typeof AuthenticatedMealsMealIdEditRoute
   '/dishes/similarity': typeof AuthenticatedDishesSimilarityIndexRoute
 }
 export interface FileRoutesByTo {
@@ -210,7 +194,6 @@ export interface FileRoutesByTo {
   '/dishes/$id': typeof AuthenticatedDishesIdRoute
   '/dishes/create': typeof AuthenticatedDishesCreateRoute
   '/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/meals/$mealId': typeof AuthenticatedMealsMealIdRouteWithChildren
   '/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/dishes': typeof AuthenticatedDishesIndexRoute
   '/meals': typeof AuthenticatedMealsIndexRoute
@@ -218,7 +201,6 @@ export interface FileRoutesByTo {
   '/programs': typeof AuthenticatedProgramsIndexRoute
   '/users': typeof AuthenticatedUsersIndexRoute
   '/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
-  '/meals/$mealId/edit': typeof AuthenticatedMealsMealIdEditRoute
   '/dishes/similarity': typeof AuthenticatedDishesSimilarityIndexRoute
 }
 export interface FileRoutesById {
@@ -238,7 +220,6 @@ export interface FileRoutesById {
   '/_authenticated/dishes/$id': typeof AuthenticatedDishesIdRoute
   '/_authenticated/dishes/create': typeof AuthenticatedDishesCreateRoute
   '/_authenticated/errors/$error': typeof AuthenticatedErrorsErrorRoute
-  '/_authenticated/meals/$mealId': typeof AuthenticatedMealsMealIdRouteWithChildren
   '/_authenticated/programs/$id': typeof AuthenticatedProgramsIdRoute
   '/_authenticated/dishes/': typeof AuthenticatedDishesIndexRoute
   '/_authenticated/meals/': typeof AuthenticatedMealsIndexRoute
@@ -246,7 +227,6 @@ export interface FileRoutesById {
   '/_authenticated/programs/': typeof AuthenticatedProgramsIndexRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexRoute
   '/_authenticated/dishes/edit/$id': typeof AuthenticatedDishesEditIdRoute
-  '/_authenticated/meals/$mealId/edit': typeof AuthenticatedMealsMealIdEditRoute
   '/_authenticated/dishes/similarity/': typeof AuthenticatedDishesSimilarityIndexRoute
 }
 export interface FileRouteTypes {
@@ -266,7 +246,6 @@ export interface FileRouteTypes {
     | '/dishes/$id'
     | '/dishes/create'
     | '/errors/$error'
-    | '/meals/$mealId'
     | '/programs/$id'
     | '/dishes'
     | '/meals'
@@ -274,7 +253,6 @@ export interface FileRouteTypes {
     | '/programs'
     | '/users'
     | '/dishes/edit/$id'
-    | '/meals/$mealId/edit'
     | '/dishes/similarity'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -292,7 +270,6 @@ export interface FileRouteTypes {
     | '/dishes/$id'
     | '/dishes/create'
     | '/errors/$error'
-    | '/meals/$mealId'
     | '/programs/$id'
     | '/dishes'
     | '/meals'
@@ -300,7 +277,6 @@ export interface FileRouteTypes {
     | '/programs'
     | '/users'
     | '/dishes/edit/$id'
-    | '/meals/$mealId/edit'
     | '/dishes/similarity'
   id:
     | '__root__'
@@ -319,7 +295,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dishes/$id'
     | '/_authenticated/dishes/create'
     | '/_authenticated/errors/$error'
-    | '/_authenticated/meals/$mealId'
     | '/_authenticated/programs/$id'
     | '/_authenticated/dishes/'
     | '/_authenticated/meals/'
@@ -327,7 +302,6 @@ export interface FileRouteTypes {
     | '/_authenticated/programs/'
     | '/_authenticated/users/'
     | '/_authenticated/dishes/edit/$id'
-    | '/_authenticated/meals/$mealId/edit'
     | '/_authenticated/dishes/similarity/'
   fileRoutesById: FileRoutesById
 }
@@ -473,13 +447,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProgramsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/meals/$mealId': {
-      id: '/_authenticated/meals/$mealId'
-      path: '/meals/$mealId'
-      fullPath: '/meals/$mealId'
-      preLoaderRoute: typeof AuthenticatedMealsMealIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/errors/$error': {
       id: '/_authenticated/errors/$error'
       path: '/errors/$error'
@@ -508,13 +475,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDishesSimilarityIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/meals/$mealId/edit': {
-      id: '/_authenticated/meals/$mealId/edit'
-      path: '/edit'
-      fullPath: '/meals/$mealId/edit'
-      preLoaderRoute: typeof AuthenticatedMealsMealIdEditRouteImport
-      parentRoute: typeof AuthenticatedMealsMealIdRoute
-    }
     '/_authenticated/dishes/edit/$id': {
       id: '/_authenticated/dishes/edit/$id'
       path: '/dishes/edit/$id'
@@ -525,26 +485,11 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedMealsMealIdRouteChildren {
-  AuthenticatedMealsMealIdEditRoute: typeof AuthenticatedMealsMealIdEditRoute
-}
-
-const AuthenticatedMealsMealIdRouteChildren: AuthenticatedMealsMealIdRouteChildren =
-  {
-    AuthenticatedMealsMealIdEditRoute: AuthenticatedMealsMealIdEditRoute,
-  }
-
-const AuthenticatedMealsMealIdRouteWithChildren =
-  AuthenticatedMealsMealIdRoute._addFileChildren(
-    AuthenticatedMealsMealIdRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedDishesIdRoute: typeof AuthenticatedDishesIdRoute
   AuthenticatedDishesCreateRoute: typeof AuthenticatedDishesCreateRoute
   AuthenticatedErrorsErrorRoute: typeof AuthenticatedErrorsErrorRoute
-  AuthenticatedMealsMealIdRoute: typeof AuthenticatedMealsMealIdRouteWithChildren
   AuthenticatedProgramsIdRoute: typeof AuthenticatedProgramsIdRoute
   AuthenticatedDishesIndexRoute: typeof AuthenticatedDishesIndexRoute
   AuthenticatedMealsIndexRoute: typeof AuthenticatedMealsIndexRoute
@@ -560,7 +505,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDishesIdRoute: AuthenticatedDishesIdRoute,
   AuthenticatedDishesCreateRoute: AuthenticatedDishesCreateRoute,
   AuthenticatedErrorsErrorRoute: AuthenticatedErrorsErrorRoute,
-  AuthenticatedMealsMealIdRoute: AuthenticatedMealsMealIdRouteWithChildren,
   AuthenticatedProgramsIdRoute: AuthenticatedProgramsIdRoute,
   AuthenticatedDishesIndexRoute: AuthenticatedDishesIndexRoute,
   AuthenticatedMealsIndexRoute: AuthenticatedMealsIndexRoute,

@@ -11,7 +11,6 @@ export const sidebarData: SidebarData = {
     {
       name: 'Food Nutrition',
       logo: AudioWaveform,
-      plan: 'AIG Program',
     },
   ],
   navGroups: [

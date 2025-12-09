@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useParams } from '@tanstack/react-router'
 import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
 import { useDishesQuery } from '@/hooks/dishes/use-dish-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -12,8 +11,11 @@ import { Identifier } from '../data/schema'
 import { MealNutritionSummary } from './meal-nutrition-summary'
 import { MealModelResults } from './meal-model-results'
 
-export function EditMeal() {
-    const { mealId } = useParams({ from: '/_authenticated/meals/$mealId' })
+interface EditMealProps {
+    mealId: string
+}
+
+export function EditMeal({ mealId }: EditMealProps) {
     const { data: mealDetails, isLoading: isLoadingMeal, error: mealError } = useMealDetailsQuery(mealId)
     const { data: dishes, isLoading: isLoadingDishes } = useDishesQuery()
 
@@ -93,7 +95,7 @@ export function EditMeal() {
                 <div className="lg:col-span-1">
                     <Card className="h-full">
                         <CardContent className="p-0 h-full">
-                            <div className="w-full h-64 sm:h-80 md:h-96 lg:h-full overflow-hidden rounded-md">
+                            <div className="w-full h-64 sm:h-80  lg:h-96 overflow-hidden rounded-md">
                                 <img
                                     src={meal.image}
                                     alt={`Meal ${meal.mealId}`}
