@@ -1,15 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Trash2} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
-import {  TransformedDish } from '../data/schema'
+import { TransformedDish } from '../data/schema'
 import { DishBadge } from './dish-badge'
 
 
@@ -62,44 +54,5 @@ export const dishColumns: ColumnDef<TransformedDish>[] = [
         </div>
       )
     },
-  },
-
-  // Column 3: Actions (Delete the Main Dish Row)
-  {
-    id: 'actions',
-    header: () => <div className='text-center'>Actions</div>,
-    cell: ({ row }) => {
-      const data = row.original
-
-      return (
-        <div className='flex items-center justify-center gap-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8'
-                  onClick={() => {
-                    // Dispatch event to delete the entire row (main dish)
-                    const event = new CustomEvent('delete-similarity', {
-                      detail: data,
-                    })
-                    window.dispatchEvent(event)
-                  }}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete entire dish</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      )
-    },
-    enableSorting: false,
-    enableHiding: false,
   },
 ]

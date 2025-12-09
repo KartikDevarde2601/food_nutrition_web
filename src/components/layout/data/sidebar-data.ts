@@ -29,15 +29,5 @@ export const sidebarData: SidebarData = {
         },
       ],
     },
-    {
-      title: 'Programs Management',
-      items: [
-        {
-          title: 'Programs',
-          url: '/programs',
-          icon: ListTodo,
-        },
-      ],
-    },
   ],
 }

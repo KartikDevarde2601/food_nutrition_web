@@ -27,11 +27,14 @@ export function MealCard({ row, onClick, isLastSelected }: MealCardProps) {
                         onClick={onClick}
                         className={cn(
                             "group relative h-28 overflow-hidden rounded-xl border-0 transition-all cursor-pointer p-0",
-                            isLastSelected && "scale-110"
+                            isLastSelected && "ring ring-primary ring-offset-2 scale-95"
                         )}
                     >
                         {/* Checkbox → top-right */}
-                        <div className="absolute right-2 top-2 z-20">
+                        <div
+                            className="absolute right-2 top-2 z-20"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <Checkbox
                                 checked={row.getIsSelected()}
                                 onCheckedChange={(value) => row.toggleSelected(!!value)}
