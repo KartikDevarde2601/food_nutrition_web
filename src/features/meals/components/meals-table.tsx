@@ -16,21 +16,22 @@ import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { DataTableToolbar } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
+import { MealsPrimaryButtons } from './meals-primary-buttons'
 import { mealsColumns as columns } from './meals-columns'
 import { useMeals } from './meals-provider'
 import { MealCard } from './meal-card'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { EditMeal } from './edit-meal'
 
-const route = getRouteApi('/_authenticated/meals/')
+const route = getRouteApi('/_authenticated/programs/$id/meals')
 
 
 
 
 export function MealsTable() {
-  const program_id = route.useSearch().program_id
+  const { id } = route.useParams()
   const { setOpen, setCurrentRow } = useMeals()
-  const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id })
+  const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id: Number(id) })
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
@@ -127,10 +128,20 @@ export function MealsTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <div className='sticky top-0 z-10 bg-background pb-4'>
+      <div className='sticky top-16 z-30 bg-background pb-4'>
+        <div className='flex flex-wrap items-end justify-between gap-2 mb-4'>
+          <div>
+            <h2 className='text-2xl font-bold tracking-tight'>Meals</h2>
+            <p className='text-muted-foreground'>
+              Here&apos;s a list of your meals!
+            </p>
+          </div>
+          <MealsPrimaryButtons />
+        </div>
         <DataTableToolbar
           table={table}
-          searchPlaceholder='Filter by ID...'
+          searchfilterEnable={false}
+          selectAllEnable={true}
           dateFilters={[
             {
               columnId: 'createdAt',
@@ -166,7 +177,7 @@ export function MealsTable() {
         )}
       </div>
 
-      <MealsBulkActions table={table} program_id={program_id!!} />
+      <MealsBulkActions table={table} program_id={Number(id)} />
 
       <Dialog open={!!selectedMealId} onOpenChange={(open) => {
         if (!open) {

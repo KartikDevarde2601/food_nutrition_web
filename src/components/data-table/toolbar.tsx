@@ -3,14 +3,17 @@ import { type Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
-import { DataTableViewOptions } from './view-options'
 import { DataTableDateFilter } from './date-filtering'
 import { DataTableModelFilter } from './data-table-model-filter'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 
 type DataTableToolbarProps<TData> = {
   table: Table<TData>
+  searchfilterEnable?: boolean
   searchPlaceholder?: string
   searchKey?: string
+  selectAllEnable?: boolean
   filters?: {
     columnId: string
     title: string
@@ -33,8 +36,10 @@ type DataTableToolbarProps<TData> = {
 
 export function DataTableToolbar<TData>({
   table,
+  searchfilterEnable = true,
   searchPlaceholder = 'Filter...',
   searchKey,
+  selectAllEnable = false,
   filters = [],
   dateFilters = [],
   modelFilters = [],
@@ -45,25 +50,32 @@ export function DataTableToolbar<TData>({
   return (
     <div className='flex items-center justify-between'>
       <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
-        {searchKey ? (
-          <Input
-            placeholder={searchPlaceholder}
-            value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
-            className='h-8 w-[150px] lg:w-[250px]'
-          />
-        ) : (
-          <Input
-            placeholder={searchPlaceholder}
-            value={table.getState().globalFilter ?? ''}
-            onChange={(event) => table.setGlobalFilter(event.target.value)}
-            className='h-8 w-[250px] lg:w-[300px]'
-          />
-        )}
+        {
+          searchfilterEnable && (
+            <div>
+              {searchKey ? (
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={
+                    (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
+                  }
+                  onChange={(event) =>
+                    table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                  }
+                  className='h-8 w-[150px] lg:w-[250px]'
+                />
+              ) : (
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={table.getState().globalFilter ?? ''}
+                  onChange={(event) => table.setGlobalFilter(event.target.value)}
+                  className='h-8 w-[250px] lg:w-[300px]'
+                />
+              )}
+            </div>
+          )
+        }
+
         <div className='flex gap-x-2'>
           {filters.map((filter) => {
             const column = table.getColumn(filter.columnId)
@@ -114,8 +126,25 @@ export function DataTableToolbar<TData>({
             <Cross2Icon className='ms-2 h-4 w-4' />
           </Button>
         )}
+        {
+          <div>
+            {selectAllEnable && (
+              <div className="flex items-center gap-3 border-1 border-dashed rounded-lg p-2">
+                <Checkbox id="select-all"
+                  checked={
+                    table.getIsAllPageRowsSelected() ||
+                    (table.getIsSomePageRowsSelected() && 'indeterminate')
+                  }
+                  onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                  aria-label='Select all'
+
+                />
+                <Label htmlFor="select-all">Select All</Label>
+              </div>
+            )}
+          </div>
+        }
       </div>
-      <DataTableViewOptions table={table} />
     </div>
   )
 }

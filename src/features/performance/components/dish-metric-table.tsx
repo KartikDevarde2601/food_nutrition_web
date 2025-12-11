@@ -13,6 +13,7 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { useDishMetricQuery } from '@/hooks/performance/use-performance-matrix-query'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
     Table,
@@ -23,20 +24,24 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
-import { useDishMetricQuery } from '@/hooks/performance/use-performance-matrix-query'
 import { dishMetricColumns as columns } from './dish-metric-columns'
 
-const route = getRouteApi('/_authenticated/performance/')
+const route = getRouteApi('/_authenticated/programs/$id/performance')
 
 export function DishMetricTable() {
+    const { id } = route.useParams()
     const search = route.useSearch()
 
     // Fetch dish metric data with model parameters
-    const { data: dishMetricData, isLoading, isError } = useDishMetricQuery({
+    const {
+        data: dishMetricData,
+        isLoading,
+        isError,
+    } = useDishMetricQuery({
         model_one: search.model_one,
         model_two: search.model_two,
         groupSimilar: 1, // Default to grouping similar dishes
-        programs: search.program_id,
+        programs: Number(id),
     })
 
     // Local UI-only states
@@ -56,7 +61,7 @@ export function DishMetricTable() {
     } = useTableUrlState({
         search: route.useSearch(),
         navigate: route.useNavigate() as any, // Type cast needed for route-specific navigate
-        pagination: { defaultPage: 1, defaultPageSize: 10 },
+        pagination: { defaultPage: 1, defaultPageSize: 30 },
         globalFilter: { enabled: true, key: 'filter' },
         columnFilters: [],
     })
@@ -165,6 +170,7 @@ export function DishMetricTable() {
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && 'selected'}
+
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell

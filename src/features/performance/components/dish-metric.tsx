@@ -8,18 +8,25 @@ import { OverallMetricsDisplay } from './overall-metrics-display'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { usePerformance } from './performance-provider'
+import { useDishMetricQuery } from '@/hooks/performance/use-performance-matrix-query'
 
-const route = getRouteApi('/_authenticated/performance/')
+const route = getRouteApi('/_authenticated/programs/$id/performance')
 
-interface DishMetricProps {
-  isLoading: boolean
-  dishMetricData: any
-}
 
-export function DishMetric({ isLoading, dishMetricData }: DishMetricProps) {
+export function DishMetric() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
+  const { id } = route.useParams()
+
+  const { data: dishMetricData, isLoading } = useDishMetricQuery({
+    model_one: search.model_one,
+    model_two: search.model_two,
+    groupSimilar: search.groupSimilarDishes,
+    programs: Number(id),
+    meals: search.meal_ids,
+  })
   const { groupSimilarDishes, setGroupSimilarDishes } = usePerformance()
+
 
   // Sync state with URL params on mount and when URL changes
   React.useEffect(() => {

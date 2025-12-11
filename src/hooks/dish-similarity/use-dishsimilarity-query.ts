@@ -7,6 +7,18 @@ import {
 } from '@/features/dish-similarity/data/schema'
 
 export function transformDishPairs(data: DishSimilarity[]): TransformedDish[] {
+  const reversesimilarity = data.map((similarity) => {
+    const dish1 = similarity.dish1
+    const dish2 = similarity.dish2
+    return {
+      ...similarity,
+      dish1: dish2,
+      dish2: dish1,
+    }
+  })
+
+  const mergeData = [...data, ...reversesimilarity]
+
   const map = new Map<
     number,
     {
@@ -16,7 +28,7 @@ export function transformDishPairs(data: DishSimilarity[]): TransformedDish[] {
     }
   >()
 
-  for (const { dish1, dish2 } of data) {
+  for (const { dish1, dish2 } of mergeData) {
     if (!map.has(dish1.dish_id)) {
       map.set(dish1.dish_id, {
         dish_id: dish1.dish_id,

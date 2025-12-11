@@ -7,7 +7,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { usePerformance } from './performance-provider'
 
-const route = getRouteApi('/_authenticated/performance/')
+const route = getRouteApi('/_authenticated/programs/$id/performance')
 
 export function MealMetric() {
   const search = route.useSearch()

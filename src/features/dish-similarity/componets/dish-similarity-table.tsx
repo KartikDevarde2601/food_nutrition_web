@@ -24,9 +24,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
+import { TransformedDish } from '../data/schema'
 import { dishColumns as columns } from './dish-similarity-columns'
 import { useDishesSimilarity } from './dish-similarity-provider'
-import { TransformedDish } from '../data/schema'
 
 const route = getRouteApi('/_authenticated/dishes/similarity/')
 
@@ -53,7 +53,7 @@ export function DishSimilarityTable() {
   } = useTableUrlState({
     search: route.useSearch(),
     navigate: route.useNavigate(),
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
+    pagination: { defaultPage: 1, defaultPageSize: 30 },
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [],
   })
@@ -97,36 +97,33 @@ export function DishSimilarityTable() {
     ensurePageInRange(pageCount)
   }, [pageCount, ensurePageInRange])
 
+  // Listen for edit similarity events from action buttons
+  useEffect(() => {
+    const handleEditSimilarity = (event: Event) => {
+      const customEvent = event as CustomEvent<TransformedDish>
+      setCurrentRow(customEvent.detail)
+      setOpen('edit')
+    }
 
-   // Listen for edit similarity events from action buttons
-    useEffect(() => {
-      const handleEditSimilarity = (event: Event) => {
-        const customEvent = event as CustomEvent<TransformedDish>
-        setCurrentRow(customEvent.detail)
-        setOpen('edit')
-      }
-  
-      window.addEventListener('edit-similarity', handleEditSimilarity)
-      return () => {
-        window.removeEventListener('edit-similarity', handleEditSimilarity)
-      }
-    }, [setCurrentRow, setOpen])
+    window.addEventListener('edit-similarity', handleEditSimilarity)
+    return () => {
+      window.removeEventListener('edit-similarity', handleEditSimilarity)
+    }
+  }, [setCurrentRow, setOpen])
 
-     // Listen for delete similarity events from action buttons
-      useEffect(() => {
-        const handleDeleteSimilarity = (event: Event) => {
-          const customEvent = event as CustomEvent<TransformedDish>
-          setCurrentRow(customEvent.detail)
-          setOpen('delete')
-        }
-    
-        window.addEventListener('delete-similarity', handleDeleteSimilarity)
-        return () => {
-          window.removeEventListener('delete-similarity', handleDeleteSimilarity)
-        }
-      }, [setCurrentRow, setOpen])
-    
+  // Listen for delete similarity events from action buttons
+  useEffect(() => {
+    const handleDeleteSimilarity = (event: Event) => {
+      const customEvent = event as CustomEvent<TransformedDish>
+      setCurrentRow(customEvent.detail)
+      setOpen('delete')
+    }
 
+    window.addEventListener('delete-similarity', handleDeleteSimilarity)
+    return () => {
+      window.removeEventListener('delete-similarity', handleDeleteSimilarity)
+    }
+  }, [setCurrentRow, setOpen])
 
   // Show loading state
   if (isLoading) {
@@ -157,7 +154,7 @@ export function DishSimilarityTable() {
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by name or ID...'
+        searchPlaceholder='Filter by dish name'
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -177,9 +174,9 @@ export function DishSimilarityTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
