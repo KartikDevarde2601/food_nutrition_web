@@ -4,7 +4,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ModelResult } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
-import { MealNutritionSummary } from './meal-nutrition-summary'
 import { useModelsQuery } from '@/hooks/programs'
 
 interface MealModelResultsProps {
@@ -60,14 +59,6 @@ export function MealModelResults({ modelsResult, dishes }: MealModelResultsProps
         return dish ? dish.dish_name : `Dish ${dishId}`
     }
 
-    // Debug logging
-    console.log("🔍 Debug Info:");
-    console.log("modelsResult:", modelsResult);
-    console.log("filtered models:", models);
-    console.log("selectedModelId (type):", selectedModelId, typeof selectedModelId);
-    console.log("modelsResult model_ids:", modelsResult.map(m => ({ id: m.model_id, type: typeof m.model_id })));
-    console.log("selectedModelResult:", selectedModelResult);
-
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -90,14 +81,9 @@ export function MealModelResults({ modelsResult, dishes }: MealModelResultsProps
             <CardContent className="mt-4">
                 {selectedModelResult ? (
                     <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-                        <div className="order-2  p-2 sm:order-1 sm:w-3/5">
-                            <MealNutritionSummary
-                                modelDishes={selectedModelResult?.dishes}
-                                dishes={dishes}
-                            />
-                        </div>
 
-                        <div className="order-1 p-2 sm:order-2 sm:w-2/5">
+
+                        <div className="order-1 p-2">
                             <Table>
                                 <TableHeader>
                                     <TableRow>

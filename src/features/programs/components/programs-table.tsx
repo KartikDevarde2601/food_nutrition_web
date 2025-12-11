@@ -154,7 +154,7 @@ export function ProgramsTable() {
     >
       <DataTableToolbar
         table={table}
-        searchPlaceholder='Filter by name or ID...'
+        searchPlaceholder='Filter by name'
       />
       <div className='overflow-hidden rounded-md border'>
         <Table>
@@ -174,9 +174,9 @@ export function ProgramsTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

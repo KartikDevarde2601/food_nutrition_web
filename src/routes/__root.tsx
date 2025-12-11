@@ -14,6 +14,7 @@ export const Route = createRootRouteWithContext<{
     return (
       <>
         <NavigationProgress />
+
         <Outlet />
         <Toaster duration={5000} />
         {import.meta.env.MODE === 'development' && (

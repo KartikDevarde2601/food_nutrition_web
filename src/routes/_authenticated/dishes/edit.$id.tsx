@@ -4,7 +4,6 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { ConfigDrawer } from '@/components/config-drawer'
-import { Search } from '@/components/search'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { DishForm } from '@/features/dishes/components/dish-form'
@@ -23,7 +22,7 @@ function EditDish() {
   return (
     <DishesProvider>
       <Header fixed>
-        <Search />
+
         <div className="ms-auto flex items-center space-x-4">
           <ThemeSwitch />
           <ConfigDrawer />

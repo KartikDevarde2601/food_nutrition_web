@@ -8,7 +8,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Identifier } from '../data/schema'
-import { MealNutritionSummary } from './meal-nutrition-summary'
 import { MealModelResults } from './meal-model-results'
 
 interface EditMealProps {
@@ -89,26 +88,25 @@ export function EditMeal({ mealId }: EditMealProps) {
 
     return (
         <div className="p-4 space-y-4">
-            {/* Main grid: image + table side by side on desktop, stacked on mobile */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Image card */}
-                <div className="lg:col-span-1">
-                    <Card className="h-full">
-                        <CardContent className="p-0 h-full">
-                            <div className="w-full h-64 sm:h-80  lg:h-96 overflow-hidden rounded-md">
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="h-full">
+                    <Card className="h-full flex flex-col">
+                        <CardContent className="flex-1 p-4">
+                            <div className="w-full h-full min-h-[400px] overflow-hidden rounded-md relative">
                                 <img
                                     src={meal.image}
                                     alt={`Meal ${meal.mealId}`}
-                                    className="w-full h-full object-cover p-2 rounded-md"
+                                    className="absolute inset-0 w-full h-full object-cover rounded-md"
                                 />
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Table + Nutrition Summary */}
-                <div className="lg:col-span-2 space-y-4">
-                    <MealNutritionSummary mergedIdentifiers={mergedIdentifiers} dishes={dishes} />
+                {/* Right Column: Two Tables (Takes 50% width) */}
+                <div className="space-y-4">
+                    {/* Table 1: Identified Dishes */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Identified Dishes</CardTitle>
@@ -118,44 +116,43 @@ export function EditMeal({ mealId }: EditMealProps) {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Dish</TableHead>
-                                        <TableHead>Weight (g)</TableHead>
+                                        <TableHead>Weight</TableHead>
                                         <TableHead>Position</TableHead>
-                                        <TableHead>Added By</TableHead>
+                                        <TableHead>Source</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {mergedIdentifiers.map((item, index) => (
                                         <TableRow key={`${item.dishId}-${index}`}>
-                                            <TableCell>{getDishName(item.dishId)}</TableCell>
-                                            <TableCell>{item.weight}</TableCell>
+                                            <TableCell className="font-medium">{getDishName(item.dishId)}</TableCell>
+                                            <TableCell>{item.weight}g</TableCell>
                                             <TableCell>{item.position}</TableCell>
-                                            <TableCell className="space-x-2">
-                                                {item.isUser && <Badge variant="secondary">User</Badge>}
-                                                {item.isAdmin && <Badge>Admin</Badge>}
+                                            <TableCell>
+                                                <div className="flex gap-1">
+                                                    {item.isUser && <Badge variant="secondary" className="text-xs">User</Badge>}
+                                                    {item.isAdmin && <Badge className="text-xs">Admin</Badge>}
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))}
                                     {mergedIdentifiers.length === 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center">
+                                            <TableCell colSpan={4} className="text-center text-muted-foreground">
                                                 No dishes identified
                                             </TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>
                             </Table>
-
-
                         </CardContent>
                     </Card>
+
+                    <MealModelResults modelsResult={meal.modelsResult} dishes={dishes} />
+
                 </div>
             </div>
 
-            {/* Model Results Section */}
-            <div>
-                <MealModelResults modelsResult={meal.modelsResult} dishes={dishes} />
-            </div>
-        </div>
 
+        </div>
     )
 }

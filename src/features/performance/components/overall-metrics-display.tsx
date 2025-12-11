@@ -1,4 +1,4 @@
-import { CheckCircle2, Percent, TrendingDown, Activity, Database } from 'lucide-react'
+import { CheckCircle2, Percent, Sigma, Activity, Database } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type OverallMetrics } from '../data/schema'
 
@@ -39,11 +39,11 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
     return (
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5'>
             <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center space-y-0 pb-1'>
+                    <CheckCircle2 className='h-4 w-4 text-muted-foreground mr-1' />
                     <CardTitle className='text-sm font-medium'>
                         Dish Matches
                     </CardTitle>
-                    <CheckCircle2 className='h-4 w-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>{metrics['#dMatch']}</div>
@@ -54,11 +54,11 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
             </Card>
 
             <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
+                    <Percent className='h-4 w-4 text-muted-foreground mr-1' />
                     <CardTitle className='text-sm font-medium'>
                         Match Rate
                     </CardTitle>
-                    <Percent className='h-4 w-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>
@@ -71,11 +71,11 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
             </Card>
 
             <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
+                    <Sigma className='h-4 w-4 text-muted-foreground mr-1' />
                     <CardTitle className='text-sm font-medium'>
                         MAE
                     </CardTitle>
-                    <TrendingDown className='h-4 w-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>{metrics.MAE.toFixed(2)}</div>
@@ -86,11 +86,11 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
             </Card>
 
             <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
+                    <Activity className='h-4 w-4 text-muted-foreground mr-1' />
                     <CardTitle className='text-sm font-medium'>
                         RMSE
                     </CardTitle>
-                    <Activity className='h-4 w-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>{metrics.RMSE.toFixed(2)}</div>
@@ -101,11 +101,11 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
             </Card>
 
             <Card>
-                <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
+                    <Database className='h-4 w-4 text-muted-foreground mr-1' />
                     <CardTitle className='text-sm font-medium'>
                         Unique Dishes
                     </CardTitle>
-                    <Database className='h-4 w-4 text-muted-foreground' />
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>{metrics.totalUniqueDishes}</div>

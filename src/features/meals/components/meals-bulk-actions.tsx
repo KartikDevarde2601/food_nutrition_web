@@ -69,11 +69,10 @@ export function MealsBulkActions<TData extends Meal>({
               variant='outline'
               size='icon'
               onClick={() => navigate({
-                to: '/performance',
+                to: `/programs/${program_id}/performance`,
                 search: {
                   model_one: program?.default_model_id,
                   model_two: program?.default_model_id === 2 ? 1 : 2,
-                  program_id: program_id,
                   meal_ids: selectedMealIds
                 }
               })}

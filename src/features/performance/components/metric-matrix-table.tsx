@@ -21,7 +21,8 @@ import { getRouteApi } from '@tanstack/react-router'
 
 
 export function MetricMatrixTable() {
-    const route = getRouteApi('/_authenticated/performance/')
+    const route = getRouteApi('/_authenticated/programs/$id/performance')
+    const { id } = route.useParams()
     const search = route.useSearch()
     const { activeMetric, dateRange, groupSimilarMeals } = usePerformance()
 
@@ -30,7 +31,7 @@ export function MetricMatrixTable() {
         startDate: dateRange.startDate,
         endDate: dateRange.endDate,
         groupSimilar: groupSimilarMeals,
-        programs: search.program_id,
+        programs: Number(id),
         meals: search.meal_ids,
     })
 
@@ -41,7 +42,7 @@ export function MetricMatrixTable() {
         const map: Record<string, string> = {}
         models.forEach((m) => {
             // @ts-ignore - model_name might be missing in type definition but present in API
-            map[String(m.model_id)] = m.model_name || m.name || `Model ${m.model_id}`
+            map[String(m.model_id)] = m.name
         })
         return map
     }, [models])
@@ -62,7 +63,7 @@ export function MetricMatrixTable() {
                 header: 'Model \\ Model',
                 cell: (info) => {
                     const id = info.getValue()
-                    return <span className='font-medium'>{modelNameMap[id] || `Model ${id}`}</span>
+                    return <span className='font-medium'>{modelNameMap[id] || `${id}`}</span>
                 },
             }),
         ]
@@ -72,7 +73,7 @@ export function MetricMatrixTable() {
             cols.push(
                 columnHelper.display({
                     id: colId,
-                    header: () => <span>{modelNameMap[colId] || `Model ${colId}`}</span>,
+                    header: () => <span>{modelNameMap[colId] || `${colId}`}</span>,
                     cell: (info) => {
                         const rowId = info.row.original.rowId
                         const rowData = info.row.original.data

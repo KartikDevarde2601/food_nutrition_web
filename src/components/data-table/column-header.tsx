@@ -2,7 +2,6 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   CaretSortIcon,
-  EyeNoneIcon,
 } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
@@ -11,7 +10,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -58,15 +56,6 @@ export function DataTableColumnHeader<TData, TValue>({
             <ArrowDownIcon className='text-muted-foreground/70 size-3.5' />
             Desc
           </DropdownMenuItem>
-          {column.getCanHide() && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
-                <EyeNoneIcon className='text-muted-foreground/70 size-3.5' />
-                Hide
-              </DropdownMenuItem>
-            </>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

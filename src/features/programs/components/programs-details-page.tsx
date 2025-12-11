@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { ArrowLeft, ListOrdered, Calendar, Info } from 'lucide-react'
+import { ListOrdered, Calendar, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Main } from '@/components/layout/main'
@@ -18,9 +18,6 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
             {/* Header */}
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/programs' })}>
-                        <ArrowLeft className="h-5 w-5" />
-                    </Button>
                     <div className="flex items-center gap-3">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">{program.name}</h1>
@@ -32,8 +29,7 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
                     <Button
                         variant="outline"
                         onClick={() => navigate({
-                            to: '/meals',
-                            search: { program_id: program.program_id }
+                            to: `/programs/${program.program_id}/meals`,
                         })}
                     >
                         View Meal
@@ -43,11 +39,10 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
                         onClick={() => {
                             const defaultModelId = Number(program.default_model?.model_id) || 1
                             navigate({
-                                to: '/performance',
+                                to: `/programs/${program.program_id}/performance`,
                                 search: {
                                     model_one: defaultModelId,
                                     model_two: defaultModelId === 2 ? 1 : 2,
-                                    program_id: program.program_id
                                 }
                             })
                         }}
@@ -58,7 +53,7 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
             </div>
 
             {/* Main Grid */}
-            <div className="grid ml-12 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* Left Section */}
                 <div className="space-y-6 lg:col-span-2">
                     {/* Description */}
