@@ -1,7 +1,6 @@
 import { toast } from 'sonner'
 import { useDeleteMealMutation } from '@/hooks/meals'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { MealsImportDialog } from './meals-import-dialog'
 import { useMeals } from './meals-provider'
 
 export function MealsDialogs() {
@@ -10,12 +9,6 @@ export function MealsDialogs() {
 
   return (
     <>
-      <MealsImportDialog
-        key='meal-import'
-        open={open === 'import'}
-        onOpenChange={() => setOpen('import')}
-      />
-
       {currentRow && (
         <>
           <ConfirmDialog

@@ -1,4 +1,4 @@
-import z from 'zod'
+import { z } from 'zod'
 import { createFileRoute } from '@tanstack/react-router'
 import { DishSimilarity } from '@/features/dish-similarity'
 
@@ -8,7 +8,16 @@ const dishSimilaritySearchSchema = z.object({
   filter: z.string().optional().catch(''),
 })
 
-export const Route = createFileRoute('/_authenticated/dishes/similarity/')({
+export const Route = createFileRoute('/_authenticated/dish_similarity/')({
   validateSearch: dishSimilaritySearchSchema,
   component: DishSimilarity,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: 'Dish Similarity',
+        },
+      ],
+    }
+  },
 })

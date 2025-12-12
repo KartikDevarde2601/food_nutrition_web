@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Main } from '@/components/layout/main'
 import { ProgramDetail } from '../data/schema'
+import { MetricCard } from '@/components/metric-card'
 
 interface ProgramDetailsContentProps {
     program: ProgramDetail
@@ -58,11 +59,12 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
                 <div className="space-y-6 lg:col-span-2">
                     {/* Description */}
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader className="flex flex-row items-center ">
+                            <Info className="h-5 w-5 mr-2 text-muted-foreground" />
                             <CardTitle>Program Description</CardTitle>
-                            <Info className="h-4 w-4 text-muted-foreground" />
+
                         </CardHeader>
-                        <CardContent className="pl-5">
+                        <CardContent className="ml-8">
                             <p className="text-muted-foreground leading-relaxed">
                                 {program.description}
                             </p>
@@ -72,68 +74,61 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
 
                     {/* STATISTICS ROW: Meals, Dishes & Date Information */}
                     <div className="grid gap-4 lg:grid-cols-3">
-                        {/* Dishes Count */}
-                        <Card>
-                            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                                <CardTitle className='text-sm font-medium'>
-                                    Dishes
-                                </CardTitle>
-                                <ListOrdered className='h-4 w-4 text-muted-foreground' />
-                            </CardHeader>
-                            <CardContent>
-                                <div className='text-2xl font-bold'>
-                                    {program.dishes || 0}
-                                </div>
-                                <p className='text-xs text-muted-foreground'>
-                                    # of total dishes
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        {/* Meals Count */}
-                        <Card>
-                            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                                <CardTitle className='text-sm font-medium'>
-                                    Meals
-                                </CardTitle>
-                                <ListOrdered className='h-4 w-4 text-muted-foreground' />
-                            </CardHeader>
-                            <CardContent>
-                                <div className='text-2xl font-bold'>
-                                    {program._count.meals || 0}
-                                </div>
-                                <p className='text-xs text-muted-foreground'>
-                                    # of total meals
-                                </p>
-                            </CardContent>
-                        </Card>
-
-                        {/* Date Information */}
-                        <Card>
-                            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                                <CardTitle className="text-sm font-medium">Date Information</CardTitle>
-                                <Calendar className='h-4 w-4 text-muted-foreground' />
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                {program.last_created_meal && (
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Earliest Date</span>
-                                        <span className="font-medium">
-                                            {format(new Date(program.last_created_meal), 'MMM dd, yyyy')}
-                                        </span>
+                        <MetricCard
+                            title="Dishes"
+                            icon={ListOrdered}
+                            content={
+                                <div>
+                                    <div className="text-2xl font-bold">
+                                        {program.dishes || 0}
                                     </div>
-                                )}
+                                    <p className="text-xs text-muted-foreground">
+                                        # of total dishes
+                                    </p>
+                                </div>
+                            }
+                        />
 
-                                {program.last_updated_meal && (
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-muted-foreground">Latest Date</span>
-                                        <span className="font-medium">
-                                            {format(new Date(program.last_updated_meal), 'MMM dd, yyyy')}
-                                        </span>
+                        <MetricCard
+                            title="Meals"
+                            icon={ListOrdered}
+                            content={
+                                <div>
+                                    <div className="text-2xl font-bold">
+                                        {program._count.meals || 0}
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                    <p className="text-xs text-muted-foreground">
+                                        # of total meals
+                                    </p>
+                                </div>
+                            }
+                        />
+
+                        <MetricCard
+                            title="Date Information"
+                            icon={Calendar}
+                            content={
+                                <div>
+                                    {program.last_created_meal && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Earliest Date</span>
+                                            <span className="font-medium">
+                                                {format(new Date(program.last_created_meal), 'MMM dd, yyyy')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {program.last_updated_meal && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-muted-foreground">Latest Date</span>
+                                            <span className="font-medium">
+                                                {format(new Date(program.last_updated_meal), 'MMM dd, yyyy')}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            }
+                        />
                     </div>
                 </div>
 

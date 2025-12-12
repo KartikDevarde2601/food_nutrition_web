@@ -17,11 +17,19 @@ import { DataTableToolbar } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
 import { MealsPrimaryButtons } from './meals-primary-buttons'
-import { mealsColumns as columns } from './meals-columns'
+import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from './meals-provider'
 import { MealCard } from './meal-card'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { EditMeal } from './edit-meal'
+import { Card } from '@/components/ui/card'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import { LayoutGrid, LayoutList } from 'lucide-react'
 
 const route = getRouteApi('/_authenticated/programs/$id/meals')
 
@@ -128,55 +136,90 @@ export function MealsTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <div className='sticky top-16 z-30 bg-background pb-4'>
-        <div className='flex flex-wrap items-end justify-between gap-2 mb-4'>
-          <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Meals</h2>
-            <p className='text-muted-foreground'>
-              Here&apos;s a list of your meals!
-            </p>
+      <Tabs defaultValue="grid" className="flex flex-col flex-1">
+        <div className='sticky top-16 z-30 bg-background pb-4'>
+          <div className='flex flex-wrap items-end justify-between gap-2 mb-4'>
+            <div>
+              <h2 className='text-2xl font-bold tracking-tight'>Meals</h2>
+              <p className='text-muted-foreground'>
+                Here&apos;s a list of your meals!
+              </p>
+            </div>
+            <MealsPrimaryButtons />
           </div>
-          <MealsPrimaryButtons />
-        </div>
-        <DataTableToolbar
-          table={table}
-          searchfilterEnable={false}
-          selectAllEnable={true}
-          dateFilters={[
-            {
-              columnId: 'createdAt',
-              title: 'Created At',
-              multiple: true,
-            },
-          ]}
-          modelFilters={[
-            {
-              columnId: 'mealInferences',
-              title: 'Models',
-            },
-          ]}
-        />
-      </div>
-
-      <div className='flex-1 overflow-y-auto min-h-0'>
-        {table.getRowModel().rows?.length ? (
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-8'>
-            {table.getRowModel().rows.map((row) => (
-              <MealCard
-                key={row.id}
-                row={row}
-                onClick={() => setSelectedMealId(String(row.original.mealId))}
-                isLastSelected={lastSelectedMealId === String(row.original.mealId)}
+          <div className='flex items-center justify-between'>
+            <div className="mb-4">
+              <DataTableToolbar
+                table={table}
+                searchfilterEnable={false}
+                selectAllEnable={true}
+                dateFilters={[
+                  {
+                    columnId: 'createdAt',
+                    title: 'Created At',
+                    multiple: true,
+                  },
+                ]}
+                modelFilters={[
+                  {
+                    columnId: 'mealInferences',
+                    title: 'Models',
+                  },
+                ]}
               />
-            ))}
+            </div>
+            <div>
+              <TabsList>
+                <TabsTrigger value="grid">
+                  <LayoutGrid className="h-4 w-4" />
+                </TabsTrigger>
+                <TabsTrigger value="list">
+                  <LayoutList className="h-4 w-4" />
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
-        ) : (
-          <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
-            No results.
-          </div>
-        )}
-      </div>
 
+
+        </div>
+
+        <TabsContent value="grid" className='flex-1 overflow-y-auto min-h-0'>
+          {table.getRowModel().rows?.length ? (
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-8'>
+              {table.getRowModel().rows.map((row) => (
+                <MealCard
+                  key={row.id}
+                  row={row}
+                  onClick={() => setSelectedMealId(String(row.original.mealId))}
+                  isLastSelected={lastSelectedMealId === String(row.original.mealId)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
+              No results.
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="list" className='flex-1 overflow-y-auto min-h-0'>
+          {table.getRowModel().rows?.length ? (
+            <div className='flex flex-col gap-6'>
+              {table.getRowModel().rows.map((row) => (
+                <Card key={row.id} className="overflow-hidden">
+                  <EditMeal
+                    mealId={String(row.original.mealId)}
+                  />
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
+              No results.
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
       <MealsBulkActions table={table} program_id={Number(id)} />
 
       <Dialog open={!!selectedMealId} onOpenChange={(open) => {
@@ -189,6 +232,6 @@ export function MealsTable() {
           {selectedMealId && <EditMeal mealId={selectedMealId} />}
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   )
 }

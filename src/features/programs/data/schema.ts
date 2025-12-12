@@ -26,7 +26,7 @@ export const programSchema = z.object({
     meals: z.number(),
   }),
 
-    last_created_meal: z.date().optional(),
+  last_created_meal: z.date().optional(),
   last_updated_meal: z.date().optional(),
 });
 

@@ -6,6 +6,15 @@ import { ProgramDetailsComponent } from '@/features/programs/components/programs
 
 export const Route = createFileRoute('/_authenticated/programs/$id/')({
     component: ProgramDetails,
+    head: (ctx) => {
+        return {
+            meta: [
+                {
+                    title: "Program Details",
+                },
+            ],
+        };
+    },
 })
 
 function ProgramDetailsContent() {

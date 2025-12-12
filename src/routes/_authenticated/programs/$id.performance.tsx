@@ -14,5 +14,14 @@ const performanceSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/programs/$id/performance')({
   validateSearch: performanceSearchSchema,
   component: Performance,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: "Performance",
+        },
+      ],
+    };
+  },
 })
 

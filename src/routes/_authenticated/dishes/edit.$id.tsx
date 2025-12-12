@@ -12,6 +12,15 @@ import { DishesDialogs } from '@/features/dishes/components/dishes-dialogs'
 
 export const Route = createFileRoute('/_authenticated/dishes/edit/$id')({
   component: EditDish,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: "Edit Dish",
+        },
+      ],
+    };
+  },
 })
 
 function EditDish() {
