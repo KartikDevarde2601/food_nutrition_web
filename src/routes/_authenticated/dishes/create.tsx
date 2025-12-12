@@ -12,6 +12,15 @@ import { DishesDialogs } from '@/features/dishes/components/dishes-dialogs'
 
 export const Route = createFileRoute('/_authenticated/dishes/create')({
   component: CreateDish,
+  head: (ctx) => {
+    return {
+      meta: [
+        {
+          title: "Create Dish",
+        },
+      ],
+    };
+  },
 })
 
 function CreateDish() {

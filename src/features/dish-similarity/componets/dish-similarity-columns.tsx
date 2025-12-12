@@ -19,7 +19,7 @@ export const dishColumns: ColumnDef<TransformedDish>[] = [
           <Link
             to='/dishes/$id'
             params={{ id: String(dishData.dish_id) }}
-            className='max-w-[200px] truncate font-medium hover:underline'
+            className='max-w-[200px] truncate font-medium hover:underline p-2'
           >
             {dishData.dish_name}
           </Link>
@@ -39,7 +39,7 @@ export const dishColumns: ColumnDef<TransformedDish>[] = [
       const similarDishes = row.original.similarDishes || []
 
       return (
-        <div className='flex flex-wrap gap-2'>
+        <div className='flex flex-wrap gap-2 p-2'>
           {similarDishes.length > 0 ? (
             similarDishes.map((sDish) => (
               <DishBadge

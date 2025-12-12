@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil } from 'lucide-react'
+import { format as formatDate } from 'date-fns'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -9,9 +10,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { type Program } from '../data/schema'
+import { type ProgramDetail } from '../data/schema'
 
-export const programsColumns: ColumnDef<Program>[] = [
+export const programsColumns: ColumnDef<ProgramDetail>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (
@@ -24,7 +25,7 @@ export const programsColumns: ColumnDef<Program>[] = [
           <Link
             to='/programs/$id'
             params={{ id: String(program.program_id) }}
-            className='max-w-[500px] truncate font-medium hover:underline'
+            className='max-w-[500px] truncate font-medium hover:underline p-2'
           >
             {row.getValue('name')}
           </Link>
@@ -40,7 +41,7 @@ export const programsColumns: ColumnDef<Program>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
-          <span className='max-w-[500px] truncate font-medium'>
+          <span className='max-w-[500px] truncate font-medium p-2'>
             {row.getValue('description')}
           </span>
         </div>
@@ -55,7 +56,7 @@ export const programsColumns: ColumnDef<Program>[] = [
     cell: ({ row }) => {
       const model = row.original.default_model
       return (
-        <div className='flex w-[150px] items-center'>
+        <div className='flex w-[150px] items-center p-2'>
           <span>{model?.name || 'N/A'}</span>
         </div>
       )
@@ -68,7 +69,7 @@ export const programsColumns: ColumnDef<Program>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex w-[80px] items-center'>
+        <div className='flex w-[80px] items-center p-2'>
           <span>{row.getValue('dishes') || 0}</span>
         </div>
       )
@@ -82,8 +83,46 @@ export const programsColumns: ColumnDef<Program>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex w-[80px] items-center'>
+        <div className='flex w-[80px] items-center p-2'>
           <span>{row.original._count?.meals || 0}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'last_created_meal',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Earliest Date' />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.last_created_meal
+
+      if (!date) {
+        return <div className='flex w-[150px] items-center p-2'>N/A</div>
+      }
+
+      return (
+        <div className='flex w-[150px] items-center p-2'>
+          <span>{formatDate(date, 'PPP')}</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: 'last_updated_meal',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Latest Date' />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.last_updated_meal
+
+      if (!date) {
+        return <div className='flex w-[150px] items-center p-2'>N/A</div>
+      }
+
+      return (
+        <div className='flex w-[150px] items-center p-2'>
+          <span>{formatDate(date, 'PPP')}</span>
         </div>
       )
     },
@@ -116,30 +155,6 @@ export const programsColumns: ColumnDef<Program>[] = [
               </TooltipTrigger>
               <TooltipContent>
                 <p>Edit program</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='text-destructive hover:text-destructive h-8 w-8'
-                  onClick={() => {
-                    // This will be handled by the ProgramsProvider context
-                    const event = new CustomEvent('delete-program', {
-                      detail: program,
-                    })
-                    window.dispatchEvent(event)
-                  }}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete program</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

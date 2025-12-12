@@ -195,7 +195,7 @@ export function ProgramsTable() {
                       key={cell.id}
                       className={cn(
                         cell.column.columnDef.meta?.className,
-                        cell.column.columnDef.meta?.tdClassName
+                        cell.column.columnDef.meta?.tdClassName,
                       )}
                     >
                       {flexRender(

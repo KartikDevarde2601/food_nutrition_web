@@ -1,14 +1,12 @@
 import { useMemo } from 'react'
 import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
 import { useDishesQuery } from '@/hooks/dishes/use-dish-query'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { Identifier } from '../data/schema'
 import { MealModelResults } from './meal-model-results'
+import { MealUserResults } from './meal-user-results'
 
 interface EditMealProps {
     mealId: string
@@ -49,12 +47,6 @@ export function EditMeal({ mealId }: EditMealProps) {
         }).filter(Boolean) as (Identifier & { isAdmin: boolean; isUser: boolean })[]
     }, [meal])
 
-    const getDishName = (dishId: string | number) => {
-        if (!dishes) return 'Loading...'
-        const dish = dishes.find(d => d.dish_id === Number(dishId))
-        return dish ? dish.dish_name : `Dish ${dishId}`
-    }
-
     if (isLoadingMeal || isLoadingDishes) {
         return <div className="p-4 space-y-4">
             <Skeleton className="h-[300px] w-full" />
@@ -88,67 +80,21 @@ export function EditMeal({ mealId }: EditMealProps) {
 
     return (
         <div className="p-4 space-y-4">
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="h-full">
-                    <Card className="h-full flex flex-col">
-                        <CardContent className="flex-1 p-4">
-                            <div className="w-full h-full min-h-[400px] overflow-hidden rounded-md relative">
-                                <img
-                                    src={meal.image}
-                                    alt={`Meal ${meal.mealId}`}
-                                    className="absolute inset-0 w-full h-full object-cover rounded-md"
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="w-full h-full min-h-[400px] overflow-hidden rounded-md relative">
+                        <img
+                            src={meal.image}
+                            alt={`Meal ${meal.mealId}`}
+                            className="absolute inset-0 w-full h-full object-cover rounded-md"
+                        />
+                    </div>
                 </div>
 
                 {/* Right Column: Two Tables (Takes 50% width) */}
                 <div className="space-y-4">
-                    {/* Table 1: Identified Dishes */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Identified Dishes</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Dish</TableHead>
-                                        <TableHead>Weight</TableHead>
-                                        <TableHead>Position</TableHead>
-                                        <TableHead>Source</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {mergedIdentifiers.map((item, index) => (
-                                        <TableRow key={`${item.dishId}-${index}`}>
-                                            <TableCell className="font-medium">{getDishName(item.dishId)}</TableCell>
-                                            <TableCell>{item.weight}g</TableCell>
-                                            <TableCell>{item.position}</TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-1">
-                                                    {item.isUser && <Badge variant="secondary" className="text-xs">User</Badge>}
-                                                    {item.isAdmin && <Badge className="text-xs">Admin</Badge>}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {mergedIdentifiers.length === 0 && (
-                                        <TableRow>
-                                            <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                                No dishes identified
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
-
                     <MealModelResults modelsResult={meal.modelsResult} dishes={dishes} />
-
+                    <MealUserResults identifiers={mergedIdentifiers} dishes={dishes} />
                 </div>
             </div>
 

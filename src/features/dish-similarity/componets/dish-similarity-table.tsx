@@ -28,13 +28,14 @@ import { TransformedDish } from '../data/schema'
 import { dishColumns as columns } from './dish-similarity-columns'
 import { useDishesSimilarity } from './dish-similarity-provider'
 
-const route = getRouteApi('/_authenticated/dishes/similarity/')
+const route = getRouteApi('/_authenticated/dish_similarity/')
 
 export function DishSimilarityTable() {
   const { setOpen, setCurrentRow } = useDishesSimilarity()
 
   // Fetch programs data
   const { data: similarity = [], isLoading, isError } = useDishSimilarityQuery()
+  console.log(similarity)
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})

@@ -22,7 +22,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
       <img
         src={row.getValue('image_url')}
         alt={row.getValue('dish_name')}
-        className='h-15 w-15 rounded-md object-cover m-2'
+        className='h-15 w-15 rounded-md object-cover'
       />
     ),
     enableSorting: false,
@@ -40,7 +40,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
           <Link
             to='/dishes/$id'
             params={{ id: String(dish.dish_id) }}
-            className='max-w-[500px] truncate font-medium hover:underline'
+            className='max-w-[500px] truncate font-medium hover:underline p-2'
           >
             {row.getValue('dish_name')}
           </Link>
@@ -56,7 +56,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
-          <span className='max-w-[500px] truncate font-medium'>
+          <span className='max-w-[500px] truncate font-medium p-2'>
             {row.getValue('description')}
           </span>
         </div>
@@ -70,7 +70,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex w-[100px] items-center'>
+        <div className='flex w-[100px] items-center p-2'>
           <span>{row.getValue('carbs_g')}</span>
         </div>
       )
@@ -83,7 +83,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex w-[100px] items-center'>
+        <div className='flex w-[100px] items-center p-2'>
           <span>{row.getValue('protein_g')}</span>
         </div>
       )
@@ -96,7 +96,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     ),
     cell: ({ row }) => {
       return (
-        <div className='flex w-[100px] items-center'>
+        <div className='flex w-[100px] items-center p-2'>
           <span>{row.getValue('fat_g')}</span>
         </div>
       )

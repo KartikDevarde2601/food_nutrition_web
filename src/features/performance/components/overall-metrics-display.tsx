@@ -1,5 +1,6 @@
 import { CheckCircle2, Percent, Sigma, Activity, Database } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MetricCard } from '@/components/metric-card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { type OverallMetrics } from '../data/schema'
 
 interface OverallMetricsDisplayProps {
@@ -7,113 +8,80 @@ interface OverallMetricsDisplayProps {
     isLoading?: boolean
 }
 
-export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisplayProps) {
-    if (isLoading) {
-        return (
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5'>
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <Card key={i}>
-                        <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-                            <CardTitle className='text-sm font-medium'>
-                                <div className='h-4 w-24 animate-pulse rounded bg-muted' />
-                            </CardTitle>
-                            <div className='h-4 w-4 animate-pulse rounded bg-muted' />
-                        </CardHeader>
-                        <CardContent>
-                            <div className='h-8 w-16 animate-pulse rounded bg-muted' />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        )
-    }
+interface MetricConfig {
+    title: string
+    icon: React.ElementType
+    getValue: (metrics: OverallMetrics) => string | number
+    description: string
+}
 
-    if (!metrics) {
+const metricsConfig: MetricConfig[] = [
+    {
+        title: 'Dish Matches',
+        icon: CheckCircle2,
+        getValue: (m) => m['#dMatch'],
+        description: '# of matching dishes',
+    },
+    {
+        title: 'Match Rate',
+        icon: Percent,
+        getValue: (m) => m['%dMatch'],
+        description: '% of dishes matched',
+    },
+    {
+        title: 'MAE',
+        icon: Sigma,
+        getValue: (m) => m.MAE.toFixed(2),
+        description: 'Mean absolute error',
+    },
+    {
+        title: 'RMSE',
+        icon: Activity,
+        getValue: (m) => m.RMSE.toFixed(2),
+        description: 'Root mean squared error',
+    },
+    {
+        title: 'Unique Dishes',
+        icon: Database,
+        getValue: (m) => m.totalUniqueDishes,
+        description: 'Total unique dishes',
+    },
+]
+
+
+
+export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisplayProps) {
+    if (!isLoading && !metrics) {
         return (
             <div className='flex h-32 items-center justify-center rounded-md border border-dashed'>
-                <p className='text-sm text-muted-foreground'>No metrics available</p>
+                <p className='text-sm text-muted-foreground'>
+                    Please reload or select two different models for comparison
+                </p>
             </div>
         )
     }
 
     return (
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5'>
-            <Card>
-                <CardHeader className='flex flex-row items-center space-y-0 pb-1'>
-                    <CheckCircle2 className='h-4 w-4 text-muted-foreground mr-1' />
-                    <CardTitle className='text-sm font-medium'>
-                        Dish Matches
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='text-2xl font-bold'>{metrics['#dMatch']}</div>
-                    <p className='text-xs text-muted-foreground'>
-                        # of matching dishes
-                    </p>
-                </CardContent>
-            </Card>
+        <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
+            {metricsConfig.map((metric) => (
+                <MetricCard
+                    key={metric.title}
+                    title={metric.title}
+                    icon={metric.icon}
+                    isLoading={isLoading}
+                    content={
+                        <div>
+                            {isLoading ? (
+                                <Skeleton className='h-8 w-16 mb-1' />
+                            ) : (
+                                <div className='text-2xl font-bold'>{metrics ? metric.getValue(metrics) : undefined}</div>
+                            )}
+                            <div className='text-sm text-muted-foreground'>{metric.description}</div>
+                        </div>
+                    }
 
-            <Card>
-                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
-                    <Percent className='h-4 w-4 text-muted-foreground mr-1' />
-                    <CardTitle className='text-sm font-medium'>
-                        Match Rate
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='text-2xl font-bold'>
-                        {metrics['%dMatch']}
-                    </div>
-                    <p className='text-xs text-muted-foreground'>
-                        % of dishes matched
-                    </p>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
-                    <Sigma className='h-4 w-4 text-muted-foreground mr-1' />
-                    <CardTitle className='text-sm font-medium'>
-                        MAE
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='text-2xl font-bold'>{metrics.MAE.toFixed(2)}</div>
-                    <p className='text-xs text-muted-foreground'>
-                        Mean absolute error
-                    </p>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
-                    <Activity className='h-4 w-4 text-muted-foreground mr-1' />
-                    <CardTitle className='text-sm font-medium'>
-                        RMSE
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='text-2xl font-bold'>{metrics.RMSE.toFixed(2)}</div>
-                    <p className='text-xs text-muted-foreground'>
-                        Root mean squared error
-                    </p>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader className='flex flex-row items-center space-y-0 pb-2'>
-                    <Database className='h-4 w-4 text-muted-foreground mr-1' />
-                    <CardTitle className='text-sm font-medium'>
-                        Unique Dishes
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className='text-2xl font-bold'>{metrics.totalUniqueDishes}</div>
-                    <p className='text-xs text-muted-foreground'>
-                        Total unique dishes
-                    </p>
-                </CardContent>
-            </Card>
+                />
+            ))}
         </div>
     )
 }

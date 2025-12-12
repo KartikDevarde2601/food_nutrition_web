@@ -40,6 +40,13 @@ export function transformDishPairs(data: DishSimilarity[]): TransformedDish[] {
   }
 
   return Array.from(map.values())
+    .sort((a, b) => a.dish_name.localeCompare(b.dish_name))
+    .map((item) => ({
+      ...item,
+      similarDishes: item.similarDishes.sort((a, b) =>
+        a.dish_name.localeCompare(b.dish_name)
+      ),
+    }))
 }
 
 export const dishsimilarityKeys = {

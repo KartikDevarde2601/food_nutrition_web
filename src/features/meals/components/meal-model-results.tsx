@@ -1,115 +1,178 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+} from '@/components/ui/tabs'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
+import {
+    type SortingState,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from '@tanstack/react-table'
 import { ModelResult } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
 import { useModelsQuery } from '@/hooks/programs'
+import { mealModelColumns, type ModelResultRow } from './table-columns/meal-model-columns'
 
 interface MealModelResultsProps {
     modelsResult: ModelResult[]
     dishes: Dish[] | undefined
 }
 
+// Keeping local type compatible with what useModelsQuery likely returns or what the logic expects
 type Model = {
-    model_id: string;
-    name: string;
-};
+    model_id: string | number
+    name: string
+}
 
-export function MealModelResults({ modelsResult, dishes }: MealModelResultsProps) {
-
+export function MealModelResults({
+    modelsResult,
+    dishes,
+}: MealModelResultsProps) {
     const [selectedModelId, setSelectedModelId] = useState<number | null>(null)
-    const { data: allmodels, isLoading } = useModelsQuery();
-
-
-
-
-    // 🔹 Handle loading
-    if (isLoading || !allmodels) {
-        return (
-            <Card>
-                <CardContent className="py-6 text-center text-muted-foreground">
-                    Loading model list...
-                </CardContent>
-            </Card>
-        )
-    }
+    const { data: allmodels, isLoading } = useModelsQuery()
+    const [sorting, setSorting] = useState<SortingState>([])
 
     // 🔹 Unique models based on results
     const models = useMemo<Model[]>(() => {
-        const ids = new Set(modelsResult.map(m => Number(m.model_id)));
-        return allmodels.filter(m => ids.has(Number(m.model_id)));
-    }, [modelsResult, allmodels]);
+        if (!allmodels) return []
+        const ids = new Set(modelsResult.map((m) => Number(m.model_id)))
+        // Filter allmodels where model_id matches the result IDs
+        return allmodels.filter((m: any) => ids.has(Number(m.model_id)))
+    }, [modelsResult, allmodels])
 
     // 🔹 Set initial selected model
     useEffect(() => {
         if (selectedModelId === null && models.length > 0) {
-            setSelectedModelId(Number(models[0].model_id));
+            setSelectedModelId(Number(models[0].model_id))
         }
-    }, [models, selectedModelId]);
+    }, [models, selectedModelId])
 
     // 🔹 Find currently selected model's results
     const selectedModelResult = useMemo(() => {
-        return modelsResult.find(m => Number(m.model_id) === selectedModelId) ?? null;
-    }, [modelsResult, selectedModelId]);
+        return modelsResult.find((m) => Number(m.model_id) === selectedModelId) ?? null
+    }, [modelsResult, selectedModelId])
 
-    const getDishName = (dishId: string | number) => {
-        if (!dishes) return 'Loading...'
-        const dish = dishes.find(d => d.dish_id === Number(dishId))
-        return dish ? dish.dish_name : `Dish ${dishId}`
+    // 🔹 Prepare data for the table
+    const tableData = useMemo<ModelResultRow[]>(() => {
+        if (!selectedModelResult || !dishes) return []
+        return selectedModelResult.dishes.map((dish) => {
+            const dishData = dishes.find((d) => d.dish_id === Number(dish.dish_id))
+            return {
+                ...dish,
+                dish_name: dishData ? dishData.dish_name : `Dish ${dish.dish_id}`,
+            }
+        })
+    }, [selectedModelResult, dishes])
+
+    const table = useReactTable({
+        data: tableData,
+        columns: mealModelColumns,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
+        state: {
+            sorting,
+        },
+    })
+
+    // 🔹 Handle loading
+    if (isLoading || !allmodels) {
+        return (
+            <div className='py-6 text-center text-muted-foreground'>
+                Loading model list...
+            </div>
+        )
     }
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Model Results</CardTitle>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Model Results</h3>
+            </div>
+            <Tabs
+                value={selectedModelId?.toString()}
+                onValueChange={(value) => setSelectedModelId(Number(value))}
+                className="w-full"
+            >
+                <TabsList className='w-full'>
+                    {models.map((model) => (
+                        <TabsTrigger
+                            key={model.model_id}
+                            value={model.model_id.toString()}
+                        >
+                            {model.name}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
 
-                <Select value={selectedModelId?.toString()} onValueChange={(value) => setSelectedModelId(Number(value))}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Model" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {models.map(model => (
-                            <SelectItem key={model.model_id} value={model.model_id.toString()}>
-                                {model.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </CardHeader>
-
-            <CardContent className="mt-4">
-                {selectedModelResult ? (
-                    <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
-
-
-                        <div className="order-1 p-2">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Dish</TableHead>
-                                        <TableHead>Weight (g)</TableHead>
-                                        <TableHead>Position</TableHead>
+            {selectedModelResult ? (
+                <div className='rounded-md border'>
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                            </TableHead>
+                                        )
+                                    })}
+                                </TableRow>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && 'selected'}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
+                                            </TableCell>
+                                        ))}
                                     </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {selectedModelResult.dishes.map((dish, index) => (
-                                        <TableRow key={`${dish.dish_id}-${index}`}>
-                                            <TableCell>{getDishName(dish.dish_id)}</TableCell>
-                                            <TableCell>{dish.weight}</TableCell>
-                                            <TableCell>{dish.position}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="text-center text-muted-foreground py-4">
-                        No model selected or no results available.
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={mealModelColumns.length}
+                                        className='h-24 text-center'
+                                    >
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            ) : (
+                <div className='text-center text-muted-foreground py-4'>
+                    No model selected or no results available.
+                </div>
+            )}
+        </div>
     )
 }

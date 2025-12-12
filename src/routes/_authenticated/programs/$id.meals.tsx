@@ -12,5 +12,14 @@ const mealSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/programs/$id/meals')({
     validateSearch: mealSearchSchema,
     component: Meals,
+    head: (ctx) => {
+        return {
+            meta: [
+                {
+                    title: "Meals",
+                },
+            ],
+        };
+    },
 })
 
