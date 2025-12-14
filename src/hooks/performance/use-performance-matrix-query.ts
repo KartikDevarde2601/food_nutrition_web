@@ -36,10 +36,8 @@ export const usePerformanceMatrixQuery = (params: PerformanceMatrixParams) => {
 
         // Store both directions (symmetric matrix)
         if (!matrixData[modelId_one]) matrixData[modelId_one] = {}
-        if (!matrixData[modelId_two]) matrixData[modelId_two] = {}
 
         matrixData[modelId_one][modelId_two] = metrics
-        matrixData[modelId_two][modelId_one] = metrics
       })
 
       return {
@@ -53,7 +51,7 @@ export const usePerformanceMatrixQuery = (params: PerformanceMatrixParams) => {
 
 export function useDishMetricQuery(
   params: DishMetricParams,
-  options?: Omit<UseQueryOptions<DataType, Error>, 'queryKey' | 'queryFu'>
+  options?: Omit<UseQueryOptions<DataType, Error>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<DataType, Error>({
     queryKey: ['performance', 'dishlevel', params],
