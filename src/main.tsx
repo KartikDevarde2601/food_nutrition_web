@@ -75,7 +75,13 @@ const queryClient = new QueryClient({
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: { queryClient },
+  context: {
+    queryClient,
+    isAuthenticated: () => {
+      const token = localStorage.getItem('access_token')
+      return !!token
+    }
+  },
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
 })

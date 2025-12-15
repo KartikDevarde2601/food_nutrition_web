@@ -64,7 +64,7 @@ export function DishDetails({ dishId }: DishDetailsProps) {
         <Button
           onClick={() =>
             navigate({
-              to: '/dishes/edit/$id',
+              to: '/dishes/$id/edit',
               params: { id: dish.dish_id.toString() },
             })
           }

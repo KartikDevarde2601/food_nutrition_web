@@ -10,9 +10,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { type ProgramDetail } from '../data/schema'
+import { type ProgramResponse } from '@/lib/api/programs.api'
 
-export const programsColumns: ColumnDef<ProgramDetail>[] = [
+export const programsColumns: ColumnDef<ProgramResponse>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => (

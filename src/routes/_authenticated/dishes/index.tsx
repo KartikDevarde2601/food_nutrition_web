@@ -11,7 +11,7 @@ const dishSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/dishes/')({
   validateSearch: dishSearchSchema,
   component: Dishes,
-  head: (ctx) => {
+  head: () => {
     return {
       meta: [
         {

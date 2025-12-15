@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Main } from '@/components/layout/main'
 import { ProgramDetail } from '../data/schema'
 import { MetricCard } from '@/components/metric-card'
+import { ArrowLeft } from 'lucide-react'
 
 interface ProgramDetailsContentProps {
     program: ProgramDetail
@@ -19,7 +20,15 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
             {/* Header */}
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-8">
+                        <Button
+                            variant="ghost"
+                            onClick={() => navigate({
+                                to: `/programs`,
+                            })}
+                        >
+                            <ArrowLeft size={24} />
+                        </Button>
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight">{program.name}</h1>
                             <p className="text-muted-foreground">Program Information</p>

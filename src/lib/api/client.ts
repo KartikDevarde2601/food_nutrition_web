@@ -11,16 +11,16 @@ export interface ApiResponse<T = any> {
 const getApiBaseUrl = () => {
   // Check if we're in production mode
   const isProd = import.meta.env.PROD
-  
+
   // Use environment-specific URL or fallback to default
   if (isProd && import.meta.env.VITE_API_BASE_URL_PROD) {
     return import.meta.env.VITE_API_BASE_URL_PROD
   }
-  
+
   if (!isProd && import.meta.env.VITE_API_BASE_URL_DEV) {
     return import.meta.env.VITE_API_BASE_URL_DEV
   }
-  
+
   // Fallback to VITE_API_BASE_URL or default localhost
   return import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 }
@@ -48,6 +48,32 @@ apiClient.interceptors.request.use(
   }
 )
 
+// Queue for storing failed requests during token refresh
+let isRefreshing = false
+let failedRequestsQueue: Array<{
+  resolve: (value?: any) => void
+  reject: (reason?: any) => void
+  config: AxiosRequestConfig
+}> = []
+
+// Process all queued requests after successful token refresh
+const processQueue = (error: any = null, token: string | null = null) => {
+  failedRequestsQueue.forEach((promise) => {
+    if (error) {
+      promise.reject(error)
+    } else {
+      // Update the request with new token and retry
+      if (promise.config.headers && token) {
+        promise.config.headers.Authorization = `Bearer ${token}`
+      }
+      apiClient(promise.config)
+        .then((response) => promise.resolve(response))
+        .catch((err) => promise.reject(err))
+    }
+  })
+  failedRequestsQueue = []
+}
+
 // Response interceptor - handle common errors and refresh token
 apiClient.interceptors.response.use(
   (response) => {
@@ -57,8 +83,18 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean }
 
     // Handle 401 Unauthorized - Refresh Token Logic
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/refresh')) {
+    if (error.response?.status === 401 && !originalRequest.url?.includes('/auth/refresh')) {
+
+      // If token refresh is already in progress, queue this request
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedRequestsQueue.push({ resolve, reject, config: originalRequest })
+        })
+      }
+
+      // Mark that we're refreshing to prevent multiple refresh calls
       originalRequest._retry = true
+      isRefreshing = true
 
       try {
         const refreshToken = localStorage.getItem('refresh_token')
@@ -66,18 +102,7 @@ apiClient.interceptors.response.use(
           throw new Error('No refresh token available')
         }
 
-        // Call refresh endpoint
-        // Note: We need to manually pass the refresh token in the body or header depending on backend expectation.
-        // The user's backend code snippet showed: @GetCurrentUser('refreshToken') refreshToken: string
-        // This usually implies it extracts from the request user object (populated by guard) or body.
-        // If the backend uses RtGuard, it likely expects:
-        // 1. Bearer token in Authorization header (which is the refresh token for the refresh endpoint)
-        // OR
-        // 2. Cookie (which we are removing)
-        
-        // Since we are switching to localStorage, the RtGuard (Passport-JWT) will likely look for Bearer token.
-        // So we should set the Authorization header to the Refresh Token for this specific request.
-        
+        // Call refresh endpoint with refresh token in Authorization header
         const response = await axios.post(
           `${getApiBaseUrl()}/auth/refresh`,
           {},
@@ -90,22 +115,32 @@ apiClient.interceptors.response.use(
 
         const { access_token, refresh_token } = response.data
 
+        // Update tokens in localStorage
         localStorage.setItem('access_token', access_token)
         localStorage.setItem('refresh_token', refresh_token)
-        
+
         // Update the original request header
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${access_token}`
         }
 
+        // Process all queued requests with the new token
+        processQueue(null, access_token)
+
+        // Reset refresh flag
+        isRefreshing = false
+
         // Retry original request
         return apiClient(originalRequest)
       } catch (refreshError) {
-        // Refresh failed - clear tokens and redirect to login
+        // Refresh failed - reject all queued requests and clear tokens
+        processQueue(refreshError, null)
+        isRefreshing = false
+
         localStorage.removeItem('access_token')
         localStorage.removeItem('refresh_token')
-        // Ideally use a store action or event to trigger logout UI
-        // window.location.href = '/sign-in' 
+
+        // The main.tsx QueryCache onError will handle the redirect to login
         return Promise.reject(refreshError)
       }
     }

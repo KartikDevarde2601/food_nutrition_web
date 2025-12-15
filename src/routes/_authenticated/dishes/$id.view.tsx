@@ -3,9 +3,9 @@ import { Main } from '@/components/layout/main'
 import { DishDetails } from '@/features/dishes/components/dish-details'
 import { DishesProvider } from '@/features/dishes/components/dishes-provider'
 
-export const Route = createFileRoute('/_authenticated/dishes/$id')({
+export const Route = createFileRoute('/_authenticated/dishes/$id/view')({
   component: DishShow,
-  head: (ctx) => {
+  head: () => {
     return {
       meta: [
         {

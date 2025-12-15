@@ -38,7 +38,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
       return (
         <div className='flex space-x-2'>
           <Link
-            to='/dishes/$id'
+            to='/dishes/$id/view'
             params={{ id: String(dish.dish_id) }}
             className='max-w-[500px] truncate font-medium hover:underline p-2'
           >
@@ -120,7 +120,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
                   asChild
                 >
                   <Link
-                    to='/dishes/$id'
+                    to='/dishes/$id/view'
                     params={{ id: String(dish.dish_id) }}
                   >
                     <Eye className='h-4 w-4' />
@@ -143,7 +143,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
                   asChild
                 >
                   <Link
-                    to='/dishes/edit/$id'
+                    to='/dishes/$id/edit'
                     params={{ id: String(dish.dish_id) }}
                   >
                     <Pencil className='h-4 w-4' />

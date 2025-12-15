@@ -10,9 +10,9 @@ import { DishForm } from '@/features/dishes/components/dish-form'
 import { DishesProvider } from '@/features/dishes/components/dishes-provider'
 import { DishesDialogs } from '@/features/dishes/components/dishes-dialogs'
 
-export const Route = createFileRoute('/_authenticated/dishes/edit/$id')({
+export const Route = createFileRoute('/_authenticated/dishes/$id/edit')({
   component: EditDish,
-  head: (ctx) => {
+  head: () => {
     return {
       meta: [
         {

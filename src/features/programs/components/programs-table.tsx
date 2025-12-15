@@ -60,7 +60,7 @@ export function ProgramsTable() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: programs,
+    data: programs || [],
     columns,
     state: {
       sorting,

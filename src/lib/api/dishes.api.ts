@@ -1,4 +1,9 @@
-import { type Dish, type DishForm } from '@/features/dishes/data/schema'
+import {
+  type PaginatedDish,
+  type DishForm,
+  type Dish,
+  type DishParams,
+} from '@/features/dishes/data/schema'
 import { apiClient } from './client'
 
 // ---------- Helpers ----------
@@ -17,8 +22,8 @@ function buildDishFormData(data: Partial<DishForm>) {
 // ---------- API Service ----------
 export const dishesApi = {
   // Get all dishes
-  async getDishes(): Promise<Dish[]> {
-    const response = await apiClient.get<Dish[]>('/dishes')
+  async getDishes(params?: DishParams): Promise<PaginatedDish> {
+    const response = await apiClient.get<PaginatedDish>('/dishes', { params })
     return response.data
   },
 

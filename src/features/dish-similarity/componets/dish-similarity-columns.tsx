@@ -17,7 +17,7 @@ export const dishColumns: ColumnDef<TransformedDish>[] = [
       return (
         <div className='flex space-x-2'>
           <Link
-            to='/dishes/$id'
+            to='/dishes/$id/view'
             params={{ id: String(dishData.dish_id) }}
             className='max-w-[200px] truncate font-medium hover:underline p-2'
           >

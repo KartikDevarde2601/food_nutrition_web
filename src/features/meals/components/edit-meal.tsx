@@ -1,12 +1,13 @@
 import { useMemo } from 'react'
 import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
-import { useDishesQuery } from '@/hooks/dishes/use-dish-query'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useDishesDetailsQuery } from '@/hooks/dishes/use-dish-query'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { Identifier } from '../data/schema'
+import { Dish } from '@/features/dishes/data/schema'
 import { MealModelResults } from './meal-model-results'
 import { MealUserResults } from './meal-user-results'
+import { MealLoadingSkeleton } from './meal-loading-skeleton'
+import { Identifier } from '../data/schema'
 
 interface EditMealProps {
     mealId: string
@@ -14,9 +15,26 @@ interface EditMealProps {
 
 export function EditMeal({ mealId }: EditMealProps) {
     const { data: mealDetails, isLoading: isLoadingMeal, error: mealError } = useMealDetailsQuery(mealId)
-    const { data: dishes, isLoading: isLoadingDishes } = useDishesQuery()
 
     const meal = mealDetails?.[0]
+
+    // Extract dish IDs for parallel fetching
+    const dishIds = useMemo(() => {
+        if (!meal) return []
+        const adminIds = meal.adminIdentifierIds || []
+        const userIds = meal.userIdentifiersIds || []
+        const modelIds = meal.modelsResult?.map((m) => m.dishes.map(d => d.dish_id)) || []
+        return Array.from(new Set([
+            ...adminIds.map(i => i.dishId),
+            ...userIds.map(i => i.dishId),
+            ...modelIds.flat()
+        ]))
+    }, [meal])
+
+    // Parallel fetch dish details
+    const dishQueries = useDishesDetailsQuery(dishIds)
+    const isLoadingDishes = dishQueries.some(q => q.isLoading)
+    const dishesData = useMemo(() => dishQueries.map(q => q.data).filter(Boolean) as Dish[], [dishQueries])
 
     // Merge identifiers
     const mergedIdentifiers = useMemo(() => {
@@ -25,33 +43,15 @@ export function EditMeal({ mealId }: EditMealProps) {
         const adminIds = meal.adminIdentifierIds || []
         const userIds = meal.userIdentifiersIds || []
 
-        // Get all unique dish IDs
-        const allDishIds = Array.from(new Set([
-            ...adminIds.map(i => i.dishId),
-            ...userIds.map(i => i.dishId)
-        ]))
+        const identifierMap = new Map()
+        adminIds.forEach(id => identifierMap.set(id.dishId, id))
+        userIds.forEach(id => identifierMap.set(id.dishId, id))
 
-        return allDishIds.map(dishId => {
-            const adminItem = adminIds.find(i => i.dishId === dishId)
-            const userItem = userIds.find(i => i.dishId === dishId)
-
-            // Prefer admin item for details if available, otherwise user item
-            const item = adminItem || userItem
-
-            if (!item) return null
-            return {
-                ...item,
-                isAdmin: !!adminItem,
-                isUser: !!userItem
-            }
-        }).filter(Boolean) as (Identifier & { isAdmin: boolean; isUser: boolean })[]
+        return Array.from(identifierMap.values()) as Identifier[]
     }, [meal])
 
-    if (isLoadingMeal || isLoadingDishes) {
-        return <div className="p-4 space-y-4">
-            <Skeleton className="h-[300px] w-full" />
-            <Skeleton className="h-[200px] w-full" />
-        </div>
+    if (isLoadingMeal || (dishIds.length > 0 && isLoadingDishes)) {
+        return <MealLoadingSkeleton />
     }
 
     if (mealError) {
@@ -80,7 +80,7 @@ export function EditMeal({ mealId }: EditMealProps) {
 
     return (
         <div className="p-4 space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                 <div className="h-full">
                     <div className="w-full h-full min-h-[400px] overflow-hidden rounded-md relative">
                         <img
@@ -92,13 +92,11 @@ export function EditMeal({ mealId }: EditMealProps) {
                 </div>
 
                 {/* Right Column: Two Tables (Takes 50% width) */}
-                <div className="space-y-4">
-                    <MealModelResults modelsResult={meal.modelsResult} dishes={dishes} />
-                    <MealUserResults identifiers={mergedIdentifiers} dishes={dishes} />
+                <div className="space-y-4 ">
+                    <MealModelResults modelsResult={meal.modelsResult} dishes={dishesData} />
+                    <MealUserResults identifiers={mergedIdentifiers} />
                 </div>
             </div>
-
-
         </div>
     )
 }

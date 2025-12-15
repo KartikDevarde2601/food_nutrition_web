@@ -11,7 +11,7 @@ const dishSimilaritySearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/dish_similarity/')({
   validateSearch: dishSimilaritySearchSchema,
   component: DishSimilarity,
-  head: (ctx) => {
+  head: () => {
     return {
       meta: [
         {

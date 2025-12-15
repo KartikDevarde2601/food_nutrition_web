@@ -11,7 +11,7 @@ const programSearchSchema = z.object({
 export const Route = createFileRoute('/_authenticated/programs/')({
   validateSearch: programSearchSchema,
   component: Programs,
-  head: (ctx) => {
+  head: () => {
     return {
       meta: [
         {

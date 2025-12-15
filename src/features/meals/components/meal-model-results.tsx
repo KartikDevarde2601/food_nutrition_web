@@ -26,6 +26,7 @@ import { mealModelColumns, type ModelResultRow } from './table-columns/meal-mode
 
 interface MealModelResultsProps {
     modelsResult: ModelResult[]
+    // List of dishes for details
     dishes: Dish[] | undefined
 }
 

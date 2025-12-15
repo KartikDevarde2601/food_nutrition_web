@@ -8,7 +8,7 @@ import {
 import { DataType } from '@/features/performance/data/schema'
 
 export const usePerformanceMatrixQuery = (params: PerformanceMatrixParams) => {
-  console.log("matrixQuery",params)
+  console.log("matrixQuery", params)
   return useQuery({
     queryKey: ['performance', 'matrix', params],
     queryFn: () => performanceApi.getMatrix(params),
@@ -35,9 +35,11 @@ export const usePerformanceMatrixQuery = (params: PerformanceMatrixParams) => {
         const { modelId_one, modelId_two, metrics } = item
 
         // Store both directions (symmetric matrix)
-        if (!matrixData[modelId_one]) matrixData[modelId_one] = {}
+
+        if (!matrixData[modelId_two]) matrixData[modelId_two] = {}
 
         matrixData[modelId_one][modelId_two] = metrics
+
       })
 
       return {

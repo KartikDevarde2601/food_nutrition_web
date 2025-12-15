@@ -30,7 +30,6 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { LayoutGrid, LayoutList } from 'lucide-react'
-
 const route = getRouteApi('/_authenticated/programs/$id/meals')
 
 
@@ -38,6 +37,8 @@ const route = getRouteApi('/_authenticated/programs/$id/meals')
 
 export function MealsTable() {
   const { id } = route.useParams()
+  const { view } = route.useSearch()
+  const navigate = route.useNavigate()
   const { setOpen, setCurrentRow } = useMeals()
   const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id: Number(id) })
 
@@ -57,7 +58,7 @@ export function MealsTable() {
     onColumnFiltersChange,
   } = useTableUrlState({
     search: route.useSearch(),
-    navigate: route.useNavigate(),
+    navigate,
     globalFilter: { enabled: true, key: 'filter' },
     columnFilters: [],
   })
@@ -136,8 +137,14 @@ export function MealsTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <Tabs defaultValue="grid" className="flex flex-col flex-1">
-        <div className='sticky top-16 z-30 bg-background pb-4'>
+      <Tabs
+        value={view || "grid"}
+        onValueChange={(value) => navigate({
+          search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
+        })}
+        className="flex flex-col flex-1"
+      >
+        <div className='bg-background pb-4'>
           <div className='flex flex-wrap items-end justify-between gap-2 mb-4'>
             <div>
               <h2 className='text-2xl font-bold tracking-tight'>Meals</h2>

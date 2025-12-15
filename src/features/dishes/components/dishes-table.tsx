@@ -33,7 +33,7 @@ const route = getRouteApi('/_authenticated/dishes/')
 export function DishesTable() {
   const { setOpen, setCurrentRow } = useDishes()
 
-  const { data: dishes = [], isLoading, isError } = useDishesQuery()
+  // Local UI-only states
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
@@ -52,14 +52,22 @@ export function DishesTable() {
   } = useTableUrlState({
     search: route.useSearch(),
     navigate: route.useNavigate(),
-    pagination: { defaultPage: 1, defaultPageSize: 10 },
-    globalFilter: { enabled: true, key: 'filter' },
+    pagination: { defaultPage: 1, defaultPageSize: 30 },
+    globalFilter: { enabled: true, key: 'search' },
     columnFilters: [],
+  })
+
+  const { data: dishes, isLoading, isError } = useDishesQuery({
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    search: globalFilter || undefined,
+    sortBy: sorting.length > 0 ? sorting[0].id : undefined,
+    sortOrder: sorting.length > 0 ? (sorting[0].desc ? 'desc' : 'asc') : undefined,
   })
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: dishes,
+    data: dishes?.data || [],
     columns,
     state: {
       sorting,
@@ -69,17 +77,14 @@ export function DishesTable() {
       globalFilter,
       pagination,
     },
+    pageCount: dishes?.meta.totalPages ?? -1,
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
-    globalFilterFn: (row, _columnId, filterValue) => {
-      const id = String(row.getValue('dish_id')).toLowerCase()
-      const name = String(row.getValue('dish_name')).toLowerCase()
-      const searchValue = String(filterValue).toLowerCase()
-
-      return id.includes(searchValue) || name.includes(searchValue)
-    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -137,10 +142,7 @@ export function DishesTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='filter by dish name'
-      />
+      <DataTableToolbar table={table} searchPlaceholder='filter by dish name' />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>

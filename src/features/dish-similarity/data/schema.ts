@@ -3,7 +3,7 @@ import z from "zod"
 
 export const dishSimilarityFormSchema = z.object({
   dish_id: z.number().min(1, 'Dish is required'),
-  similar_dish_id: z.number().min(1, 'Similar dishes are required'),
+  similar_dish_ids: z.array(z.number()).min(1, 'At least one similar dish is required'),
 })
 
 export type DishSimilarityFormValues = z.infer<typeof dishSimilarityFormSchema>
@@ -22,9 +22,9 @@ export type DishSimilarity = {
 }
 
 export type TransformedDish = {
-    dish_id: number
-    dish_name: string
-    similarDishes: Dish[]
+  dish_id: number
+  dish_name: string
+  similarDishes: Dish[]
 }
 
 

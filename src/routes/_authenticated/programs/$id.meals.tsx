@@ -7,12 +7,13 @@ const mealSearchSchema = z.object({
     page: z.number().optional().catch(1),
     pageSize: z.number().optional().catch(10),
     filter: z.string().optional().catch(''),
+    view: z.enum(['grid', 'list']).default('grid'),
 })
 
 export const Route = createFileRoute('/_authenticated/programs/$id/meals')({
     validateSearch: mealSearchSchema,
     component: Meals,
-    head: (ctx) => {
+    head: () => {
         return {
             meta: [
                 {
