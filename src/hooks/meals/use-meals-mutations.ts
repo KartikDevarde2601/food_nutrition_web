@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { mealsApi } from '@/lib/api/meal.api'
 import { Meal, MealForm } from '@/features/meals/data/schema'
 import { mealsKeys } from './use-meals-query'
+import { MealCorrectionPayload } from '@/features/meals/data/meal-user-form-schema'
 
 export function useCreateMealMutation(
   options?: Omit<UseMutationOptions<Meal, Error, MealForm>, 'mutationFn'>
@@ -74,3 +75,26 @@ export function useDeleteMealMutation(
     },
   })
 }
+
+export function useCorrectMealMutation(
+  options?: Omit<UseMutationOptions<void, Error, MealCorrectionPayload>, 'mutationFn'>
+) {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, Error, MealCorrectionPayload>({
+    ...options,
+    mutationFn: (payload) => mealsApi.correctMeal(payload),
+    onSuccess: (data, variables, context, mutation) => {
+      queryClient.invalidateQueries({ queryKey: mealsKeys.detail(variables.meal_id) })
+      toast.success('Meal corrected successfully!')
+      options?.onSuccess?.(data, variables, context, mutation)
+    },
+    onError: (error, variables, context, mutation) => {
+      options?.onError?.(error, variables, context, mutation)
+    },
+  })
+}
+
+
+
+

@@ -1,5 +1,6 @@
 import { type Meal, type MealForm, type MealDetail } from '@/features/meals/data/schema'
 import { apiClient } from './client'
+import { MealCorrectionPayload } from '@/features/meals/data/meal-user-form-schema'
 
 // ---------- Helpers ----------
 function buildMealFormData(data: Partial<MealForm>) {
@@ -18,10 +19,10 @@ function buildMealFormData(data: Partial<MealForm>) {
 export const mealsApi = {
   // Get all meals
   async getMeals(params?: { program_id?: number }): Promise<Meal[]> {
-    const queryParams = params?.program_id 
+    const queryParams = params?.program_id
       ? { programs: params.program_id }
       : {}
-    
+
     const response = await apiClient.get<Meal[]>('/meals', { params: queryParams })
     return response.data
   },
@@ -72,4 +73,10 @@ export const mealsApi = {
     const response = await apiClient.get<MealDetail[]>(`/meals/details?meals=${id}`)
     return response.data
   },
+
+
+  async correctMeal(payload: MealCorrectionPayload): Promise<any> {
+    const response = await apiClient.post('meals/user-correction', payload)
+    return response.data
+  }
 }

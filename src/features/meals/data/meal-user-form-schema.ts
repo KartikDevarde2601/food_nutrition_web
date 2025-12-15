@@ -21,3 +21,8 @@ export const mealUserFormSchema = z.object({
 
 export type UserIdentifierForm = z.infer<typeof userIdentifierFormSchema>
 export type MealUserForm = z.infer<typeof mealUserFormSchema>
+
+export interface MealCorrectionPayload {
+    meal_id: number,
+    dishCorrection: UserIdentifierForm[]
+}

@@ -25,18 +25,25 @@ import { DishPopover } from '@/components/dishes-pop-over'
 import { Trash2, Plus } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
 
 
 interface MealUserResultsProps {
     identifiers: Identifier[]
+    meal_id: number
 }
 
 export function MealUserResults({
     identifiers,
+    meal_id
 }: MealUserResultsProps) {
     // State for search functionality
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearch = useDebounce(searchQuery, 300)
+
+    const { mutate: correctMeal } = useCorrectMealMutation()
+
+
 
     // Query for the main dish selection (all dishes, no limit initially or default limit)
     const { data: allDishesData } = useDishesQuery({ limit: 100 })
@@ -47,6 +54,7 @@ export function MealUserResults({
         search: debouncedSearch,
         limit: 100,
     })
+
     const searchDishes = searchDishesData?.data || []
     // Initialize form with existing identifiers
     const form = useForm<MealUserForm>({
@@ -67,7 +75,10 @@ export function MealUserResults({
 
     // Handle form submission
     const onSubmit = (data: MealUserForm) => {
-        console.log('Form submitted:', data)
+        correctMeal({
+            meal_id: meal_id,
+            dishCorrection: data.identifiers,
+        })
     }
 
     // Define columns with inline editing
@@ -150,6 +161,7 @@ export function MealUserResults({
 
                 return (
                     <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         onClick={() => remove(index)}

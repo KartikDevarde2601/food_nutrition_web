@@ -94,7 +94,7 @@ export function EditMeal({ mealId }: EditMealProps) {
                 {/* Right Column: Two Tables (Takes 50% width) */}
                 <div className="space-y-4 ">
                     <MealModelResults modelsResult={meal.modelsResult} dishes={dishesData} />
-                    <MealUserResults identifiers={mergedIdentifiers} />
+                    <MealUserResults identifiers={mergedIdentifiers} meal_id={meal.mealId} />
                 </div>
             </div>
         </div>
