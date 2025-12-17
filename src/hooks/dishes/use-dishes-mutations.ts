@@ -41,7 +41,7 @@ export function useUpdateDishMutation(
     ...options,
     mutationFn: ({ id, data }) => dishesApi.updateDish(id, data),
     onSuccess: (data, variables, context, mutation) => {
-      queryClient.invalidateQueries({ queryKey: dishesKeys.list() })
+      queryClient.invalidateQueries({ queryKey: dishesKeys.lists() })
       queryClient.invalidateQueries({
         queryKey: dishesKeys.detail(variables.id),
       })
@@ -64,7 +64,7 @@ export function useDeleteDishMutation(
     mutationFn: (id) => dishesApi.deleteDish(id),
     onSuccess: (data, variables, context, mutation) => {
       // Invalidate programs list to refetch
-      queryClient.invalidateQueries({ queryKey: dishesKeys.list() })
+      queryClient.invalidateQueries({ queryKey: dishesKeys.lists() })
       toast.success('Dish deleted successfully!')
       options?.onSuccess?.(data, variables, context, mutation)
     },

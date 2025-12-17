@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -117,8 +118,8 @@ export function DishSimilarityMutateDrawer({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className='flex flex-col w-[500px] sm:w-[600px] p-0 gap-0'>
-        <SheetHeader className='p-4'>
+      <SheetContent className='flex flex-col w-[500px] sm:w-[600px] p-0 gap-4'>
+        <SheetHeader className='px-4'>
           <SheetTitle>Create Dish Similarity</SheetTitle>
           <SheetDescription>
             Select a primary dish and search for multiple similar dishes.
@@ -127,8 +128,9 @@ export function DishSimilarityMutateDrawer({
         <div className="flex-1 min-h-0 bg-background/50">
           <Form {...form}>
             <form
+              id='dish-similarity-form'
               onSubmit={form.handleSubmit(onSubmit)}
-              className='space-y-6 p-4'
+              className='space-y-6 px-4'
             >
               <FormField
                 control={form.control}
@@ -156,24 +158,6 @@ export function DishSimilarityMutateDrawer({
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
                     <FormLabel>Similar Dishes</FormLabel>
-                    <div className='flex flex-wrap gap-2 mb-2'>
-                      {field.value?.map((id) => (
-                        <Badge key={id} variant="secondary" className="pl-2 pr-1 py-1 flex items-center gap-1">
-                          {getDishName(id)}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-4 w-4 rounded-full hover:bg-transparent"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              removeSimilarDish(id)
-                            }}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </Badge>
-                      ))}
-                    </div>
                     <FormControl>
                       <DishPopover
                         dishes={searchDishes}
@@ -190,14 +174,41 @@ export function DishSimilarityMutateDrawer({
                         onOpenChange={setOpenSimilar}
                       />
                     </FormControl>
+                    {field.value && field.value.length > 0 && (
+                      <div className='flex flex-wrap gap-2 mt-2'>
+                        {field.value.map((id) => (
+                          <Badge key={id} variant="secondary" className="pl-2 pr-1 py-1 flex items-center gap-1">
+                            {getDishName(id)}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-4 w-4 rounded-full hover:bg-transparent"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                removeSimilarDish(id)
+                              }}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button type='submit' className='w-full'>
-                Create Similarity
-              </Button>
+              <div className='flex gap-2'>
+                <SheetClose asChild>
+                  <Button variant='outline' className='flex-1'>
+                    Close
+                  </Button>
+                </SheetClose>
+                <Button type='submit' className='flex-1'>
+                  Create Similarity
+                </Button>
+              </div>
             </form>
           </Form>
         </div>

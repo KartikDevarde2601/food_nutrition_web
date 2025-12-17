@@ -58,6 +58,12 @@ export function useDishMetricQuery(
   return useQuery<DataType, Error>({
     queryKey: ['performance', 'dishlevel', params],
     queryFn: () => performanceApi.getDishMetric(params),
+    select: (data) => ({
+      ...data,
+      perDishMetrics: [...data.perDishMetrics].sort((a, b) =>
+        a.dishName.localeCompare(b.dishName)
+      ),
+    }),
     ...options,
   })
 }

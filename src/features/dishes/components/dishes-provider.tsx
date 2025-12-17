@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { type Dish } from '../data/schema'
 
-type DishesDialogType = 'delete' | 'import' | null
+type DishesDialogType = 'delete' | 'import' | 'create' | 'update' | null
 
 interface DishesContextType {
   open: DishesDialogType

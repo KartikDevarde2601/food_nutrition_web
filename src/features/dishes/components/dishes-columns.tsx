@@ -1,6 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
+import { Pencil, Trash2 } from 'lucide-react'
 
 import { DataTableColumnHeader } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
@@ -34,16 +33,11 @@ export const dishesColumns: ColumnDef<Dish>[] = [
       <DataTableColumnHeader column={column} title='Dish Name' />
     ),
     cell: ({ row }) => {
-      const dish = row.original
       return (
         <div className='flex space-x-2'>
-          <Link
-            to='/dishes/$id/view'
-            params={{ id: String(dish.dish_id) }}
-            className='max-w-[500px] truncate font-medium hover:underline p-2'
-          >
+          <div className='max-w-[500px] truncate font-medium hover:underline p-2'>
             {row.getValue('dish_name')}
-          </Link>
+          </div>
         </div>
       )
     },
@@ -116,38 +110,15 @@ export const dishesColumns: ColumnDef<Dish>[] = [
                 <Button
                   variant='ghost'
                   size='icon'
-                  className='h-8 w-8'
-                  asChild
+                  className='h-8 w-8 text-destructive hover:text-destructive'
+                  onClick={() => {
+                    const event = new CustomEvent('edit-dish', {
+                      detail: dish,
+                    })
+                    window.dispatchEvent(event)
+                  }}
                 >
-                  <Link
-                    to='/dishes/$id/view'
-                    params={{ id: String(dish.dish_id) }}
-                  >
-                    <Eye className='h-4 w-4' />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>View details</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8'
-                  asChild
-                >
-                  <Link
-                    to='/dishes/$id/edit'
-                    params={{ id: String(dish.dish_id) }}
-                  >
-                    <Pencil className='h-4 w-4' />
-                  </Link>
+                  <Pencil className='h-4 w-4 text-primary' />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -164,7 +135,6 @@ export const dishesColumns: ColumnDef<Dish>[] = [
                   size='icon'
                   className='h-8 w-8 text-destructive hover:text-destructive'
                   onClick={() => {
-                    // This will be handled by the DishesProvider context
                     const event = new CustomEvent('delete-dish', {
                       detail: dish,
                     })

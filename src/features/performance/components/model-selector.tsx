@@ -1,4 +1,5 @@
 import { getRouteApi } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { useModelsQuery } from '@/hooks/programs/use-models-query'
 import { Label } from '@/components/ui/label'
 import {
@@ -17,20 +18,22 @@ export function ModelSelector() {
 
   const { data: models = [], isLoading } = useModelsQuery()
 
-  const handleModelOneChange = (value: string) => {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        model_one: parseInt(value),
-      }),
-    })
-  }
+  const handleModelChange = (modelType: 'model_one' | 'model_two') => (value: string) => {
+    const selectedModelId = parseInt(value)
+    const otherModel = modelType === 'model_one' ? search.model_two : search.model_one
 
-  const handleModelTwoChange = (value: string) => {
+    // Check if trying to select the same model as the other model
+    if (selectedModelId === otherModel) {
+      toast.warning('Cannot select the same model', {
+        description: 'Please select two different models to compare.',
+      })
+      return
+    }
+
     navigate({
       search: (prev) => ({
         ...prev,
-        model_two: parseInt(value),
+        [modelType]: selectedModelId,
       }),
     })
   }
@@ -56,7 +59,7 @@ export function ModelSelector() {
         <Label htmlFor='model-one-select'>Model 1</Label>
         <Select
           value={String(search.model_one)}
-          onValueChange={handleModelOneChange}
+          onValueChange={handleModelChange('model_one')}
         >
           <SelectTrigger id='model-one-select' className='w-48'>
             <SelectValue placeholder='Select Model 1' />
@@ -75,7 +78,7 @@ export function ModelSelector() {
         <Label htmlFor='model-two-select'>Model 2</Label>
         <Select
           value={String(search.model_two)}
-          onValueChange={handleModelTwoChange}
+          onValueChange={handleModelChange('model_two')}
         >
           <SelectTrigger id='model-two-select' className='w-48'>
             <SelectValue placeholder='Select Model 2' />

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
 type HeaderProps = React.HTMLAttributes<HTMLElement> & {
@@ -7,26 +6,11 @@ type HeaderProps = React.HTMLAttributes<HTMLElement> & {
 }
 
 export function Header({ className, fixed, children, ...props }: HeaderProps) {
-  const [offset, setOffset] = useState(0)
-
-  useEffect(() => {
-    const onScroll = () => {
-      setOffset(document.body.scrollTop || document.documentElement.scrollTop)
-    }
-
-    // Add scroll listener to the body
-    document.addEventListener('scroll', onScroll, { passive: true })
-
-    // Clean up the event listener on unmount
-    return () => document.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
     <header
       className={cn(
-        'z-50 h-16',
-        fixed && 'header-fixed peer/header fixed top-0 left-0 right-0',
-        offset > 10 && fixed ? 'bg-white shadow-none' : 'bg-transparent border-none',
+        'z-50 h-12 border-b',
+        fixed && 'header-fixed peer/header fixed top-0 left-0 right-0 bg-white',
         className
       )}
 
@@ -34,7 +18,7 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
     >
       <div
         className={cn(
-          'relative flex h-full items-center gap-3 p-4 sm:gap-4',
+          'flex h-full items-center gap-2 px-5 sm:gap-4',
         )}
       >
         {children}

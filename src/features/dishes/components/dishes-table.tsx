@@ -28,6 +28,11 @@ import { type Dish } from '../data/schema'
 import { dishesColumns as columns } from './dishes-columns'
 import { useDishes } from './dishes-provider'
 
+export interface ColumnSort {
+  desc: boolean;
+  id: string;
+}
+
 const route = getRouteApi('/_authenticated/dishes/')
 
 export function DishesTable() {
@@ -37,7 +42,7 @@ export function DishesTable() {
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([{ desc: false, id: 'dish_name' }])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   // Synced with URL states (updated to match route search schema defaults)
@@ -101,7 +106,7 @@ export function DishesTable() {
     ensurePageInRange(pageCount)
   }, [pageCount, ensurePageInRange])
 
-  // Listen for delete dish events from action buttons
+  // Listen for delete and edit dish events from action buttons
   useEffect(() => {
     const handleDeleteDish = (event: Event) => {
       const customEvent = event as CustomEvent<Dish>
@@ -109,9 +114,17 @@ export function DishesTable() {
       setOpen('delete')
     }
 
+    const handleEditDish = (event: Event) => {
+      const customEvent = event as CustomEvent<Dish>
+      setCurrentRow(customEvent.detail)
+      setOpen('update')
+    }
+
     window.addEventListener('delete-dish', handleDeleteDish)
+    window.addEventListener('edit-dish', handleEditDish)
     return () => {
       window.removeEventListener('delete-dish', handleDeleteDish)
+      window.removeEventListener('edit-dish', handleEditDish)
     }
   }, [setCurrentRow, setOpen])
 

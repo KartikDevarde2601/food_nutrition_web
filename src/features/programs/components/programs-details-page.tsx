@@ -1,24 +1,20 @@
 import { format } from 'date-fns'
-import { useNavigate } from '@tanstack/react-router'
 import { ListOrdered, Calendar, Info } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Main } from '@/components/layout/main'
 import { ProgramDetail } from '../data/schema'
 import { MetricCard } from '@/components/metric-card'
-import { ArrowLeft } from 'lucide-react'
 
 interface ProgramDetailsContentProps {
     program: ProgramDetail
 }
 
 export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps) {
-    const navigate = useNavigate()
 
     return (
         <Main className="flex flex-1 flex-col gap-6 sm:gap-8">
             {/* Header */}
-            <div className="flex items-center justify-between gap-4">
+            {/* <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-8">
                         <Button
@@ -60,7 +56,7 @@ export function ProgramDetailsComponent({ program }: ProgramDetailsContentProps)
                         Performance
                     </Button>
                 </div>
-            </div>
+            </div> */}
 
             {/* Main Grid */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

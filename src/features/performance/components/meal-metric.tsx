@@ -1,6 +1,5 @@
 import React from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { Main } from '@/components/layout/main'
 import { MetricMatrixTable } from './metric-matrix-table'
 import { MetricSelector } from './metric-selector'
 import { Switch } from '@/components/ui/switch'
@@ -31,7 +30,7 @@ export function MealMetric() {
   }
 
   return (
-    <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
+    <>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>Meal Level</h2>
@@ -54,7 +53,7 @@ export function MealMetric() {
 
       </div>
       <MetricMatrixTable />
-    </Main>
+    </>
 
   )
 }

@@ -1,6 +1,5 @@
 import React from 'react'
 import { getRouteApi } from '@tanstack/react-router'
-import { Main } from '@/components/layout/main'
 
 import { DishMetricTable } from './dish-metric-table'
 import { ModelSelector } from './model-selector'
@@ -45,7 +44,7 @@ export function DishMetric() {
   }
 
   return (
-    <Main className='flex flex-1 flex-col gap-4 sm:gap-6'>
+    <>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>
@@ -55,16 +54,21 @@ export function DishMetric() {
             Analyze dish level model performance metrics and comparisons!
           </p>
         </div>
+        <div className='flex items-center gap-2'>
+          <ModelSelector />
+          <div className="flex items-end mt-5">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="group-similar-dishes"
+                className="scale-120 ml-2"
+                checked={groupSimilarDishes}
+                onCheckedChange={handleGroupSimilarChange}
+              />
+              <Label htmlFor="group-similar-dishes">Group Similar</Label>
+            </div>
 
-        <ModelSelector />
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="group-similar-dishes"
-            className="scale-120 ml-2"
-            checked={groupSimilarDishes}
-            onCheckedChange={handleGroupSimilarChange}
-          />
-          <Label htmlFor="group-similar-dishes">Group Similar</Label>
+          </div>
+
         </div>
       </div>
 
@@ -74,7 +78,7 @@ export function DishMetric() {
       />
 
       <DishMetricTable />
-    </Main>
+    </>
 
   )
 }

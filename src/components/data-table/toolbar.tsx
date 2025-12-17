@@ -76,7 +76,7 @@ export function DataTableToolbar<TData>({
           )
         }
 
-        <div className='flex gap-x-2'>
+        <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
           {filters.map((filter) => {
             const column = table.getColumn(filter.columnId)
             if (!column) return null
@@ -127,7 +127,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
         {
-          <div>
+          <div className='flex flex-1 flex-col-reverse items-start gap-y-2 sm:flex-row sm:items-center sm:space-x-2'>
             {selectAllEnable && (
               <div className="flex items-center gap-3 border-1 border-dashed rounded-lg p-2">
                 <Checkbox id="select-all"

@@ -16,7 +16,7 @@ import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { DataTableToolbar } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
-import { MealsPrimaryButtons } from './meals-primary-buttons'
+
 import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from './meals-provider'
 import { MealCard } from './meal-card'
@@ -30,6 +30,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 import { LayoutGrid, LayoutList } from 'lucide-react'
+
 const route = getRouteApi('/_authenticated/programs/$id/meals')
 
 
@@ -40,7 +41,10 @@ export function MealsTable() {
   const { view } = route.useSearch()
   const navigate = route.useNavigate()
   const { setOpen, setCurrentRow } = useMeals()
+
   const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id: Number(id) })
+
+
 
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
@@ -142,52 +146,35 @@ export function MealsTable() {
         onValueChange={(value) => navigate({
           search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
         })}
-        className="flex flex-col flex-1"
+        className='gap-4'
       >
-        <div className='bg-background pb-4'>
-          <div className='flex flex-wrap items-end justify-between gap-2 mb-4'>
-            <div>
-              <h2 className='text-2xl font-bold tracking-tight'>Meals</h2>
-              <p className='text-muted-foreground'>
-                Here&apos;s a list of your meals!
-              </p>
-            </div>
-            <MealsPrimaryButtons />
-          </div>
-          <div className='flex items-center justify-between'>
-            <div className="mb-4">
-              <DataTableToolbar
-                table={table}
-                searchfilterEnable={false}
-                selectAllEnable={true}
-                dateFilters={[
-                  {
-                    columnId: 'createdAt',
-                    title: 'Created At',
-                    multiple: true,
-                  },
-                ]}
-                modelFilters={[
-                  {
-                    columnId: 'mealInferences',
-                    title: 'Models',
-                  },
-                ]}
-              />
-            </div>
-            <div>
-              <TabsList>
-                <TabsTrigger value="grid">
-                  <LayoutGrid className="h-4 w-4" />
-                </TabsTrigger>
-                <TabsTrigger value="list">
-                  <LayoutList className="h-4 w-4" />
-                </TabsTrigger>
-              </TabsList>
-            </div>
-          </div>
-
-
+        <div className='flex items-center justify-between'>
+          <DataTableToolbar
+            table={table}
+            searchfilterEnable={false}
+            selectAllEnable={true}
+            dateFilters={[
+              {
+                columnId: 'createdAt',
+                title: 'Date Filter',
+                multiple: true,
+              },
+            ]}
+            modelFilters={[
+              {
+                columnId: 'mealInferences',
+                title: 'Models',
+              },
+            ]}
+          />
+          <TabsList className='flex items-center gap-2'>
+            <TabsTrigger value="grid">
+              <LayoutGrid className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger value="list">
+              <LayoutList className="h-4 w-4" />
+            </TabsTrigger>
+          </TabsList>
         </div>
 
         <TabsContent value="grid" className='flex-1 overflow-y-auto min-h-0'>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Upload,  Trash2 } from "lucide-react";
+import { Upload, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface SingleImageUploadProps {
@@ -113,9 +113,12 @@ export function SingleImageUpload({
 
             {/* File Details */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
+
+              <p className="text-sm font-medium text-foreground text-wrap">
                 {value instanceof File ? value.name : "Existing Image"}
               </p>
+
+
               <p className="text-xs text-muted-foreground">
                 {value instanceof File
                   ? formatFileSize(value.size)
@@ -149,10 +152,9 @@ export function SingleImageUpload({
           relative border-2 border-dashed rounded-lg p-8
           flex flex-col items-center justify-center text-center
           transition-colors duration-200 ease-in-out
-          ${
-            isDragOver
-              ? "border-primary bg-primary/5"
-              : "border-border hover:border-primary/50 hover:bg-muted/50"
+          ${isDragOver
+            ? "border-primary bg-primary/5"
+            : "border-border hover:border-primary/50 hover:bg-muted/50"
           }
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         `}

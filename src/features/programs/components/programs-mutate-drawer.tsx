@@ -22,7 +22,6 @@ import {
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
@@ -117,8 +116,8 @@ export function ProgramsMutateDrawer({
         }
       }}
     >
-      <SheetContent className='flex flex-col'>
-        <SheetHeader className='text-start'>
+      <SheetContent className='flex flex-col w-[500px] sm:w-[600px] p-0 gap-4'>
+        <SheetHeader className='px-4'>
           <SheetTitle>{isUpdate ? 'Update' : 'Create'} Program</SheetTitle>
           <SheetDescription>
             {isUpdate
@@ -127,92 +126,92 @@ export function ProgramsMutateDrawer({
             Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
+        <div className="flex-1 min-h-0 bg-background/50">
+          <Form {...form}>
+            <form
+              id='programs-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='space-y-6 px-4'
+            >
+              {/* Name */}
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='Enter program name' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <Form {...form}>
-          <form
-            id='programs-form'
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='flex-1 space-y-6 overflow-y-auto px-4'
-          >
-            {/* Name */}
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder='Enter program name' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Description */}
+              <FormField
+                control={form.control}
+                name='description'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder='Enter program description'
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name='description'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder='Enter program description'
-                      rows={4}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Default Model */}
-            <FormField
-              control={form.control}
-              name='default_model_id'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Default Model</FormLabel>
-                  <SelectDropdown
-                    key={field.value || 'empty'}
-                    defaultValue={field.value ? String(field.value) : ''}
-                    onValueChange={(value) => {
-                      if (value && value !== '') {
-                        field.onChange(Number(value))
-                      } else {
-                        field.onChange(undefined)
+              {/* Default Model */}
+              <FormField
+                control={form.control}
+                name='default_model_id'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Default Model</FormLabel>
+                    <SelectDropdown
+                      key={field.value || 'empty'}
+                      defaultValue={field.value ? String(field.value) : ''}
+                      onValueChange={(value) => {
+                        if (value && value !== '') {
+                          field.onChange(Number(value))
+                        } else {
+                          field.onChange(undefined)
+                        }
+                      }}
+                      placeholder={
+                        isLoadingModels ? 'Loading models...' : 'Select a model'
                       }
-                    }}
-                    placeholder={
-                      isLoadingModels ? 'Loading models...' : 'Select a model'
-                    }
-                    disabled={isLoadingModels || isSubmitting}
-                    items={models.map((model) => ({
-                      key: model.model_id,
-                      label: model.name,
-                      value: String(model.model_id),
-                    }))}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+                      disabled={isLoadingModels || isSubmitting}
+                      items={models.map((model) => ({
+                        key: model.model_id,
+                        label: model.name,
+                        value: String(model.model_id),
+                      }))}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <SheetFooter className='gap-2'>
-          <SheetClose asChild>
-            <Button variant='outline' disabled={isSubmitting}>
-              Close
-            </Button>
-          </SheetClose>
-
-          <Button form='programs-form' type='submit' disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : 'Save changes'}
-          </Button>
-        </SheetFooter>
+              <div className='flex gap-2'>
+                <SheetClose asChild>
+                  <Button variant='outline' disabled={isSubmitting} className='flex-1'>
+                    Close
+                  </Button>
+                </SheetClose>
+                <Button type='submit' disabled={isSubmitting} className='flex-1'>
+                  {isSubmitting ? 'Saving...' : 'Save changes'}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </SheetContent>
     </Sheet>
   )
