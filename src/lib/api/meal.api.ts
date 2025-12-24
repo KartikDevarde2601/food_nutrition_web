@@ -65,7 +65,7 @@ export const mealsApi = {
 
   // Run models on meals
   async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
-    await apiClient.post('/meals/run-models', { mealIds, modelIds })
+    await apiClient.post('/meals/runmodels', { meals: mealIds, models: modelIds })
   },
 
   // Get meal details
