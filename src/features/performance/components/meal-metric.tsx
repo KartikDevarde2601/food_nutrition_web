@@ -13,6 +13,9 @@ export function MealMetric() {
   const navigate = route.useNavigate()
   const { groupSimilarMeals, setGroupSimilarMeals } = usePerformance()
 
+
+  const meal_ids_length = search.meal_ids.length
+
   // Sync state with URL params on mount and when URL changes
   React.useEffect(() => {
     setGroupSimilarMeals(search.groupSimilarMeals === 1)
@@ -35,7 +38,11 @@ export function MealMetric() {
         <div>
           <h2 className='text-2xl font-bold tracking-tight'>Meal Level</h2>
           <p className='text-muted-foreground'>
-            Analyze model performance metrics and comparisons!
+            {
+              meal_ids_length > 0 ? <span> Analyze models performance metrics and comparisons for
+                <span className='font-semibold text-lg'> {meal_ids_length}</span>  meals</span>
+                : <span> Analyze models performance metrics and comparisons for all meals!</span>
+            }
           </p>
         </div>
         <div className="flex items-center gap-2">
