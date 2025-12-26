@@ -78,5 +78,35 @@ export const mealsApi = {
   async correctMeal(payload: MealCorrectionPayload): Promise<any> {
     const response = await apiClient.post('meals/user-correction', payload)
     return response.data
+  },
+
+  // Save meal (multipart/form-data) - simplified endpoint
+  async saveMeal(data: MealForm): Promise<Meal> {
+    const formData = new FormData()
+
+    // Add image if provided
+    if (data.image) {
+      formData.append('image', data.image)
+    }
+
+    // Add program_id
+    formData.append('program_id', data.program_id.toString())
+
+    // Add feedback if provided
+    if (data.feedback) {
+      formData.append('feedback', data.feedback)
+    }
+
+    // Add empty fields as per API spec
+    formData.append('image_url', '')
+    formData.append('modelsResult', '')
+    formData.append('userIdentifiersIds', '')
+    formData.append('userIdentifiersNames', '')
+
+    const response = await apiClient.post<Meal>('/meals/save', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+
+    return response.data
   }
 }

@@ -2,6 +2,7 @@ import { toast } from 'sonner'
 import { useDeleteMealMutation } from '@/hooks/meals'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { useMeals } from './meals-provider'
+import { CreateMealDrawer } from './create-meal-drawer'
 
 export function MealsDialogs() {
   const { open, setOpen, currentRow, setCurrentRow } = useMeals()
@@ -9,6 +10,12 @@ export function MealsDialogs() {
 
   return (
     <>
+      {/* Create Meal Drawer */}
+      <CreateMealDrawer
+        open={open === 'create'}
+        onOpenChange={(isOpen) => setOpen(isOpen ? 'create' : null)}
+      />
+
       {currentRow && (
         <>
           <ConfirmDialog

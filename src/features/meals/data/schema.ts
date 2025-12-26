@@ -28,6 +28,10 @@ export const MealFormSchema = z.object({
     .union([z.instanceof(File), z.string()])
     .optional()
     .nullable(),
+  program_id: z.number({
+    message: 'Program is required',
+  }),
+  feedback: z.string().optional(),
 })
 
 export type MealForm = z.infer<typeof MealFormSchema>
@@ -67,7 +71,7 @@ export const MealDetailSchema = z.object({
   modelsResult: z.array(ModelResultSchema),
   adminIdentifierIds: z.array(IdentifierSchema),
   userIdentifiersIds: z.array(IdentifierSchema),
-  userIdentifiersNames: z.array(UserIdentifierSchema), 
+  userIdentifiersNames: z.array(UserIdentifierSchema),
 })
 
 export type MealDetail = z.infer<typeof MealDetailSchema>

@@ -95,6 +95,23 @@ export function useCorrectMealMutation(
   })
 }
 
+export function useSaveMealMutation(
+  options?: Omit<UseMutationOptions<Meal, Error, MealForm>, 'mutationFn'>
+) {
+  const queryClient = useQueryClient()
 
-
-
+  return useMutation<Meal, Error, MealForm>({
+    ...options,
+    mutationFn: (data: MealForm) => mealsApi.saveMeal(data),
+    onSuccess: (data, variables, context, mutation) => {
+      // Invalidate meals list to refetch
+      queryClient.invalidateQueries({ queryKey: mealsKeys.list() })
+      toast.success('Meal saved successfully!')
+      options?.onSuccess?.(data, variables, context, mutation)
+    },
+    onError: (error, variables, context, mutation) => {
+      // Error handling is done globally in main.tsx
+      options?.onError?.(error, variables, context, mutation)
+    },
+  })
+}
