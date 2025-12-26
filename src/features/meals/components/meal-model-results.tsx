@@ -23,6 +23,8 @@ import { ModelResult } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
 import { useModelsQuery } from '@/hooks/programs'
 import { mealModelColumns, type ModelResultRow } from './table-columns/meal-model-columns'
+import { MealNutritionSummary } from './meal-nutrition-summary'
+import { View } from 'lucide-react'
 
 interface MealModelResultsProps {
     modelsResult: ModelResult[]
@@ -168,6 +170,13 @@ export function MealModelResults({
                             )}
                         </TableBody>
                     </Table>
+                    <div className='flex justify-center py-4 px-4'>
+                        <MealNutritionSummary
+                            modelDishes={selectedModelResult?.dishes}
+                            dishes={dishes}
+                            title="Model Results"
+                        />
+                    </div>
                 </div>
             ) : (
                 <div className='text-center text-muted-foreground py-4'>

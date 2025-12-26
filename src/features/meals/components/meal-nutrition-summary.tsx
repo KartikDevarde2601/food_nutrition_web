@@ -6,7 +6,7 @@ import { Egg, Flame, Nut, Wheat } from 'lucide-react'
 
 interface MealNutritionSummaryProps {
     mergedIdentifiers?: (Identifier & { isAdmin: boolean; isUser: boolean })[]
-    modelDishes?: { dish_id: string | number; weight: number }[]
+    modelDishes?: { dish_id: string | number; weight: number; position: string }[]
     dishes: Dish[] | undefined
     title?: string
 }
