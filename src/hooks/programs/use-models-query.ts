@@ -12,11 +12,15 @@ export const modelsKeys = {
 
 // Hook to fetch all models
 export function useModelsQuery(
+  params: {
+    programId?: number
+    includeGT?: boolean
+  },
   options?: Omit<UseQueryOptions<ModelDto[], Error>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<ModelDto[], Error>({
-    queryKey: modelsKeys.list(),
-    queryFn: () => modelsApi.getModels(),
+    queryKey: [modelsKeys.list(), params],
+    queryFn: () => modelsApi.getModels(params),
     staleTime: 5 * 60 * 1000, // Models don't change often, cache for 5 minutes
     ...options,
   })

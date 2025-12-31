@@ -16,27 +16,29 @@ export function ModelSelector() {
   const navigate = route.useNavigate()
   const search = route.useSearch()
 
-  const { data: models = [], isLoading } = useModelsQuery()
+  const { data: models = [], isLoading } = useModelsQuery({ includeGT: true })
 
-  const handleModelChange = (modelType: 'model_one' | 'model_two') => (value: string) => {
-    const selectedModelId = parseInt(value)
-    const otherModel = modelType === 'model_one' ? search.model_two : search.model_one
+  const handleModelChange =
+    (modelType: 'model_one' | 'model_two') => (value: string) => {
+      const selectedModelId = parseInt(value)
+      const otherModel =
+        modelType === 'model_one' ? search.model_two : search.model_one
 
-    // Check if trying to select the same model as the other model
-    if (selectedModelId === otherModel) {
-      toast.warning('Cannot select the same model', {
-        description: 'Please select two different models to compare.',
+      // Check if trying to select the same model as the other model
+      if (selectedModelId === otherModel) {
+        toast.warning('Cannot select the same model', {
+          description: 'Please select two different models to compare.',
+        })
+        return
+      }
+
+      navigate({
+        search: (prev) => ({
+          ...prev,
+          [modelType]: selectedModelId,
+        }),
       })
-      return
     }
-
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        [modelType]: selectedModelId,
-      }),
-    })
-  }
 
   if (isLoading) {
     return (

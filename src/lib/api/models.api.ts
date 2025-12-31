@@ -3,11 +3,16 @@ import { apiClient } from './client'
 
 export interface ModelDto extends Model {}
 
+export interface GetModelsParams {
+  programId?: number
+  includeGT?: boolean
+}
+
 // Models API Service
 export const modelsApi = {
   // Get all available models
-  async getModels(): Promise<ModelDto[]> {
-    const response = await apiClient.get<ModelDto[]>('/models')
+  async getModels(params: GetModelsParams): Promise<ModelDto[]> {
+    const response = await apiClient.get<ModelDto[]>('/models', { params })
     return response.data
   },
 
