@@ -21,7 +21,7 @@ import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from './meals-provider'
 import { MealCard } from './meal-card'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { EditMeal } from './edit-meal'
+import { MealDishesInfo } from './meal-dishes-info'
 import { Card } from '@/components/ui/card'
 import {
   Tabs,
@@ -201,7 +201,7 @@ export function MealsTable() {
             <div className='flex flex-col gap-6'>
               {table.getRowModel().rows.map((row) => (
                 <Card key={row.id} className="overflow-hidden">
-                  <EditMeal
+                  <MealDishesInfo
                     mealId={String(row.original.mealId)}
                   />
                 </Card>
@@ -223,7 +223,7 @@ export function MealsTable() {
         }
       }}>
         <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          {selectedMealId && <EditMeal mealId={selectedMealId} />}
+          {selectedMealId && <MealDishesInfo mealId={selectedMealId} />}
         </DialogContent>
       </Dialog>
     </div >

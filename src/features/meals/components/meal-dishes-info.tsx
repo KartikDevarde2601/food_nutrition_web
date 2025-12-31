@@ -9,11 +9,11 @@ import { MealUserResults } from './meal-user-results'
 import { MealLoadingSkeleton } from './meal-loading-skeleton'
 import { Identifier } from '../data/schema'
 
-interface EditMealProps {
+interface MealDishesInfoProps {
     mealId: string
 }
 
-export function EditMeal({ mealId }: EditMealProps) {
+export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
     const { data: mealDetails, isLoading: isLoadingMeal, error: mealError } = useMealDetailsQuery(mealId)
 
     const meal = mealDetails?.[0]

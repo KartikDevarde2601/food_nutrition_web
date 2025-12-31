@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
     Table,
@@ -27,41 +27,68 @@ import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
 
-
 interface MealUserResultsProps {
     identifiers: Identifier[]
     meal_id: number
 }
 
-export function MealUserResults({
-    identifiers,
-    meal_id
-}: MealUserResultsProps) {
-    // State for search functionality
+function DishSearchPopover({
+    index,
+    form,
+    allDishes,
+}: {
+    index: number
+    form: UseFormReturn<MealUserForm>
+    allDishes: any[]
+}) {
+    const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearch = useDebounce(searchQuery, 300)
 
-    const { mutate: correctMeal } = useCorrectMealMutation()
-
-
-
-    // Query for the main dish selection (all dishes, no limit initially or default limit)
-    const { data: allDishesData } = useDishesQuery({ limit: 100 })
-    const allDishes = allDishesData?.data || []
-
-    // Query for similar dishes search with limit 10
     const { data: searchDishesData, isLoading: isSearching } = useDishesQuery({
         search: debouncedSearch,
         limit: 100,
     })
 
     const searchDishes = searchDishesData?.data || []
+    const currentValue = form.watch(`identifiers.${index}.dishId`)
+    const selectedDish = allDishes.find(d => d.dish_id === Number(currentValue))
+
+    return (
+        <DishPopover
+            dishes={searchDishes.length > 0 ? searchDishes : allDishes}
+            selectedValue={selectedDish?.dish_id}
+            onSelect={(dishId) => {
+                form.setValue(`identifiers.${index}.dishId`, String(dishId))
+            }}
+            placeholder='Search dishes...'
+            buttonText={selectedDish?.dish_name || 'Select dish...'}
+            isLoading={isSearching}
+            enableSearch
+            searchValue={searchQuery}
+            onSearchChange={setSearchQuery}
+            open={open}
+            onOpenChange={setOpen}
+        />
+    )
+}
+
+export function MealUserResults({
+    identifiers,
+    meal_id
+}: MealUserResultsProps) {
+    const { mutate: correctMeal } = useCorrectMealMutation()
+
+    // Query for the main dish selection (all dishes, no limit initially or default limit)
+    const { data: allDishesData } = useDishesQuery({ limit: 100 })
+    const allDishes = allDishesData?.data || []
+
     // Initialize form with existing identifiers
     const form = useForm<MealUserForm>({
         resolver: zodResolver(mealUserFormSchema),
         defaultValues: {
             identifiers: identifiers.map(id => ({
-                dishId: id.dishId,
+                dishId: String(id.dishId),
                 weight: id.weight,
                 position: id.position,
             })),
@@ -89,25 +116,13 @@ export function MealUserResults({
             cell: ({ row }) => {
                 const index = row.index
                 const error = form.formState.errors.identifiers?.[index]?.dishId?.message
-                const currentValue = form.watch(`identifiers.${index}.dishId`)
-
-                // Find selected dish
-                const selectedDish = allDishes.find(d => d.dish_id === Number(currentValue))
 
                 return (
                     <div className="flex flex-col">
-                        <DishPopover
-                            dishes={searchDishes.length > 0 ? searchDishes : allDishes}
-                            selectedValue={selectedDish?.dish_id}
-                            onSelect={(dishId) => {
-                                form.setValue(`identifiers.${index}.dishId`, dishId)
-                            }}
-                            placeholder='Search dishes...'
-                            buttonText={selectedDish?.dish_name || 'Select dish...'}
-                            isLoading={isSearching}
-                            enableSearch
-                            searchValue={searchQuery}
-                            onSearchChange={setSearchQuery}
+                        <DishSearchPopover
+                            index={index}
+                            form={form}
+                            allDishes={allDishes}
                         />
                         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
                     </div>
@@ -172,7 +187,7 @@ export function MealUserResults({
                 )
             },
         },
-    ], [form, allDishes, searchDishes, searchQuery, setSearchQuery, isSearching, remove])
+    ], [form, allDishes, remove])
 
     const table = useReactTable({
         data: fields,

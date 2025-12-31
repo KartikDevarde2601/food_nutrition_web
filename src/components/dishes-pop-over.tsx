@@ -14,6 +14,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react'
 
 type Dish = {
     dish_id: number
@@ -60,6 +61,7 @@ export function DishPopover({
         }
         return selectedValue === dishId
     }
+
 
     const getDisplayValue = () => {
         if (isMultiSelect) return buttonText
@@ -115,7 +117,12 @@ export function DishPopover({
                                     <CommandItem
                                         key={dish.dish_id}
                                         value={enableSearch ? String(dish.dish_id) : dish.dish_name}
-                                        onSelect={() => onSelect(dish.dish_id)}
+                                        onSelect={() => {
+                                            onSelect(dish.dish_id)
+                                            if (onOpenChange) {
+                                                onOpenChange(false)
+                                            }
+                                        }}
                                     >
                                         <Check
                                             className={cn(
@@ -131,6 +138,6 @@ export function DishPopover({
                     </CommandList>
                 </Command>
             </PopoverContent>
-        </Popover>
+        </Popover >
     )
 }
