@@ -36,7 +36,7 @@ export function MetricMatrixTable() {
     })
 
     // Fetch Models for Names
-    const { data: models = [], isLoading: isModelsLoading } = useModelsQuery()
+    const { data: models = [], isLoading: isModelsLoading } = useModelsQuery({ includeGT: true })
 
     const modelNameMap = useMemo(() => {
         const map: Record<string, string> = {}

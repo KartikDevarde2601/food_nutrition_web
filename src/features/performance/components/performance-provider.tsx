@@ -31,9 +31,10 @@ interface PerformanceProviderProps {
 export function PerformanceProvider({ children }: PerformanceProviderProps) {
     const [open, setOpen] = useState<PerformanceDialogType>(null)
     const [activeMetric, setActiveMetric] = useState<string>('MAE')
+    const currentYear = new Date().getFullYear()
     const [dateRange, setDateRange] = useState({
-        startDate: '2025-01-01',
-        endDate: '2025-12-31',
+        startDate: `${currentYear}-01-01`,
+        endDate: `${currentYear}-12-31`,
     })
     const [groupSimilarDishes, setGroupSimilarDishes] = useState(true)
     const [groupSimilarMeals, setGroupSimilarMeals] = useState(true)
