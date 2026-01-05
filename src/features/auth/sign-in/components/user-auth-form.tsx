@@ -63,14 +63,14 @@ export function UserAuthForm({
 
       if (response.data) {
         const { access_token, refresh_token } = response.data
-        
+
         // Store tokens in localStorage
         localStorage.setItem('access_token', access_token)
         localStorage.setItem('refresh_token', refresh_token)
-        
+
         // Update store
         auth.setTokens(access_token, refresh_token)
-        
+
         // Mock user data for now since signin response only returns tokens
         // In a real app, you might decode the token or fetch user profile here
         const mockUser = {
@@ -80,7 +80,7 @@ export function UserAuthForm({
         auth.setUser(mockUser)
 
         toast.success(`Welcome back, ${data.email}!`)
-        
+
         // Redirect to the stored location or default to dashboard
         const targetPath = redirectTo || '/'
         navigate({ to: targetPath, replace: true })
@@ -142,19 +142,10 @@ export function UserAuthForm({
             <span className='w-full border-t' />
           </div>
           <div className='relative flex justify-center text-xs uppercase'>
-            <span className='bg-background text-muted-foreground px-2'>
-              Or continue with
-            </span>
+            <Link to='/sign-up' className='bg-background text-muted-foreground px-2'>
+              Don't have an account?{' '}
+            </Link>
           </div>
-        </div>
-
-        <div className='grid grid-cols-2 gap-2'>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconGithub className='h-4 w-4' /> GitHub
-          </Button>
-          <Button variant='outline' type='button' disabled={isLoading}>
-            <IconFacebook className='h-4 w-4' /> Facebook
-          </Button>
         </div>
       </form>
     </Form>

@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { authApi } from '@/lib/api/auth.api'
 import { toast } from 'sonner'
-// import { useNavigate } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 
 const formSchema = z
   .object({
@@ -42,7 +42,7 @@ export function SignUpForm({
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
   const [isLoading, setIsLoading] = useState(false)
-  // const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -62,7 +62,7 @@ export function SignUpForm({
         password: data.password,
         full_name: data.fullName,
       })
-      
+
       // Store tokens in localStorage
       if (response.data) {
         localStorage.setItem('access_token', response.data.access_token)
@@ -71,7 +71,7 @@ export function SignUpForm({
 
       toast.success('Account created successfully!')
       // Navigate to dashboard or login page
-      // navigate({ to: '/dashboard' }) 
+      navigate({ to: '/programs' })
       // For now, let's just log success as we might not have dashboard route set up or want to auto-login
     } catch (error: any) {
       console.error(error)
