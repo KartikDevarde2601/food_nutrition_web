@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
 import { toast } from 'sonner'
-import { IconFacebook, IconGithub } from '@/assets/brand-icons'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { authApi } from '@/lib/api/auth.api'
@@ -56,10 +55,13 @@ export function UserAuthForm({
     setIsLoading(true)
 
     try {
-      const response = await authApi.signin({
-        email: data.email,
-        password: data.password,
-      })
+
+      const deviceInfo = await auth.getDeviceInfo()
+      const payload = {
+        ...data,
+        ...deviceInfo
+      }
+      const response = await authApi.signin(payload)
 
       if (response.data) {
         const { access_token, refresh_token } = response.data
@@ -68,18 +70,7 @@ export function UserAuthForm({
         localStorage.setItem('access_token', access_token)
         localStorage.setItem('refresh_token', refresh_token)
 
-        // Update store
-        auth.setTokens(access_token, refresh_token)
 
-        // Mock user data for now since signin response only returns tokens
-        // In a real app, you might decode the token or fetch user profile here
-        const mockUser = {
-          id: 1, // Placeholder
-          email: data.email,
-        }
-        auth.setUser(mockUser)
-
-        toast.success(`Welcome back, ${data.email}!`)
 
         // Redirect to the stored location or default to dashboard
         const targetPath = redirectTo || '/'

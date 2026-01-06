@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 
+
 const ACCESS_TOKEN = 'access_token'
 const REFRESH_TOKEN = 'refresh_token'
 
@@ -7,6 +8,11 @@ interface AuthUser {
   id: number
   email: string
   // Add other fields as needed
+}
+interface Device {
+  deviceId: string
+  deviceName: string
+  platform: string
 }
 
 interface AuthState {
@@ -18,12 +24,14 @@ interface AuthState {
     setTokens: (accessToken: string, refreshToken: string) => void
     resetTokens: () => void
     reset: () => void
+    getDeviceInfo: () => Promise<Device>
   }
 }
 
 export const useAuthStore = create<AuthState>()((set) => {
   const accessToken = localStorage.getItem(ACCESS_TOKEN)
   const refreshToken = localStorage.getItem(REFRESH_TOKEN)
+
 
   return {
     auth: {
@@ -59,6 +67,11 @@ export const useAuthStore = create<AuthState>()((set) => {
             auth: { ...state.auth, user: null, accessToken: null, refreshToken: null },
           }
         }),
+      getDeviceInfo: async () => ({
+        deviceId: crypto.randomUUID(),
+        deviceName: navigator.userAgent,
+        platform: 'web',
+      }),
     },
   }
 })

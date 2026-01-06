@@ -21,11 +21,17 @@ export interface SignUpPayload {
   email: string
   password: string
   full_name: string
+  deviceId: string
+  deviceName: string
+  platform: string
 }
 
 export interface SignInPayload {
   email: string
   password: string
+  deviceId: string
+  deviceName: string
+  platform: string
 }
 
 export const authApi = {

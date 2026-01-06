@@ -18,6 +18,7 @@ import { PasswordInput } from '@/components/password-input'
 import { authApi } from '@/lib/api/auth.api'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
+import { useAuthStore } from '@/stores/auth-store'
 
 const formSchema = z
   .object({
@@ -41,6 +42,7 @@ export function SignUpForm({
   className,
   ...props
 }: React.HTMLAttributes<HTMLFormElement>) {
+  const { auth } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -57,11 +59,14 @@ export function SignUpForm({
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
     try {
-      const response = await authApi.signup({
+      const deviceInfo = await auth.getDeviceInfo()
+      const payload = {
+        full_name: data.fullName,
         email: data.email,
         password: data.password,
-        full_name: data.fullName,
-      })
+        ...deviceInfo
+      }
+      const response = await authApi.signup(payload)
 
       // Store tokens in localStorage
       if (response.data) {
