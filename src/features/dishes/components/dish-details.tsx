@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { useNavigate } from '@tanstack/react-router'
-import { Edit, ArrowLeft, Calendar, User } from 'lucide-react'
+import { ArrowLeft, Calendar, User } from 'lucide-react'
 import { useDishQuery } from '@/hooks/dishes'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -61,18 +61,6 @@ export function DishDetails({ dishId }: DishDetailsProps) {
             </p>
           </div>
         </div>
-        <Button
-          onClick={() =>
-            navigate({
-              to: '/dishes/$id/edit',
-              params: { id: dish.dish_id.toString() },
-            })
-          }
-          className='w-full sm:w-auto'
-        >
-          <Edit className='mr-2 h-4 w-4' />
-          Edit Dish
-        </Button>
       </div>
 
       <Separator />

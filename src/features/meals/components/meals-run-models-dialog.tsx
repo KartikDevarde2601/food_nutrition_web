@@ -48,7 +48,7 @@ export function MealsRunModelsDialog<TData extends Meal>({
   const [openCombobox, setOpenCombobox] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
 
-  const { data: models = [] } = useModelsQuery()
+  const { data: models = [] } = useModelsQuery({})
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleRunModels = async () => {

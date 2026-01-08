@@ -47,7 +47,7 @@ export function DataTableModelFilter<TData, TValue>({
 }: DataTableModelFilterProps<TData, TValue>) {
   const [operator, setOperator] = React.useState<FilterOperator>('hasAnyOf')
   const [selectedModels, setSelectedModels] = React.useState<Set<string>>(new Set())
-  const { data: models = [], isLoading } = useModelsQuery()
+  const { data: models = [], isLoading } = useModelsQuery({})
 
   const showModelSelect = operator === 'hasAnyOf' || operator === 'hasNoneOf'
   const isFilterActive =

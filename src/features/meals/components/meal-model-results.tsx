@@ -24,7 +24,6 @@ import { Dish } from '@/features/dishes/data/schema'
 import { useModelsQuery } from '@/hooks/programs'
 import { mealModelColumns, type ModelResultRow } from './table-columns/meal-model-columns'
 import { MealNutritionSummary } from './meal-nutrition-summary'
-import { View } from 'lucide-react'
 
 interface MealModelResultsProps {
     modelsResult: ModelResult[]
@@ -43,7 +42,7 @@ export function MealModelResults({
     dishes,
 }: MealModelResultsProps) {
     const [selectedModelId, setSelectedModelId] = useState<number | null>(null)
-    const { data: allmodels, isLoading } = useModelsQuery()
+    const { data: allmodels, isLoading } = useModelsQuery({})
     const [sorting, setSorting] = useState<SortingState>([])
 
     // 🔹 Unique models based on results

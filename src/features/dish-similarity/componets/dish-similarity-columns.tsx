@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { TransformedDish } from '../data/schema'
@@ -16,13 +15,7 @@ export const dishColumns: ColumnDef<TransformedDish>[] = [
       const dishData = row.original
       return (
         <div className='flex space-x-2'>
-          <Link
-            to='/dishes/$id/view'
-            params={{ id: String(dishData.dish_id) }}
-            className='max-w-[200px] truncate font-medium hover:underline p-2'
-          >
-            {dishData.dish_name}
-          </Link>
+          {dishData.dish_name}
         </div>
       )
     },

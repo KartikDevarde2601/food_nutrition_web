@@ -49,7 +49,7 @@ export function ProgramsMutateDrawer({
   const { setCurrentRow } = usePrograms()
 
   // Fetch models for dropdown
-  const { data: models = [], isLoading: isLoadingModels } = useModelsQuery()
+  const { data: models = [], isLoading: isLoadingModels } = useModelsQuery({})
 
   // Mutations
   const createMutation = useCreateProgramMutation({
