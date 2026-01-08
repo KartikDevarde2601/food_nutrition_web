@@ -1,0 +1,31 @@
+version: '1.0'
+
+services:
+  web:
+  # tell docker to use the dev dockerfile
+    container_name: food_nutrition_web
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+
+   # - Maps host:container ports
+    ports:
+      - "3006:5173"
+
+
+    volumes:
+    #mounts the current directory to /app in the container change reflects in the container
+      - .:/app
+     # WHY? Prevents host's node_modules from overriding container's
+      - /app/node_modules
+
+    # WHY environment variables?
+    # - CHOKIDAR_USEPOLLING: Alternative to usePolling in vite config
+    # - WATCHPACK_POLLING: For webpack-based tools if needed
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+
+    stdin_open: true
+    tty: true
+      

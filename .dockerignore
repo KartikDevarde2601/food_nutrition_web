@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+# Build output (we build inside Docker)
+dist
+# Development files
+.git
+.gitignore
+*.md
+!README.md
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+# Environment files (add via Docker secrets or env vars)
+.env
+.env.*
+# Testing
+coverage
+*.test.ts
+*.spec.ts
+# OS files
+.DS_Store
+Thumbs.db
+# Docker files (prevent recursive copying)
+Dockerfile*
+doc/*
+docker-compose*.yml

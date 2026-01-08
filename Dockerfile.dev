@@ -1,0 +1,36 @@
+# ============================================
+# DEVELOPMENT DOCKERFILE
+# ============================================
+# WHY node:22-alpine?
+# - Alpine is small (~50MB vs ~900MB for full Node)
+# - Node 22 supports modern JavaScript features
+# - LTS version = stable
+FROM node:22-alpine
+# WHY set WORKDIR?
+# - Creates a dedicated directory for your app
+# - All subsequent commands run from here
+# - Keeps container filesystem organized
+WORKDIR /app
+# WHY install pnpm globally?
+# - Your project uses pnpm (pnpm-lock.yaml exists)
+# - Alpine doesn't have pnpm by default
+RUN npm install -g pnpm
+# WHY copy package files first?
+# - Docker caches each layer
+# - If package.json hasn't changed, Docker reuses cached deps
+# - This makes rebuilds MUCH faster
+COPY package.json pnpm-lock.yaml ./
+# WHY separate install step?
+# - Cached layer = dependencies don't reinstall on every code change
+# - Saves minutes on each rebuild
+RUN pnpm install
+# WHY NOT copy source files here?
+# - In development, we mount source as a volume
+# - This allows hot reload without rebuilding the image
+# WHY EXPOSE?
+# - Documents which port the container listens on
+# - Doesn't actually publish the port (that's -p flag's job)
+EXPOSE 3006
+# WHY use dev command?
+# - Starts Vite's development server with HMR
+CMD ["pnpm", "run", "dev"]

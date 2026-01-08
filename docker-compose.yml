@@ -1,0 +1,27 @@
+# docker-compose.yml (Production)
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # WHY target?
+      # - Specifies which stage to build up to
+      target: production
+    
+    ports:
+      - "5009:5009"
+    
+    # WHY restart policy?
+    # - Automatically restarts if container crashes
+    # - "unless-stopped" = restarts unless you manually stop it
+    restart: unless-stopped
+    # WHY healthcheck?
+    # - Monitors if nginx is actually responding
+    # - Docker can restart unhealthy containers
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5009"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
