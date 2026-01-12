@@ -1,26 +1,38 @@
 # docker-compose.yml (Production)
 version: '3.8'
+
 services:
   web:
+    image: food_nutrition_web:${IMAGE_TAG:-latest}
     build:
+      
       context: .
       dockerfile: Dockerfile
-      # WHY target?
-      # - Specifies which stage to build up to
       target: production
-    
+      # ============ BUILD ARGUMENTS ============
+      # WHY args?
+      # - Vite embeds VITE_* at BUILD time, not runtime
+      # - These are read from your .env.production file
+      # - ${VAR} syntax reads from host environment or .env file
+      args:
+        - VITE_API_BASE_URL_DEV=${VITE_API_BASE_URL_DEV}
+        - VITE_API_BASE_URL_PROD=${VITE_API_BASE_URL_PROD}
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
     ports:
-      - "5009:5009"
-    
-    # WHY restart policy?
-    # - Automatically restarts if container crashes
-    # - "unless-stopped" = restarts unless you manually stop it
+      - "3006:3006"
+
+    # ✅ Optional: Load .env.production for build args
+    # WHY env_file here?
+    # - Provides ${VAR} values for build.args above
+    # - Create .env.production with your production values
+    env_file:
+      - .env.production
+
     restart: unless-stopped
-    # WHY healthcheck?
-    # - Monitors if nginx is actually responding
-    # - Docker can restart unhealthy containers
+
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5009"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3006"]
       interval: 30s
       timeout: 10s
       retries: 3

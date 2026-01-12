@@ -41,7 +41,7 @@ export function TopNav({ className, ...props }: TopNavProps) {
           {/* Logo / Brand */}
           <div className='flex items-center gap-2 font-bold text-base shrink-0' onClick={() => window.location.href = '/'} role="button" tabIndex={0}>
             <img
-              src='/images/favicon.svg'
+              src='images/favicon.svg'
               alt='Nutrition Scanner'
               className='h-6 w-6'
             />

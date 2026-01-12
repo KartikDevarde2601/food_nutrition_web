@@ -70,11 +70,7 @@ export function UserAuthForm({
         localStorage.setItem('access_token', access_token)
         localStorage.setItem('refresh_token', refresh_token)
 
-
-
-        // Redirect to the stored location or default to dashboard
-        const targetPath = redirectTo || '/'
-        navigate({ to: targetPath, replace: true })
+        navigate({ to: '/programs', replace: true })
       }
     } catch (error: any) {
       console.error(error)

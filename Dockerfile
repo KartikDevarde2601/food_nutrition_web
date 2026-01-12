@@ -1,53 +1,83 @@
 # ============================================
 # PRODUCTION DOCKERFILE (Multi-Stage Build)
 # ============================================
+
+ARG TARGETPLATFORM=linux/amd64
+
 # ------------------- STAGE 1: BUILD -------------------
-# WHY "AS build"?
-# - Names this stage so we can reference it later
-FROM node:22-alpine AS build
+FROM --platform=${TARGETPLATFORM} node:22-alpine AS build
+
 WORKDIR /app
-# WHY install pnpm?
-# - Required to install dependencies
+
+# ============ BUILD-TIME ARGUMENTS ============
+# WHY ARG?
+# - Vite replaces import.meta.env.VITE_* at BUILD TIME
+# - These must be available when 'pnpm run build' runs
+# - Passed via docker-compose build.args or --build-arg
+ARG VITE_CLERK_PUBLISHABLE_KEY
+ARG VITE_API_BASE_URL_DEV
+ARG VITE_API_BASE_URL_PROD
+ARG VITE_API_BASE_URL
+
+# WHY ENV after ARG?
+# - ARG is only available during build
+# - ENV makes them available to the build command
+ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
+ENV VITE_API_BASE_URL_DEV=$VITE_API_BASE_URL_DEV
+ENV VITE_API_BASE_URL_PROD=$VITE_API_BASE_URL_PROD
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+# Install pnpm
 RUN npm install -g pnpm
-# WHY copy package files first?
-# - Layer caching optimization (same as development)
+
+# Copy package files first (layer caching)
 COPY package.json pnpm-lock.yaml ./
-# WHY --frozen-lockfile?
-# - Ensures exact versions from lockfile are installed
-# - Fails if lockfile is out of sync (catches errors)
+
+# Install dependencies with exact versions
 RUN pnpm install --frozen-lockfile
-# NOW copy all source files
-# WHY after dependencies?
-# - Source code changes frequently
-# - Dependencies change rarely
-# - This order maximizes cache hits
+
+# Copy all source files
 COPY . .
-# WHY run build?
-# - Creates optimized production bundle in /app/dist
-# - Minified, tree-shaken, code-split
+
+# Build the application
+# VITE_* environment variables are embedded during this step
 RUN pnpm run build
+
 # ------------------- STAGE 2: PRODUCTION -------------------
-# WHY nginx:alpine?
-# - Nginx is the gold standard for serving static files
-# - Alpine variant is tiny (~25MB)
-# - Handles gzip, caching, routing efficiently
-FROM nginx:alpine AS production
-# WHY remove default nginx files?
-# - Clean slate for our application
-RUN rm -rf /usr/share/nginx/html/*
-# WHY copy from build stage?
-# - ONLY copies the dist/ folder (built files)
-# - Discards Node.js, source code, node_modules
-# - Massive size reduction
+# Redeclare ARG after FROM (ARGs don't persist across stages)
+ARG TARGETPLATFORM=linux/amd64
+FROM --platform=${TARGETPLATFORM} nginx:alpine AS production
+
+# Copy built files from build stage to nginx html directory
+# No nested path needed - the reverse proxy handles /cdith/nutritionscanner/
+# and Vite's base config already embeds correct asset paths (/cdith/nutritionscanner/assets/...)
 COPY --from=build /app/dist /usr/share/nginx/html
-# WHY copy custom nginx config?
-# - Need to configure SPA routing
-# - Set up port 5009
-# - Enable gzip compression
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-# EXPOSE the port
-EXPOSE 5009
-# WHY this command?
-# - Runs nginx in foreground (required for Docker)
-# - "daemon off" prevents nginx from backgrounding itself
+
+# Create nginx configuration for SPA
+# The server nginx reverse proxy routes /cdith/nutritionscanner/ → this container at /
+# Asset paths in HTML already have /cdith/nutritionscanner/ prefix from Vite build
+RUN echo 'server { \
+    listen 3006; \
+    server_name localhost; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    \
+    # Handle all routes - SPA fallback to index.html \
+    location / { \
+    try_files $uri $uri/ /index.html; \
+    } \
+    \
+    # Enable gzip compression \
+    gzip on; \
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml text/javascript; \
+    \
+    # Cache static assets \
+    location ~* \\.(?:css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ { \
+    expires 1y; \
+    add_header Cache-Control "public, immutable"; \
+    } \
+    }' > /etc/nginx/conf.d/default.conf
+
+EXPOSE 3006
+
 CMD ["nginx", "-g", "daemon off;"]

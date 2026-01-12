@@ -1,31 +1,35 @@
-version: '1.0'
+# docker-compose.dev.yml (Development)
+version: '3.8'
 
 services:
   web:
-  # tell docker to use the dev dockerfile
-    container_name: food_nutrition_web
-    build: 
+    container_name: food_nutrition_web_dev
+    build:
       context: .
       dockerfile: Dockerfile.dev
 
-   # - Maps host:container ports
     ports:
-      - "3006:5173"
-
+      - "5173:5173"
 
     volumes:
-    #mounts the current directory to /app in the container change reflects in the container
+      # Mount source code - changes reflect instantly
       - .:/app
-     # WHY? Prevents host's node_modules from overriding container's
+      # Anonymous volume for node_modules
+      # WHY? Prevents host's node_modules from overriding container's
       - /app/node_modules
 
-    # WHY environment variables?
-    # - CHOKIDAR_USEPOLLING: Alternative to usePolling in vite config
-    # - WATCHPACK_POLLING: For webpack-based tools if needed
+    # ✅ Load .env file at runtime
+    # WHY env_file?
+    # - .dockerignore excludes .env for security
+    # - env_file loads it at container STARTUP (not build time)
+    # - Vite dev server reads VITE_* vars from process.env
+    env_file:
+      - .env
+
     environment:
+      # Polling for file watching in Docker
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
 
     stdin_open: true
     tty: true
-      
