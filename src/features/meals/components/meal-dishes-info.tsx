@@ -3,11 +3,9 @@ import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
 import { useDishesDetailsQuery } from '@/hooks/dishes/use-dish-query'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-import { Dish } from '@/features/dishes/data/schema'
-import { MealModelResults } from './meal-model-results'
-import { MealUserResults } from './meal-user-results'
+
 import { MealLoadingSkeleton } from './meal-loading-skeleton'
-import { Identifier } from '../data/schema'
+import { MealModelResults } from './meal-model-results'
 
 interface MealDishesInfoProps {
     mealId: string
@@ -16,39 +14,23 @@ interface MealDishesInfoProps {
 export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
     const { data: mealDetails, isLoading: isLoadingMeal, error: mealError } = useMealDetailsQuery(mealId)
 
+
+
     const meal = mealDetails?.[0]
 
     // Extract dish IDs for parallel fetching
     const dishIds = useMemo(() => {
         if (!meal) return []
-        const adminIds = meal.adminIdentifierIds || []
-        const userIds = meal.userIdentifiersIds || []
-        const modelIds = meal.modelsResult?.map((m) => m.dishes.map(d => d.dish_id)) || []
+        const mergedIds = meal.mergedIdentifierIds.map(i => i.dishes.map(d => d.dishId))
         return Array.from(new Set([
-            ...adminIds.map(i => i.dishId),
-            ...userIds.map(i => i.dishId),
-            ...modelIds.flat()
+            ...mergedIds.flat(),
         ]))
     }, [meal])
 
     // Parallel fetch dish details
     const dishQueries = useDishesDetailsQuery(dishIds)
     const isLoadingDishes = dishQueries.some(q => q.isLoading)
-    const dishesData = useMemo(() => dishQueries.map(q => q.data).filter(Boolean) as Dish[], [dishQueries])
-
-    // Merge identifiers
-    const mergedIdentifiers = useMemo(() => {
-        if (!meal) return []
-
-        const adminIds = meal.adminIdentifierIds || []
-        const userIds = meal.userIdentifiersIds || []
-
-        const identifierMap = new Map()
-        adminIds.forEach(id => identifierMap.set(id.dishId, id))
-        userIds.forEach(id => identifierMap.set(id.dishId, id))
-
-        return Array.from(identifierMap.values()) as Identifier[]
-    }, [meal])
+    // const dishesData = useMemo(() => dishQueries.map(q => q.data).filter(Boolean) as Dish[], [dishQueries])
 
     if (isLoadingMeal || (dishIds.length > 0 && isLoadingDishes)) {
         return <MealLoadingSkeleton />
@@ -93,8 +75,7 @@ export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
 
                 {/* Right Column: Two Tables (Takes 50% width) */}
                 <div className="space-y-4 ">
-                    <MealModelResults modelsResult={meal.modelsResult} dishes={dishesData} />
-                    <MealUserResults identifiers={mergedIdentifiers} meal_id={meal.mealId} />
+                    <MealModelResults modelsResult={meal.mergedIdentifierIds} meal_id={meal.mealId} />
                 </div>
             </div>
         </div>

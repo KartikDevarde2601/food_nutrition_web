@@ -1,6 +1,6 @@
 import { type Meal, type MealForm, type MealDetail } from '@/features/meals/data/schema'
 import { apiClient } from './client'
-import { MealCorrectionPayload } from '@/features/meals/data/meal-user-form-schema'
+import { MealCorrectionPayload } from '@/features/meals/data/schema'
 
 // ---------- Helpers ----------
 function buildMealFormData(data: Partial<MealForm>) {
@@ -76,7 +76,20 @@ export const mealsApi = {
 
 
   async correctMeal(payload: MealCorrectionPayload): Promise<any> {
-    const response = await apiClient.post('meals/user-correction', payload)
+    // Transform to backend-compatible payload
+    // Only include dishes with tag 'user' or 'both', and map userWeight to weight
+    const backendPayload = {
+      meal_id: payload.meal_id,
+      dishCorrection: payload.dishCorrection
+        .filter((dish) => dish.tag === 'user' || dish.tag === 'both')
+        .map((dish) => ({
+          dishId: String(dish.dishId),
+          weight: String(dish.userWeight ?? ''),
+          position: dish.position,
+        })),
+    }
+
+    const response = await apiClient.post('meals/user-correction', backendPayload)
     return response.data
   },
 
