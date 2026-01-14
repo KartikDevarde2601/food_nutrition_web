@@ -32,7 +32,7 @@ export function MetricCard({
                 </CardTitle>
 
             </CardHeader>
-            <CardContent>
+            <CardContent className='flex-1'>
                 {content}
             </CardContent>
         </Card>

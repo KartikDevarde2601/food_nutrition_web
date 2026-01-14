@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { ModelAndUserIdentifier } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { MetricCard } from '@/components/metric-card'
 import { Egg, Flame, Nut, Wheat } from 'lucide-react'
 import { useMealFormContext } from '../context/meal-form-provider'
 
@@ -51,7 +51,7 @@ export function MealNutritionSummary({ mergedIdentifiers, dishes, title, type }:
             name: 'Calories',
             value: Math.round(totalNutrition.calories) + " " + 'kcal',
             icon: Flame,
-            footer: 'Total energy'
+            footer: 'Calories'
         },
         {
             name: 'Protein',
@@ -76,25 +76,25 @@ export function MealNutritionSummary({ mergedIdentifiers, dishes, title, type }:
     return (
         <div className="w-full">
             {title && <h3 className="text-sm font-semibold mb-3 text-muted-foreground">{title}</h3>}
-            <div className="flex flex-wrap lg:flex-nowrap gap-2">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {stats.map((stat, i) => {
                     const Icon = stat.icon
                     return (
-                        <Card
+                        <MetricCard
                             key={i}
-                            className="w-1/2 sm:w-1/2 lg:w-auto flex-1 p-2"
-                        >
-                            <CardHeader className="flex items-center justify-between pb-1">
-                                <CardTitle className="text-sm font-medium">{stat.name}</CardTitle>
-                                <Icon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent className="py-1">
-                                <div className="text-lg font-bold text-center">{stat.value}</div>
-                            </CardContent>
-                            <CardFooter>
-                                <div className="text-xs text-center text-muted-foreground pb-1">{stat.footer}</div>
-                            </CardFooter>
-                        </Card>
+                            title={stat.name}
+                            icon={Icon}
+                            content={
+                                <div className="flex-col h-full flex  justify-between">
+                                    <div className="text-xl font-bold">
+                                        {stat.value}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        {stat.footer}
+                                    </p>
+                                </div>
+                            }
+                        />
                     )
                 })}
             </div>
