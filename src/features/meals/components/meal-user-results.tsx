@@ -211,26 +211,6 @@ export function MealResults({
             },
         },
         {
-            accessorKey: 'position',
-            header: 'Position',
-            cell: ({ row }) => {
-                const index = row.index
-                const error = form.formState.errors.identifiers?.[index]?.position?.message
-
-                return (
-                    <div className="flex flex-col">
-                        <Input
-                            type="text"
-                            placeholder="Enter position"
-                            {...form.register(`identifiers.${index}.position`)}
-                            className={cn(error && 'border-red-500')}
-                        />
-                        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-                    </div>
-                )
-            },
-        },
-        {
             id: 'actions',
             header: 'Actions',
             cell: ({ row }) => {
@@ -264,7 +244,7 @@ export function MealResults({
     const handleAddRow = () => {
         append({
             dishId: '',
-            userWeight: undefined,
+            userWeight: 0,
             aiWeight: undefined,
             position: '',
             tag: 'user', // New rows are user-added

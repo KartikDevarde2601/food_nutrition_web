@@ -31,6 +31,9 @@ export const MealFormSchema = z.object({
   program_id: z.number({
     message: 'Program is required',
   }),
+  user_id: z.number({
+    message: 'User is required',
+  }).optional(),
   feedback: z.string().optional(),
 })
 
@@ -79,7 +82,7 @@ export const TransformedIdentifierSchema = z.object({
   dishId: z.union([z.string(), z.number()]),
   userWeight: z.union([z.string(), z.number()]).optional(),
   aiWeight: z.union([z.string(), z.number()]).optional(),
-  position: z.string(),
+  position: z.string().optional(),
   tag: z.enum(['user', 'ai', 'both']).optional(),
 })
 

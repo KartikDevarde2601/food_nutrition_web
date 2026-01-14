@@ -65,7 +65,7 @@ export const mealsApi = {
 
   // Run models on meals
   async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
-    await apiClient.post('/meals/runmodels', { meals: mealIds, models: modelIds })
+    await apiClient.post('/meals/runmodel', { meals: mealIds, models: modelIds })
   },
 
   // Get meal details
@@ -95,7 +95,11 @@ export const mealsApi = {
 
   // Save meal (multipart/form-data) - simplified endpoint
   async saveMeal(data: MealForm): Promise<Meal> {
+    if (!data.user_id && !data.program_id) {
+      throw new Error('User ID or Program ID is required')
+    }
     const formData = new FormData()
+
 
     // Add image if provided
     if (data.image) {
@@ -104,6 +108,8 @@ export const mealsApi = {
 
     // Add program_id
     formData.append('program_id', data.program_id.toString())
+    formData.append('user_id', data?.user_id?.toString() || '')
+
 
     // Add feedback if provided
     if (data.feedback) {

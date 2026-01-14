@@ -23,8 +23,10 @@ import { SingleImageUpload } from '@/components/upload-image'
 import { type MealForm, MealFormSchema } from '../data/schema'
 import { useProgramQuery } from '@/hooks/programs'
 import { getRouteApi } from '@tanstack/react-router'
+import { useUserQuery } from '@/hooks/user/use-user-query'
 
 const route = getRouteApi('/_authenticated/programs/$id/meals')
+
 
 type CreateMealDrawerProps = {
     open: boolean
@@ -39,6 +41,8 @@ export function CreateMealDrawer({
     const { id } = route.useParams()
 
     const { data: programsData, isLoading: isLoadingPrograms } = useProgramQuery(id)
+    const { data: user } = useUserQuery()
+
 
     // Mutation
     const saveMutation = useSaveMealMutation({
@@ -72,6 +76,7 @@ export function CreateMealDrawer({
         const payload: MealForm = {
             image: data.image,
             program_id: data.program_id,
+            user_id: user?.id
         }
 
         // Add feedback if provided

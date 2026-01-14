@@ -1,29 +1,32 @@
 import { useMemo } from 'react'
-import { Identifier } from '../data/schema'
+import { ModelAndUserIdentifier } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Egg, Flame, Nut, Wheat } from 'lucide-react'
 
 interface MealNutritionSummaryProps {
-    mergedIdentifiers?: (Identifier & { isAdmin: boolean; isUser: boolean })[]
-    modelDishes?: { dish_id: string | number; weight: number; position: string }[]
+    mergedIdentifiers: ModelAndUserIdentifier
     dishes: Dish[] | undefined
     title?: string
+    type: 'user' | 'ai'
 }
 
-export function MealNutritionSummary({ mergedIdentifiers, modelDishes, dishes, title }: MealNutritionSummaryProps) {
+export function MealNutritionSummary({ mergedIdentifiers, dishes, title, type }: MealNutritionSummaryProps) {
     const totalNutrition = useMemo(() => {
         if (!dishes) return null
-        const dishData = mergedIdentifiers || modelDishes
+        const dishData = mergedIdentifiers.dishes
         if (!dishData) return null
 
         return dishData.reduce(
             (acc: { calories: number; protein: number; carbs: number; fat: number }, item) => {
-                const dishId = 'dishId' in item ? item.dishId : item.dish_id
-                const dish = dishes.find(d => d.dish_id === Number(dishId))
+                const dish = dishes.find(d => d.dish_id === Number(item.dishId))
                 if (!dish) return acc
-
-                const weight = Number(item.weight) || 0
+                let weight = 0
+                if (type === 'user') {
+                    weight = Number(item.userWeight) || 0
+                } else {
+                    weight = Number(item.aiWeight) || 0
+                }
                 const ratio = weight / 100
                 return {
                     calories: acc.calories + ((dish.carbs_g * 4) + (dish.protein_g * 4) + (dish.fat_g * 9)) * ratio,
@@ -34,7 +37,7 @@ export function MealNutritionSummary({ mergedIdentifiers, modelDishes, dishes, t
             },
             { calories: 0, protein: 0, carbs: 0, fat: 0 }
         )
-    }, [mergedIdentifiers, modelDishes, dishes])
+    }, [mergedIdentifiers, dishes])
 
     if (!totalNutrition) return null
 

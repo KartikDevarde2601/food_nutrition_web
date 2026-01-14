@@ -7,8 +7,8 @@ import { Meal, MealDetail, TransformedMealDetail, TransformedIdentifier, ModelAn
 const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
   // Helper function to compute tag based on userWeight and aiWeight
   const computeTag = (userWeight: string | number | undefined, aiWeight: string | number | undefined): 'user' | 'ai' | 'both' => {
-    const hasUser = userWeight !== undefined && userWeight !== ''
-    const hasAi = aiWeight !== undefined && aiWeight !== ''
+    const hasUser = userWeight !== undefined && userWeight !== 0 && userWeight !== ''
+    const hasAi = aiWeight !== undefined && aiWeight !== 0 && aiWeight !== ''
     if (hasUser && hasAi) return 'both'
     if (hasUser) return 'user'
     return 'ai'
@@ -25,7 +25,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
       if (!baseIdentifierMap.has(dishIdKey)) {
         baseIdentifierMap.set(dishIdKey, {
           dishId: identifier.dishId,
-          userWeight: identifier.weight,
+          userWeight: identifier.weight || 0,
           aiWeight: undefined,
           position: identifier.position,
           tag: 'user', // Initially set as user
@@ -39,7 +39,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
       if (!baseIdentifierMap.has(dishIdKey)) {
         baseIdentifierMap.set(dishIdKey, {
           dishId: identifier.dishId,
-          userWeight: identifier.weight,
+          userWeight: identifier.weight || 0,
           aiWeight: undefined,
           position: identifier.position,
           tag: 'user', // Initially set as user
@@ -67,7 +67,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
           // Add new entry with aiWeight, userWeight = undefined
           modelIdentifierMap.set(dishIdKey, {
             dishId: dish.dish_id,
-            userWeight: undefined,
+            userWeight: 0,
             aiWeight: dish.weight,
             position: dish.position,
             tag: 'ai', // Only AI has this dish

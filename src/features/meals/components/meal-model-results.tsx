@@ -8,6 +8,8 @@ import {
 import { ModelAndUserIdentifier } from '../data/schema'
 import { useModelsQuery } from '@/hooks/programs'
 import { MealResults } from './meal-user-results'
+import { MealNutritionSummary } from './meal-nutrition-summary'
+import { useDishesQuery } from '@/hooks/dishes'
 
 interface MealModelResultsProps {
     modelsResult: ModelAndUserIdentifier[]
@@ -26,6 +28,7 @@ export function MealModelResults({
 }: MealModelResultsProps) {
     const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
     const { data: allmodels, isLoading } = useModelsQuery({})
+    const { data: allDishesData } = useDishesQuery({ limit: 100 })
 
     // 🔹 Unique models based on results (excluding model_id = 1)
     const models = useMemo<Model[]>(() => {
@@ -53,7 +56,7 @@ export function MealModelResults({
     }, [models, selectedModelId])
 
     // 🔹 Handle loading
-    if (isLoading || !allmodels) {
+    if (isLoading || !allmodels || !allDishesData?.data) {
         return (
             <div className='py-6 text-center text-muted-foreground'>
                 Loading model list...
@@ -63,9 +66,6 @@ export function MealModelResults({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Meal Results</h3>
-            </div>
             <Tabs
                 value={selectedModelId ?? undefined}
                 onValueChange={(value) => setSelectedModelId(value)}
@@ -89,6 +89,21 @@ export function MealModelResults({
                             key={modelResult.model_id}
                             value={String(modelResult.model_id)}
                         >
+                            <div className="flex flex-col gap-4 pb-4">
+                                <MealNutritionSummary
+                                    mergedIdentifiers={modelResult}
+                                    dishes={allDishesData?.data}
+                                    type="user"
+                                    title='User Nutrition Summary'
+                                />
+                                <MealNutritionSummary
+                                    mergedIdentifiers={modelResult}
+                                    dishes={allDishesData?.data}
+                                    type="ai"
+                                    title='AI Nutrition Summary'
+                                />
+                            </div>
+
                             <MealResults
                                 identifiers={modelResult.dishes}
                                 meal_id={meal_id}
