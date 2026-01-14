@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useForm, useFieldArray, UseFormReturn } from 'react-hook-form'
+import { useForm, useFieldArray, UseFormReturn, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
@@ -26,6 +26,7 @@ import { Trash2, Plus } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
+import { useMealFormContext } from '../context/meal-form-provider'
 
 // Form schema using TransformedIdentifierSchema
 const FormSchema = z.object({
@@ -52,6 +53,8 @@ function DishSearchPopover({
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearch = useDebounce(searchQuery, 300)
+
+
 
     const { data: searchDishesData, isLoading: isSearching } = useDishesQuery({
         search: debouncedSearch,
@@ -87,7 +90,7 @@ export function MealResults({
     meal_id
 }: MealUserResultsProps) {
 
-    console.log('identifiers', identifiers)
+    const { updateFormDishes } = useMealFormContext()
     const { mutate: correctMeal } = useCorrectMealMutation()
 
     // Query for the main dish selection (all dishes, no limit initially or default limit)
@@ -114,10 +117,20 @@ export function MealResults({
     })
 
     // Watch form values and update tags dynamically
-    const watchedIdentifiers = form.watch('identifiers')
+    const watchedIdentifiers = useWatch({
+        control: form.control,
+        name: 'identifiers',
+    })
 
     useEffect(() => {
+
+        console.log('useeffect trigger')
         if (!watchedIdentifiers) return
+
+        // Sync form values to context for MealNutritionSummary
+        updateFormDishes(String(model_id), watchedIdentifiers)
+
+        console.log('form updating....')
 
         watchedIdentifiers.forEach((identifier, index) => {
             const hasUserWeight = identifier.userWeight !== undefined && identifier.userWeight !== ''
@@ -138,7 +151,7 @@ export function MealResults({
                 form.setValue(`identifiers.${index}.tag`, newTag)
             }
         })
-    }, [watchedIdentifiers, form])
+    }, [watchedIdentifiers, form, updateFormDishes, model_id])
 
     // Handle form submission
     const onSubmit = (data: FormValues) => {

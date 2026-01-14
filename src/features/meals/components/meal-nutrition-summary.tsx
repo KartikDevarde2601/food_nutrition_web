@@ -3,6 +3,7 @@ import { ModelAndUserIdentifier } from '../data/schema'
 import { Dish } from '@/features/dishes/data/schema'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Egg, Flame, Nut, Wheat } from 'lucide-react'
+import { useMealFormContext } from '../context/meal-form-provider'
 
 interface MealNutritionSummaryProps {
     mergedIdentifiers: ModelAndUserIdentifier
@@ -12,9 +13,13 @@ interface MealNutritionSummaryProps {
 }
 
 export function MealNutritionSummary({ mergedIdentifiers, dishes, title, type }: MealNutritionSummaryProps) {
+    const { getDishes } = useMealFormContext()
+
+    const currentDishes = getDishes(String(mergedIdentifiers.model_id), mergedIdentifiers.dishes)
+
     const totalNutrition = useMemo(() => {
         if (!dishes) return null
-        const dishData = mergedIdentifiers.dishes
+        const dishData = currentDishes
         if (!dishData) return null
 
         return dishData.reduce(
@@ -37,7 +42,7 @@ export function MealNutritionSummary({ mergedIdentifiers, dishes, title, type }:
             },
             { calories: 0, protein: 0, carbs: 0, fat: 0 }
         )
-    }, [mergedIdentifiers, dishes])
+    }, [currentDishes, dishes, type])
 
     if (!totalNutrition) return null
 

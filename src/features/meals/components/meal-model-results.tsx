@@ -10,6 +10,7 @@ import { useModelsQuery } from '@/hooks/programs'
 import { MealResults } from './meal-user-results'
 import { MealNutritionSummary } from './meal-nutrition-summary'
 import { useDishesQuery } from '@/hooks/dishes'
+import { MealFormProvider, useMealFormContext } from '../context/meal-form-provider'
 
 interface MealModelResultsProps {
     modelsResult: ModelAndUserIdentifier[]
@@ -65,54 +66,56 @@ export function MealModelResults({
     }
 
     return (
-        <div className="space-y-4">
-            <Tabs
-                value={selectedModelId ?? undefined}
-                onValueChange={(value) => setSelectedModelId(value)}
-                className="w-full"
-            >
-                <TabsList className='w-full'>
-                    {models.map((model) => (
-                        <TabsTrigger
-                            key={model.model_id}
-                            value={String(model.model_id)}
-                        >
-                            {model.name}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
+        <MealFormProvider>
+            <div className="space-y-4">
+                <Tabs
+                    value={selectedModelId ?? undefined}
+                    onValueChange={(value) => setSelectedModelId(value)}
+                    className="w-full"
+                >
+                    <TabsList className='w-full'>
+                        {models.map((model) => (
+                            <TabsTrigger
+                                key={model.model_id}
+                                value={String(model.model_id)}
+                            >
+                                {model.name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
 
-                {/* Tab content for each model */}
-                {filteredModelsResult.map((modelResult) => {
-                    return (
-                        <TabsContent
-                            key={modelResult.model_id}
-                            value={String(modelResult.model_id)}
-                        >
-                            <div className="flex flex-col gap-4 pb-4">
-                                <MealNutritionSummary
-                                    mergedIdentifiers={modelResult}
-                                    dishes={allDishesData?.data}
-                                    type="user"
-                                    title='User Nutrition Summary'
-                                />
-                                <MealNutritionSummary
-                                    mergedIdentifiers={modelResult}
-                                    dishes={allDishesData?.data}
-                                    type="ai"
-                                    title='AI Nutrition Summary'
-                                />
-                            </div>
+                    {/* Tab content for each model */}
+                    {filteredModelsResult.map((modelResult) => {
+                        return (
+                            <TabsContent
+                                key={modelResult.model_id}
+                                value={String(modelResult.model_id)}
+                            >
+                                <div className="flex flex-col gap-4 pb-4">
+                                    <MealNutritionSummary
+                                        mergedIdentifiers={modelResult}
+                                        dishes={allDishesData?.data}
+                                        type="user"
+                                        title='User Nutrition Summary'
+                                    />
+                                    <MealNutritionSummary
+                                        mergedIdentifiers={modelResult}
+                                        dishes={allDishesData?.data}
+                                        type="ai"
+                                        title='AI Nutrition Summary'
+                                    />
+                                </div>
 
-                            <MealResults
-                                identifiers={modelResult.dishes}
-                                meal_id={meal_id}
-                                model_id={Number(modelResult.model_id)}
-                            />
-                        </TabsContent>
-                    )
-                })}
-            </Tabs>
-        </div>
+                                <MealResults
+                                    identifiers={modelResult.dishes}
+                                    meal_id={meal_id}
+                                    model_id={Number(modelResult.model_id)}
+                                />
+                            </TabsContent>
+                        )
+                    })}
+                </Tabs>
+            </div>
+        </MealFormProvider>
     )
 }
