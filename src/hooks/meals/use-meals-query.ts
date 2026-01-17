@@ -92,6 +92,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
       image: meal.image,
       mergedIdentifierIds,
       userIdentifiersNames: meal.userIdentifiersNames,
+      feedback: meal.feedback,
     }
   })
 }

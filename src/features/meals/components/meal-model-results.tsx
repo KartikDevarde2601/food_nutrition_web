@@ -15,6 +15,7 @@ import { MealFormProvider, useMealFormContext } from '../context/meal-form-provi
 interface MealModelResultsProps {
     modelsResult: ModelAndUserIdentifier[]
     meal_id: number
+    feedback: string
 }
 
 // Keeping local type compatible with what useModelsQuery likely returns or what the logic expects
@@ -26,6 +27,7 @@ type Model = {
 export function MealModelResults({
     modelsResult,
     meal_id,
+    feedback,
 }: MealModelResultsProps) {
     const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
     const { data: allmodels, isLoading } = useModelsQuery({})
@@ -110,6 +112,7 @@ export function MealModelResults({
                                     identifiers={modelResult.dishes}
                                     meal_id={meal_id}
                                     model_id={Number(modelResult.model_id)}
+                                    feedback={feedback}
                                 />
                             </TabsContent>
                         )

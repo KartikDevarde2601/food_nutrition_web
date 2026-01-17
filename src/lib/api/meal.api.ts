@@ -87,6 +87,7 @@ export const mealsApi = {
           weight: String(dish.userWeight ?? ''),
           position: dish.position,
         })),
+      feedback: payload.feedback,
     }
 
     const response = await apiClient.post('meals/user-correction', backendPayload)

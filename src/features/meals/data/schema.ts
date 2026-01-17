@@ -75,6 +75,7 @@ export const MealDetailSchema = z.object({
   adminIdentifierIds: z.array(IdentifierSchema),
   userIdentifiersIds: z.array(IdentifierSchema),
   userIdentifiersNames: z.array(UserIdentifierSchema),
+  feedback: z.string(),
 })
 
 // Schema for transformed identifier with userWeight and aiWeight
@@ -89,6 +90,7 @@ export const TransformedIdentifierSchema = z.object({
 export const MealCorrectionPayloadSchema = z.object({
   meal_id: z.number(),
   dishCorrection: z.array(TransformedIdentifierSchema),
+  feedback: z.string(),
 })
 
 export type MealCorrectionPayload = z.infer<typeof MealCorrectionPayloadSchema>
@@ -109,6 +111,7 @@ export const TransformedMealDetailSchema = z.object({
   image: z.string(),
   mergedIdentifierIds: z.array(ModelAndUserIdentifierSchema),
   userIdentifiersNames: z.array(UserIdentifierSchema),
+  feedback: z.string(),
 })
 
 export type MealDetail = z.infer<typeof MealDetailSchema>

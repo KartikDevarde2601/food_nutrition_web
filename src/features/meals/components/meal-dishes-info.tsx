@@ -75,7 +75,7 @@ export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
 
                 {/* Right Column: Two Tables (Takes 50% width) */}
                 <div className="space-y-4 ">
-                    <MealModelResults modelsResult={meal.mergedIdentifierIds} meal_id={meal.mealId} />
+                    <MealModelResults modelsResult={meal.mergedIdentifierIds} feedback={meal.feedback} meal_id={meal.mealId} />
                 </div>
             </div>
         </div>

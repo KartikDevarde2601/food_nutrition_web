@@ -27,10 +27,12 @@ import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
 import { useMealFormContext } from '../context/meal-form-provider'
+import { Textarea } from '@/components/ui/textarea'
 
 // Form schema using TransformedIdentifierSchema
 const FormSchema = z.object({
     identifiers: z.array(TransformedIdentifierSchema),
+    feedback: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof FormSchema>
@@ -39,6 +41,7 @@ interface MealUserResultsProps {
     identifiers: TransformedIdentifier[]
     meal_id: number
     model_id: number
+    feedback: string
 }
 
 function DishSearchPopover({
@@ -53,8 +56,6 @@ function DishSearchPopover({
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const debouncedSearch = useDebounce(searchQuery, 300)
-
-
 
     const { data: searchDishesData, isLoading: isSearching } = useDishesQuery({
         search: debouncedSearch,
@@ -87,7 +88,8 @@ function DishSearchPopover({
 export function MealResults({
     identifiers,
     model_id,
-    meal_id
+    meal_id,
+    feedback,
 }: MealUserResultsProps) {
 
     const { updateFormDishes } = useMealFormContext()
@@ -108,6 +110,7 @@ export function MealResults({
                 position: id.position,
                 tag: id.tag, // Include tag in form data
             })),
+            feedback: feedback || '',
         },
     })
 
@@ -158,6 +161,7 @@ export function MealResults({
         correctMeal({
             meal_id: meal_id,
             dishCorrection: data.identifiers,
+            feedback: data.feedback || '',
         })
     }
 
@@ -312,6 +316,13 @@ export function MealResults({
                             )}
                         </TableBody>
                     </Table>
+                </div>
+                <div>
+                    <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Feedback</h3>
+                    <Textarea
+                        placeholder="Enter your feedback"
+                        {...form.register('feedback')}
+                    />
                 </div>
                 <div className="flex flex-col gap-4">
                     <Button
