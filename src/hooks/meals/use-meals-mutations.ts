@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { mealsApi } from '@/lib/api/meal.api'
 import { Meal, MealForm } from '@/features/meals/data/schema'
 import { mealsKeys } from './use-meals-query'
-import { MealCorrectionPayload } from '@/features/meals/data/meal-user-form-schema'
+import { MealCorrectionPayload } from '@/features/meals/data/schema'
 
 export function useCreateMealMutation(
   options?: Omit<UseMutationOptions<Meal, Error, MealForm>, 'mutationFn'>

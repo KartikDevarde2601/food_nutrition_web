@@ -2,7 +2,7 @@ import { Main } from '@/components/layout/main'
 import { MealsTable } from './components/meals-table'
 import { MealsDialogs } from './components/meals-dialogs'
 import { useProgramQuery } from '@/hooks/programs/use-programs-query'
-import { MealsProvider } from './components/meals-provider'
+import { MealsProvider } from './context/meals-provider'
 import { getRouteApi } from '@tanstack/react-router'
 import { MealsPrimaryButtons } from './components/meals-primary-buttons'
 

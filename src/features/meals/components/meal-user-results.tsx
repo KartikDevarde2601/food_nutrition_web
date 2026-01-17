@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
-import { useForm, useFieldArray, UseFormReturn } from 'react-hook-form'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm, useFieldArray, UseFormReturn, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import {
     Table,
     TableBody,
@@ -16,8 +17,7 @@ import {
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table'
-import { Identifier } from '../data/schema'
-import { mealUserFormSchema, type MealUserForm, type UserIdentifierForm } from '../data/meal-user-form-schema'
+import { TransformedIdentifier, TransformedIdentifierSchema } from '../data/schema'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -26,10 +26,22 @@ import { Trash2, Plus } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
+import { useMealFormContext } from '../context/meal-form-provider'
+import { Textarea } from '@/components/ui/textarea'
+
+// Form schema using TransformedIdentifierSchema
+const FormSchema = z.object({
+    identifiers: z.array(TransformedIdentifierSchema),
+    feedback: z.string().optional(),
+})
+
+type FormValues = z.infer<typeof FormSchema>
 
 interface MealUserResultsProps {
-    identifiers: Identifier[]
+    identifiers: TransformedIdentifier[]
     meal_id: number
+    model_id: number
+    feedback: string
 }
 
 function DishSearchPopover({
@@ -38,7 +50,7 @@ function DishSearchPopover({
     allDishes,
 }: {
     index: number
-    form: UseFormReturn<MealUserForm>
+    form: UseFormReturn<FormValues>
     allDishes: any[]
 }) {
     const [open, setOpen] = useState(false)
@@ -73,25 +85,32 @@ function DishSearchPopover({
     )
 }
 
-export function MealUserResults({
+export function MealResults({
     identifiers,
-    meal_id
+    model_id,
+    meal_id,
+    feedback,
 }: MealUserResultsProps) {
+
+    const { updateFormDishes } = useMealFormContext()
     const { mutate: correctMeal } = useCorrectMealMutation()
 
     // Query for the main dish selection (all dishes, no limit initially or default limit)
     const { data: allDishesData } = useDishesQuery({ limit: 100 })
     const allDishes = allDishesData?.data || []
 
-    // Initialize form with existing identifiers
-    const form = useForm<MealUserForm>({
-        resolver: zodResolver(mealUserFormSchema),
+    // Initialize form with existing identifiers using TransformedIdentifierSchema
+    const form = useForm<FormValues>({
+        resolver: zodResolver(FormSchema),
         defaultValues: {
             identifiers: identifiers.map(id => ({
                 dishId: String(id.dishId),
-                weight: id.weight,
+                userWeight: id.userWeight,
+                aiWeight: id.aiWeight,
                 position: id.position,
+                tag: id.tag, // Include tag in form data
             })),
+            feedback: feedback || '',
         },
     })
 
@@ -100,16 +119,54 @@ export function MealUserResults({
         name: 'identifiers',
     })
 
+    // Watch form values and update tags dynamically
+    const watchedIdentifiers = useWatch({
+        control: form.control,
+        name: 'identifiers',
+    })
+
+    useEffect(() => {
+
+        console.log('useeffect trigger')
+        if (!watchedIdentifiers) return
+
+        // Sync form values to context for MealNutritionSummary
+        updateFormDishes(String(model_id), watchedIdentifiers)
+
+        console.log('form updating....')
+
+        watchedIdentifiers.forEach((identifier, index) => {
+            const hasUserWeight = identifier.userWeight !== undefined && identifier.userWeight !== ''
+            const hasAiWeight = identifier.aiWeight !== undefined && identifier.aiWeight !== ''
+
+            let newTag: 'user' | 'ai' | 'both'
+            if (hasUserWeight && hasAiWeight) {
+                newTag = 'both'
+            } else if (hasUserWeight) {
+                newTag = 'user'
+            } else {
+                newTag = 'ai'
+            }
+
+            // Only update if tag has changed to avoid infinite loop
+            const currentTag = form.getValues(`identifiers.${index}.tag`)
+            if (currentTag !== newTag) {
+                form.setValue(`identifiers.${index}.tag`, newTag)
+            }
+        })
+    }, [watchedIdentifiers, form, updateFormDishes, model_id])
+
     // Handle form submission
-    const onSubmit = (data: MealUserForm) => {
+    const onSubmit = (data: FormValues) => {
         correctMeal({
             meal_id: meal_id,
             dishCorrection: data.identifiers,
+            feedback: data.feedback || '',
         })
     }
 
     // Define columns with inline editing
-    const columns: ColumnDef<UserIdentifierForm>[] = useMemo(() => [
+    const columns: ColumnDef<TransformedIdentifier>[] = useMemo(() => [
         {
             accessorKey: 'dishId',
             header: 'Dish',
@@ -130,18 +187,18 @@ export function MealUserResults({
             },
         },
         {
-            accessorKey: 'weight',
-            header: 'Weight (g)',
+            accessorKey: 'userWeight',
+            header: 'User Weight (g)',
             cell: ({ row }) => {
                 const index = row.index
-                const error = form.formState.errors.identifiers?.[index]?.weight?.message
+                const error = form.formState.errors.identifiers?.[index]?.userWeight?.message
 
                 return (
                     <div className="flex flex-col">
                         <Input
                             type="number"
-                            placeholder="Enter weight"
-                            {...form.register(`identifiers.${index}.weight`)}
+                            placeholder="User"
+                            {...form.register(`identifiers.${index}.userWeight`)}
                             className={cn(error && 'border-red-500')}
                         />
                         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
@@ -150,18 +207,20 @@ export function MealUserResults({
             },
         },
         {
-            accessorKey: 'position',
-            header: 'Position',
+            accessorKey: 'aiWeight',
+            header: 'AI Weight (g)',
             cell: ({ row }) => {
                 const index = row.index
-                const error = form.formState.errors.identifiers?.[index]?.position?.message
+                const error = form.formState.errors.identifiers?.[index]?.aiWeight?.message
 
                 return (
                     <div className="flex flex-col">
                         <Input
-                            placeholder="Enter position"
-                            {...form.register(`identifiers.${index}.position`)}
+                            type="number"
+                            placeholder="AI"
+                            {...form.register(`identifiers.${index}.aiWeight`)}
                             className={cn(error && 'border-red-500')}
+                            disabled={true}
                         />
                         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
                     </div>
@@ -173,7 +232,10 @@ export function MealUserResults({
             header: 'Actions',
             cell: ({ row }) => {
                 const index = row.index
-
+                const tag = row.original.tag
+                if (tag === 'both' || tag === 'ai') {
+                    return null
+                }
                 return (
                     <Button
                         type="button"
@@ -199,24 +261,16 @@ export function MealUserResults({
     const handleAddRow = () => {
         append({
             dishId: '',
-            weight: '',
+            userWeight: 0,
+            aiWeight: undefined,
             position: '',
+            tag: 'user', // New rows are user-added
         })
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium">User identifies dishes</h3>
-                    <Button
-                        type="submit"
-                        size="sm"
-                        className="ml-auto"
-                    >
-                        Submit
-                    </Button>
-                </div>
 
                 <div className='rounded-md border'>
                     <Table>
@@ -263,17 +317,45 @@ export function MealUserResults({
                         </TableBody>
                     </Table>
                 </div>
+                <div>
+                    <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Feedback</h3>
+                    <Textarea
+                        placeholder="Enter your feedback"
+                        {...form.register('feedback')}
+                    />
+                </div>
+                <div className="flex flex-col gap-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddRow}
+                        className="w-full"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Row
+                    </Button>
+                    <div className="flex justify-between gap-4">
+                        <Button
+                            type="submit"
+                            size="sm"
+                            className="w-1/3"
+                        >
+                            Submit
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-1/3"
+                            onClick={() => form.reset()}
+                        >
+                            Reset
+                        </Button>
+                    </div>
 
-                <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddRow}
-                    className="w-full"
-                >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Row
-                </Button>
+                </div>
+
             </form>
         </Form>
     )

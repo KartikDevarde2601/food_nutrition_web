@@ -31,6 +31,9 @@ export const MealFormSchema = z.object({
   program_id: z.number({
     message: 'Program is required',
   }),
+  user_id: z.number({
+    message: 'User is required',
+  }).optional(),
   feedback: z.string().optional(),
 })
 
@@ -72,6 +75,44 @@ export const MealDetailSchema = z.object({
   adminIdentifierIds: z.array(IdentifierSchema),
   userIdentifiersIds: z.array(IdentifierSchema),
   userIdentifiersNames: z.array(UserIdentifierSchema),
+  feedback: z.string(),
+})
+
+// Schema for transformed identifier with userWeight and aiWeight
+export const TransformedIdentifierSchema = z.object({
+  dishId: z.union([z.string(), z.number()]),
+  userWeight: z.union([z.string(), z.number()]).optional(),
+  aiWeight: z.union([z.string(), z.number()]).optional(),
+  position: z.string().optional(),
+  tag: z.enum(['user', 'ai', 'both']).optional(),
+})
+
+export const MealCorrectionPayloadSchema = z.object({
+  meal_id: z.number(),
+  dishCorrection: z.array(TransformedIdentifierSchema),
+  feedback: z.string(),
+})
+
+export type MealCorrectionPayload = z.infer<typeof MealCorrectionPayloadSchema>
+
+export type TransformedIdentifier = z.infer<typeof TransformedIdentifierSchema>
+
+// Schema for each model's merged dishes (model dishes + user identifiers)
+export const ModelAndUserIdentifierSchema = z.object({
+  model_id: z.string(),
+  dishes: z.array(TransformedIdentifierSchema),
+})
+
+export type ModelAndUserIdentifier = z.infer<typeof ModelAndUserIdentifierSchema>
+
+// Schema for transformed meal detail with merged data
+export const TransformedMealDetailSchema = z.object({
+  mealId: z.number(),
+  image: z.string(),
+  mergedIdentifierIds: z.array(ModelAndUserIdentifierSchema),
+  userIdentifiersNames: z.array(UserIdentifierSchema),
+  feedback: z.string(),
 })
 
 export type MealDetail = z.infer<typeof MealDetailSchema>
+export type TransformedMealDetail = z.infer<typeof TransformedMealDetailSchema>

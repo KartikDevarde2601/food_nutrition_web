@@ -1,6 +1,6 @@
 import { type Meal, type MealForm, type MealDetail } from '@/features/meals/data/schema'
 import { apiClient } from './client'
-import { MealCorrectionPayload } from '@/features/meals/data/meal-user-form-schema'
+import { MealCorrectionPayload } from '@/features/meals/data/schema'
 
 // ---------- Helpers ----------
 function buildMealFormData(data: Partial<MealForm>) {
@@ -65,7 +65,7 @@ export const mealsApi = {
 
   // Run models on meals
   async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
-    await apiClient.post('/meals/runmodels', { meals: mealIds, models: modelIds })
+    await apiClient.post('/meals/runmodel', { meals: mealIds, models: modelIds })
   },
 
   // Get meal details
@@ -76,13 +76,31 @@ export const mealsApi = {
 
 
   async correctMeal(payload: MealCorrectionPayload): Promise<any> {
-    const response = await apiClient.post('meals/user-correction', payload)
+    // Transform to backend-compatible payload
+    // Only include dishes with tag 'user' or 'both', and map userWeight to weight
+    const backendPayload = {
+      meal_id: payload.meal_id,
+      dishCorrection: payload.dishCorrection
+        .filter((dish) => dish.tag === 'user' || dish.tag === 'both')
+        .map((dish) => ({
+          dishId: String(dish.dishId),
+          weight: String(dish.userWeight ?? ''),
+          position: dish.position,
+        })),
+      feedback: payload.feedback,
+    }
+
+    const response = await apiClient.post('meals/user-correction', backendPayload)
     return response.data
   },
 
   // Save meal (multipart/form-data) - simplified endpoint
   async saveMeal(data: MealForm): Promise<Meal> {
+    if (!data.user_id && !data.program_id) {
+      throw new Error('User ID or Program ID is required')
+    }
     const formData = new FormData()
+
 
     // Add image if provided
     if (data.image) {
@@ -91,6 +109,8 @@ export const mealsApi = {
 
     // Add program_id
     formData.append('program_id', data.program_id.toString())
+    formData.append('user_id', data?.user_id?.toString() || '')
+
 
     // Add feedback if provided
     if (data.feedback) {

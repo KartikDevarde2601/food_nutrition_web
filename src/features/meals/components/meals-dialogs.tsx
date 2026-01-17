@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
 import { useDeleteMealMutation } from '@/hooks/meals'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { useMeals } from './meals-provider'
+import { useMeals } from '../context/meals-provider'
 import { CreateMealDrawer } from './create-meal-drawer'
 
 export function MealsDialogs() {

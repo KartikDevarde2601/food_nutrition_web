@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useMeals } from './meals-provider'
+import { useMeals } from '../context/meals-provider'
 
 export function MealsPrimaryButtons() {
   const { setOpen } = useMeals()

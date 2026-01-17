@@ -18,7 +18,7 @@ import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
 
 import { mealsColumns as columns } from './table-columns/meals-columns'
-import { useMeals } from './meals-provider'
+import { useMeals } from '../context/meals-provider'
 import { MealCard } from './meal-card'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { MealDishesInfo } from './meal-dishes-info'
