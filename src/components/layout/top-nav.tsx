@@ -39,7 +39,7 @@ export function TopNav({ className, ...props }: TopNavProps) {
         {/* Left Side: Logo and Links */}
         <div className='flex items-center ms-auto gap-4 w-full'>
           {/* Logo / Brand */}
-          <div className='flex items-center gap-2 font-bold text-base shrink-0' onClick={() => window.location.href = '/'} role="button" tabIndex={0}>
+          <div className='flex items-center gap-2 font-bold text-base shrink-0' onClick={() => window.location.href = '/cdith/nutritionscanner'} role="button" tabIndex={0}>
             <img
               src='images/favicon.svg'
               alt='Nutrition Scanner'
