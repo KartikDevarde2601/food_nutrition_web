@@ -1,7 +1,7 @@
 {
   "name": "shadcn-admin",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://pl-app.iiit.ac.in/cdith/nutritionscanner",
   "type": "module",
   "scripts": {
@@ -18,7 +18,7 @@
     "docker:dev:logs": "docker compose -f docker-compose.dev.yml logs -f",
     "docker:dev:stop": "docker compose -f docker-compose.dev.yml stop",
     "docker:dev:restart": "docker compose -f docker-compose.dev.yml restart",
-    "docker:prod:build": "source .env.production && docker build --no-cache --build-arg VITE_API_BASE_URL_DEV=$VITE_API_BASE_URL_DEV --build-arg VITE_API_BASE_URL_PROD=$VITE_API_BASE_URL_PROD --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL -t food_nutrition_web:$(node -p \"require('./package.json').version\") .",
+    "docker:prod:build": "source .env.production && docker build --no-cache --build-arg VITE_API_BASE_URL_DEV=$VITE_API_BASE_URL_DEV --build-arg VITE_API_BASE_URL_PROD=$VITE_API_BASE_URL_PROD --build-arg VITE_API_BASE_URL=$VITE_API_BASE_URL --build-arg VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY -t food_nutrition_web:$(node -p \"require('./package.json').version\") .",
     "docker:prod:up": "docker run -d -p 3006:3006 --name food_nutrition_web food_nutrition_web:$(node -p \"require('./package.json').version\")",
     "docker:prod:down": "docker stop food_nutrition_web && docker rm food_nutrition_web",
     "docker:prod:logs": "docker logs food_nutrition_web"

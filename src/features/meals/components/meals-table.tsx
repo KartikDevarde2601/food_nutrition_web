@@ -20,7 +20,7 @@ import { MealsBulkActions } from './meals-bulk-actions'
 import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from '../context/meals-provider'
 import { MealCard } from './meal-card'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { MealDishesInfo } from './meal-dishes-info'
 import { Card } from '@/components/ui/card'
 import {
@@ -28,6 +28,8 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+
+
 } from "@/components/ui/tabs"
 import { LayoutGrid, LayoutList } from 'lucide-react'
 
@@ -222,8 +224,13 @@ export function MealsTable() {
           setSelectedMealId(null)
         }
       }}>
-        <DialogContent className="w-[95vw] max-w-[95vw] sm:max-w-[95vw] max-h-[90vh] overflow-y-auto">
-          {selectedMealId && <MealDishesInfo mealId={selectedMealId} />}
+        <DialogContent className='w-[95vw] max-w-[90vw] sm:max-w-[950vw] h-[90vh] max-h-[90vh] flex flex-col'>
+          <DialogHeader>
+            <DialogTitle>Meal Details with nutrition info</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {selectedMealId && <MealDishesInfo mealId={selectedMealId} />}
+          </div>
         </DialogContent>
       </Dialog>
     </div >

@@ -25,6 +25,7 @@ import { DishPopover } from '@/components/dishes-pop-over'
 import { Trash2, Plus } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
 import { useDebounce } from '@/hooks/use-debounce'
+import { Dish } from '@/features/dishes/data/schema'
 import { useCorrectMealMutation } from '@/hooks/meals/use-meals-mutations'
 import { useMealFormContext } from '../context/meal-form-provider'
 import { Textarea } from '@/components/ui/textarea'
@@ -42,6 +43,7 @@ interface MealUserResultsProps {
     meal_id: number
     model_id: number
     feedback: string
+    allDishes: Dish[]
 }
 
 function DishSearchPopover({
@@ -90,14 +92,11 @@ export function MealResults({
     model_id,
     meal_id,
     feedback,
+    allDishes,
 }: MealUserResultsProps) {
 
     const { updateFormDishes } = useMealFormContext()
     const { mutate: correctMeal } = useCorrectMealMutation()
-
-    // Query for the main dish selection (all dishes, no limit initially or default limit)
-    const { data: allDishesData } = useDishesQuery({ limit: 100 })
-    const allDishes = allDishesData?.data || []
 
     // Initialize form with existing identifiers using TransformedIdentifierSchema
     const form = useForm<FormValues>({
@@ -125,15 +124,18 @@ export function MealResults({
         name: 'identifiers',
     })
 
+    // Debounce form updates to context for nutrition recalculation (300ms)
+    const debouncedIdentifiers = useDebounce(watchedIdentifiers, 300)
+
+    // Sync debounced form values to context
     useEffect(() => {
+        if (!debouncedIdentifiers) return
+        updateFormDishes(String(model_id), debouncedIdentifiers)
+    }, [debouncedIdentifiers, updateFormDishes, model_id])
 
-        console.log('useeffect trigger')
+    // Update tags dynamically based on watched (non-debounced) values
+    useEffect(() => {
         if (!watchedIdentifiers) return
-
-        // Sync form values to context for MealNutritionSummary
-        updateFormDishes(String(model_id), watchedIdentifiers)
-
-        console.log('form updating....')
 
         watchedIdentifiers.forEach((identifier, index) => {
             const hasUserWeight = identifier.userWeight !== undefined && identifier.userWeight !== ''
@@ -154,7 +156,7 @@ export function MealResults({
                 form.setValue(`identifiers.${index}.tag`, newTag)
             }
         })
-    }, [watchedIdentifiers, form, updateFormDishes, model_id])
+    }, [watchedIdentifiers, form])
 
     // Handle form submission
     const onSubmit = (data: FormValues) => {
@@ -198,6 +200,7 @@ export function MealResults({
                         <Input
                             type="number"
                             placeholder="User"
+                            step="10"
                             {...form.register(`identifiers.${index}.userWeight`)}
                             className={cn(error && 'border-red-500')}
                         />
