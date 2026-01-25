@@ -17,7 +17,7 @@ export function DishMetric() {
   const navigate = route.useNavigate()
   const { id } = route.useParams()
 
-  const { data: dishMetricData, isLoading } = useDishMetricQuery({
+  const { data: dishMetricData, isLoading, isError } = useDishMetricQuery({
     model_one: search.model_one,
     model_two: search.model_two,
     groupSimilar: search.groupSimilarDishes,
@@ -83,7 +83,7 @@ export function DishMetric() {
         isLoading={isLoading}
       />
 
-      <DishMetricTable />
+      <DishMetricTable dishMetricData={dishMetricData} isLoading={isLoading} isError={isError} />
     </>
 
   )

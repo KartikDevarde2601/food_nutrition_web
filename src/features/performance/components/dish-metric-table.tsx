@@ -13,7 +13,6 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
-import { useDishMetricQuery } from '@/hooks/performance/use-performance-matrix-query'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import {
     Table,
@@ -25,24 +24,17 @@ import {
 } from '@/components/ui/table'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { dishMetricColumns as columns } from './dish-metric-columns'
+import { DataType } from '@/features/performance/data/schema'
 
 const route = getRouteApi('/_authenticated/programs/$id/performance')
 
-export function DishMetricTable() {
-    const { id } = route.useParams()
-    const search = route.useSearch()
+interface Props {
+    dishMetricData: DataType | undefined,
+    isLoading: boolean
+    isError: boolean
+}
 
-    // Fetch dish metric data with model parameters
-    const {
-        data: dishMetricData,
-        isLoading,
-        isError,
-    } = useDishMetricQuery({
-        model_one: search.model_one,
-        model_two: search.model_two,
-        groupSimilar: 1, // Default to grouping similar dishes
-        programs: Number(id),
-    })
+export function DishMetricTable({ dishMetricData, isLoading, isError }: Props) {
 
     // Local UI-only states
     const [rowSelection, setRowSelection] = useState({})

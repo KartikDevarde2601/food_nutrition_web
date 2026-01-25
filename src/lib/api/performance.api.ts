@@ -52,6 +52,9 @@ export const performanceApi = {
   ): Promise<ModelMetricResponse[]> => {
     const response = await apiClient.get('/meals/metric/models', {
       params,
+      paramsSerializer: {
+        indexes: null,
+      },
     })
     return response.data
   },
