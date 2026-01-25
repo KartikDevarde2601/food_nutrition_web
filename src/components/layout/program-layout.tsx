@@ -12,7 +12,7 @@ type ProgramLayoutProps = {
 export function ProgramLayout({ children }: ProgramLayoutProps) {
     return (
         <>
-            <Header fixed className="top-12">
+            <Header fixed className="top-12 bg-background">
                 <ProgramSubNav />
             </Header>
             <div className='flex h-full flex-col top-36 mt-14 '>

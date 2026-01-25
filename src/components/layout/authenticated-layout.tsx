@@ -13,7 +13,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   return (
     <>
       <SkipToMain />
-      <Header fixed>
+      <Header fixed className='bg-background'>
         <TopNav />
       </Header>
 

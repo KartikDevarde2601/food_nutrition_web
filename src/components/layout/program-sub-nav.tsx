@@ -34,10 +34,10 @@ export function ProgramSubNav() {
     ]
 
     return (
-        <div className='flex items-center gap-2 h-6'>
-            <div className='font-semibold text-base text-black-foreground'>
+        <div className='flex items-center gap-2 h-6 '>
+            <div className='font-semibold text-base text-foreground'>
                 <Breadcrumb>
-                    <BreadcrumbList className="text-base font-semibold text-black-foreground">
+                    <BreadcrumbList className="text-base font-semibold text-foreground">
                         <BreadcrumbItem>
                             <BreadcrumbLink asChild>
                                 <Link to="/programs">Programs</Link>
