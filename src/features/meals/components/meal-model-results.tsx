@@ -8,6 +8,7 @@ import {
 import { ModelAndUserIdentifier } from '../data/schema'
 import { useModelsQuery } from '@/hooks/programs'
 import { MealResults } from './meal-user-results'
+import { MealNutritionTable } from './meal-nutrition-table'
 import { Dish } from '@/features/dishes/data/schema'
 
 interface MealModelResultsProps {
@@ -52,6 +53,12 @@ export function MealModelResults({
         return modelsResult.filter((m) => Number(m.model_id) !== 1)
     }, [modelsResult])
 
+    // 🔹 Create dishes map for O(1) lookup
+    const dishesMap = useMemo(() => {
+        if (!allDishes.length) return new Map<number, Dish>()
+        return new Map(allDishes.map(d => [d.dish_id, d]))
+    }, [allDishes])
+
     // 🔹 Set initial selected model if not set
     useEffect(() => {
         if (selectedModelId === null && models.length > 0) {
@@ -93,13 +100,20 @@ export function MealModelResults({
                             key={modelResult.model_id}
                             value={String(modelResult.model_id)}
                         >
-                            <MealResults
-                                identifiers={modelResult.dishes}
-                                meal_id={meal_id}
-                                model_id={Number(modelResult.model_id)}
-                                feedback={feedback}
-                                allDishes={allDishes}
-                            />
+                            <div className="space-y-4">
+                                <MealNutritionTable
+                                    mergedIdentifiers={modelResult}
+                                    dishes={allDishes}
+                                    dishesMap={dishesMap}
+                                />
+                                <MealResults
+                                    identifiers={modelResult.dishes}
+                                    meal_id={meal_id}
+                                    model_id={Number(modelResult.model_id)}
+                                    feedback={feedback}
+                                    allDishes={allDishes}
+                                />
+                            </div>
                         </TabsContent>
                     )
                 ))}

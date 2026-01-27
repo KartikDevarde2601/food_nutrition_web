@@ -4,12 +4,9 @@ import { useDishesDetailsQuery } from '@/hooks/dishes/use-dish-query'
 import { useDishesQuery } from '@/hooks/dishes'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
-
 import { MealLoadingSkeleton } from './meal-loading-skeleton'
 import { MealModelResults } from './meal-model-results'
-import { MealNutritionSummary } from './meal-nutrition-summary'
 import { MealFormProvider } from '../context/meal-form-provider'
-import { Dish } from '@/features/dishes/data/schema'
 
 interface MealDishesInfoProps {
     mealId: string
@@ -51,18 +48,6 @@ export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
         }
     }, [meal, selectedModelId])
 
-    // Get selected model data for nutrition display
-    const selectedModelData = useMemo(() => {
-        if (!meal || !selectedModelId) return null
-        return meal.mergedIdentifierIds.find(m => String(m.model_id) === selectedModelId) || null
-    }, [meal, selectedModelId])
-
-    // Create dishes map for O(1) lookup
-    const dishesMap = useMemo(() => {
-        if (!allDishes.length) return new Map<number, Dish>()
-        return new Map(allDishes.map(d => [d.dish_id, d]))
-    }, [allDishes])
-
     if (isLoadingMeal || isLoadingDishes || (dishIds.length > 0 && isLoadingDishDetails)) {
         return <MealLoadingSkeleton />
     }
@@ -96,39 +81,18 @@ export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
             <div className="p-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Column: Image + Nutrition Summaries */}
-                    <div className="space-y-6">
-                        <div className="space-y-4">
-                            {selectedModelData && (
-                                <>
-                                    <MealNutritionSummary
-                                        mergedIdentifiers={selectedModelData}
-                                        dishes={allDishes}
-                                        dishesMap={dishesMap}
-                                        type="user"
-                                        title="User Nutrition Summary"
-                                    />
-                                    <MealNutritionSummary
-                                        mergedIdentifiers={selectedModelData}
-                                        dishes={allDishes}
-                                        dishesMap={dishesMap}
-                                        type="ai"
-                                        title="AI Nutrition Summary"
-                                    />
-                                </>
-                            )}
-                        </div>
-                        <div className="w-full flex items-start justify-center">
-                            <img
-                                src={meal.image}
-                                alt={`Meal ${meal.mealId}`}
-                                className="max-w-full max-h-[50vh] w-auto h-auto object-contain rounded-lg border border-border/50 shadow-sm"
-                            />
-                        </div>
 
+                    <div className="w-full flex items-start justify-center">
+                        <img
+                            src={meal.image}
+                            alt={`Meal ${meal.mealId}`}
+                            className="max-w-full max-h-[50vh] w-auto h-auto object-contain rounded-lg border border-border/50 shadow-sm"
+                        />
                     </div>
 
                     {/* Right Column: Model Results */}
                     <div className="space-y-4">
+
                         <MealModelResults
                             modelsResult={meal.mergedIdentifierIds}
                             feedback={meal.feedback}
