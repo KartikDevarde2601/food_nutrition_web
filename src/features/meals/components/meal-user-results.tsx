@@ -321,44 +321,40 @@ export function MealResults({
                     </Table>
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Feedback</h3>
                     <Textarea
                         placeholder="Enter your feedback"
                         {...form.register('feedback')}
+
                     />
                 </div>
-                <div className="flex flex-col gap-4">
+                <div className="flex justify-between gap-4">
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="flex-1"
                         onClick={handleAddRow}
-                        className="w-full"
                     >
                         <Plus className="h-4 w-4 mr-2" />
                         Add Row
                     </Button>
-                    <div className="flex justify-between gap-4">
-                        <Button
-                            type="submit"
-                            size="sm"
-                            className="w-1/3"
-                        >
-                            Submit
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="w-1/3"
-                            onClick={() => form.reset()}
-                        >
-                            Reset
-                        </Button>
-                    </div>
-
+                    <Button
+                        type="submit"
+                        size="sm"
+                        className="flex-1"
+                    >
+                        Submit
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => form.reset()}
+                    >
+                        Reset
+                    </Button>
                 </div>
-
             </form>
         </Form>
     )

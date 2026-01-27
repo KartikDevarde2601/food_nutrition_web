@@ -18,12 +18,34 @@ function buildMealFormData(data: Partial<MealForm>) {
 // ---------- API Service ----------
 export const mealsApi = {
   // Get all meals
-  async getMeals(params?: { program_id?: number; startDate?: string; endDate?: string }): Promise<Meal[]> {
+  async getMeals(params?: {
+    program_id?: number
+    startDate?: string
+    endDate?: string
+    weightFilter?: {
+      mode?: 'less' | 'greater' | 'between'
+      min?: number
+      max?: number
+    }
+  }): Promise<Meal[]> {
     const queryParams: Record<string, any> = {}
 
     if (params?.program_id) queryParams.programs = params.program_id
     if (params?.startDate) queryParams.startDate = params.startDate
     if (params?.endDate) queryParams.endDate = params.endDate
+
+    // Weight filter with dot notation
+    if (params?.weightFilter) {
+      if (params.weightFilter.mode) {
+        queryParams['weightFilter.type'] = params.weightFilter.mode
+      }
+      if (params.weightFilter.min !== undefined) {
+        queryParams['weightFilter.min'] = params.weightFilter.min
+      }
+      if (params.weightFilter.max !== undefined) {
+        queryParams['weightFilter.max'] = params.weightFilter.max
+      }
+    }
 
     const response = await apiClient.get<Meal[]>('/meals', { params: queryParams })
     return response.data

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { DataTableFacetedFilter } from './faceted-filter'
 import { DataTableDateFilter } from './date-filtering'
 import { DataTableModelFilter } from './data-table-model-filter'
+import { DataTableWeightRangeFilter, type WeightFilterMode } from './weight-range-filter'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 
@@ -32,6 +33,21 @@ type DataTableToolbarProps<TData> = {
     columnId: string
     title: string
   }[]
+  weightRangeFilter?: {
+    title: string
+    min?: number
+    max?: number
+    step?: number
+    unit?: string
+    weightFilter: WeightFilterMode
+    weightMin: number
+    weightMax: number
+    onFilterChange: (filter: {
+      weightFilter: WeightFilterMode
+      weightMin: number
+      weightMax: number
+    }) => void
+  }
 }
 
 export function DataTableToolbar<TData>({
@@ -43,7 +59,9 @@ export function DataTableToolbar<TData>({
   filters = [],
   dateFilters = [],
   modelFilters = [],
+  weightRangeFilter,
 }: DataTableToolbarProps<TData>) {
+
   const isFiltered =
     table.getState().columnFilters.length > 0 || table.getState().globalFilter
 
@@ -112,6 +130,19 @@ export function DataTableToolbar<TData>({
               />
             )
           })}
+          {weightRangeFilter && (
+            <DataTableWeightRangeFilter
+              title={weightRangeFilter.title}
+              min={weightRangeFilter.min}
+              max={weightRangeFilter.max}
+              step={weightRangeFilter.step}
+              unit={weightRangeFilter.unit}
+              weightFilter={weightRangeFilter.weightFilter}
+              weightMin={weightRangeFilter.weightMin}
+              weightMax={weightRangeFilter.weightMax}
+              onFilterChange={weightRangeFilter.onFilterChange}
+            />
+          )}
         </div>
         {isFiltered && (
           <Button

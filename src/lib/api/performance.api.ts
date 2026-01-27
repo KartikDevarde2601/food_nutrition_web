@@ -9,6 +9,16 @@ export interface PerformanceMatrixParams {
   meals?: number[]
 }
 
+
+export interface DishMetricParams {
+  model_one: number
+  model_two: number
+  groupSimilar: boolean
+  programs: number
+  meals?: number[]
+}
+
+
 export interface MetricValues {
   '#cMeals'?: number
   '%cMeals'?: number
@@ -38,13 +48,6 @@ export interface PerformanceMatrixData {
   data: Record<string, Record<string, MetricValues>>
 }
 
-export interface DishMetricParams {
-  model_one: number
-  model_two: number
-  groupSimilar: number
-  programs: number
-  meals?: number[]
-}
 
 export const performanceApi = {
   getMatrix: async (

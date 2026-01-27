@@ -4,6 +4,8 @@ import { Meal, MealDetail, TransformedMealDetail, TransformedIdentifier, ModelAn
 
 
 
+
+
 const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
   // Helper function to compute tag based on userWeight and aiWeight
   const computeTag = (userWeight: string | number | undefined, aiWeight: string | number | undefined): 'user' | 'ai' | 'both' => {
@@ -108,11 +110,24 @@ export const mealsKeys = {
 
 // Hook to fetch all meals
 export function useMealsQuery(
-  params?: { program_id?: number },
+  params?: {
+    program_id?: number
+    weightFilter?: {
+      mode?: 'less' | 'greater' | 'between'
+      min?: number
+      max?: number
+    }
+  },
   options?: Omit<UseQueryOptions<Meal[], Error>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<Meal[], Error>({
-    queryKey: [...mealsKeys.list(), params?.program_id] as const,
+    queryKey: [
+      ...mealsKeys.list(),
+      params?.program_id,
+      params?.weightFilter?.mode,
+      params?.weightFilter?.min,
+      params?.weightFilter?.max,
+    ] as const,
     queryFn: () => mealsApi.getMeals(params),
     ...options,
   })

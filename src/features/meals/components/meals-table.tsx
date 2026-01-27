@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { getRouteApi } from '@tanstack/react-router'
 import {
   type SortingState,
@@ -14,8 +14,10 @@ import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { DataTableToolbar } from '@/components/data-table'
+import type { WeightFilterMode } from '@/components/data-table'
 import { Meal } from '../data/schema'
 import { MealsBulkActions } from './meals-bulk-actions'
+import { useDebounce } from '@/hooks/use-debounce'
 
 import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from '../context/meals-provider'
@@ -35,16 +37,41 @@ import { LayoutGrid, LayoutList } from 'lucide-react'
 
 const route = getRouteApi('/_authenticated/programs/$id/meals')
 
-
-
-
 export function MealsTable() {
   const { id } = route.useParams()
-  const { view } = route.useSearch()
+  const { view, weightfilter = 'greater', weightMin = 0, weightMax = 10000 } = route.useSearch()
   const navigate = route.useNavigate()
   const { setOpen, setCurrentRow } = useMeals()
 
-  const { data: meals = [], isLoading, isError } = useMealsQuery({ program_id: Number(id) })
+  // Debounce weight filter values for API calls (500ms)
+  const weightFilterParams = useMemo(() => ({
+    mode: weightfilter as 'less' | 'greater' | 'between',
+    min: weightMin,
+    max: weightMax,
+  }), [weightfilter, weightMin, weightMax])
+
+  const debouncedWeightFilter = useDebounce(weightFilterParams, 500)
+
+  const { data: meals = [], isLoading, isError } = useMealsQuery({
+    program_id: Number(id),
+    weightFilter: debouncedWeightFilter,
+  })
+
+  // Handler for weight range filter changes
+  const handleWeightFilterChange = (filter: {
+    weightFilter: WeightFilterMode
+    weightMin: number
+    weightMax: number
+  }) => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        weightfilter: filter.weightFilter,
+        weightMin: filter.weightMin,
+        weightMax: filter.weightMax,
+      }),
+    })
+  }
 
 
 
@@ -116,15 +143,6 @@ export function MealsTable() {
     }
   }, [setCurrentRow, setOpen])
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className='flex h-96 items-center justify-center'>
-        <div className='text-muted-foreground'>Loading meals...</div>
-      </div>
-    )
-  }
-
   // Show error state
   if (isError) {
     return (
@@ -136,49 +154,18 @@ export function MealsTable() {
     )
   }
 
-  return (
-    <div
-      className={cn(
-        'max-sm:has-[div[role="toolbar"]]:mb-16',
-        'flex flex-1 flex-col gap-4'
-      )}
-    >
-      <Tabs
-        value={view || "grid"}
-        onValueChange={(value) => navigate({
-          search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
-        })}
-        className='gap-4'
-      >
-        <div className='flex items-center justify-between'>
-          <DataTableToolbar
-            table={table}
-            searchfilterEnable={false}
-            selectAllEnable={true}
-            dateFilters={[
-              {
-                columnId: 'createdAt',
-                title: 'Date Filter',
-                multiple: true,
-              },
-            ]}
-            modelFilters={[
-              {
-                columnId: 'mealInferences',
-                title: 'Models',
-              },
-            ]}
-          />
-          <TabsList className='flex items-center gap-2'>
-            <TabsTrigger value="grid">
-              <LayoutGrid className="h-4 w-4" />
-            </TabsTrigger>
-            <TabsTrigger value="list">
-              <LayoutList className="h-4 w-4" />
-            </TabsTrigger>
-          </TabsList>
+  // Content to render based on loading state
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className='flex h-96 items-center justify-center'>
+          <div className='text-muted-foreground'>Loading meals...</div>
         </div>
+      )
+    }
 
+    return (
+      <>
         <TabsContent value="grid" className='flex-1 overflow-y-auto min-h-0'>
           {table.getRowModel().rows?.length ? (
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-8'>
@@ -215,6 +202,74 @@ export function MealsTable() {
             </div>
           )}
         </TabsContent>
+      </>
+    )
+  }
+
+  return (
+    <div
+      className={cn(
+        'max-sm:has-[div[role="toolbar"]]:mb-16',
+        'flex flex-1 flex-col gap-4'
+      )}
+    >
+      {/* Toolbar outside of Tabs to prevent re-render on loading */}
+      <div className='flex items-center justify-between'>
+        <DataTableToolbar
+          table={table}
+          searchfilterEnable={false}
+          selectAllEnable={true}
+          dateFilters={[
+            {
+              columnId: 'createdAt',
+              title: 'Date Filter',
+              multiple: true,
+            },
+          ]}
+          modelFilters={[
+            {
+              columnId: 'mealInferences',
+              title: 'Models',
+            },
+          ]}
+          weightRangeFilter={{
+            title: 'filter by whole weight',
+            min: 0,
+            max: 2000,
+            step: 10,
+            unit: 'g',
+            weightFilter: weightfilter as WeightFilterMode,
+            weightMin,
+            weightMax,
+            onFilterChange: handleWeightFilterChange,
+          }}
+        />
+        <Tabs
+          value={view || "grid"}
+          onValueChange={(value) => navigate({
+            search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
+          })}
+        >
+          <TabsList className='flex items-center gap-2'>
+            <TabsTrigger value="grid">
+              <LayoutGrid className="h-4 w-4" />
+            </TabsTrigger>
+            <TabsTrigger value="list">
+              <LayoutList className="h-4 w-4" />
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Tabs content area with loading inside */}
+      <Tabs
+        value={view || "grid"}
+        onValueChange={(value) => navigate({
+          search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
+        })}
+        className='flex-1 flex flex-col'
+      >
+        {renderContent()}
       </Tabs>
       <MealsBulkActions table={table} program_id={Number(id)} />
 
