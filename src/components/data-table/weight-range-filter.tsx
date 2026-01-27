@@ -37,12 +37,6 @@ export type WeightRangeFilterProps = {
     }) => void
 }
 
-const FILTER_MODE_LABELS: Record<WeightFilterMode, string> = {
-    less: 'Less than',
-    greater: 'Greater than',
-    between: 'Between',
-}
-
 export function DataTableWeightRangeFilter({
     title,
     min = 0,
