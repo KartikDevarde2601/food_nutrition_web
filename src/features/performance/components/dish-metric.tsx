@@ -20,7 +20,7 @@ export function DishMetric() {
   const { data: dishMetricData, isLoading, isError } = useDishMetricQuery({
     model_one: search.model_one,
     model_two: search.model_two,
-    groupSimilar: search.groupSimilarDishes,
+    groupSimilar: search.groupSimilarDishes === 1,
     programs: Number(id),
     meals: search.meal_ids,
   })
