@@ -41,18 +41,21 @@ export function DishSimilarityMutateDrawer({
   open,
   onOpenChange,
 }: SimilarityMutateDrawerProps) {
+  const [openPrimary, setOpenPrimary] = useState(false)
   const [openSimilar, setOpenSimilar] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearch = useDebounce(searchQuery, 300)
 
   // Query for the main dish selection (all dishes, no limit initially or default limit)
-  const { data: allDishesData } = useDishesQuery({ limit: 100 })
+  const { data: allDishesData } = useDishesQuery({ limit: 100, sortOrder: 'asc', sortBy: 'dish_name' })
   const allDishes = allDishesData?.data || []
 
   // Query for similar dishes search with limit 10
   const { data: searchDishesData, isLoading: isSearching } = useDishesQuery({
     search: debouncedSearch,
     limit: 100,
+    sortOrder: 'asc',
+    sortBy: 'dish_name'
   })
   const searchDishes = searchDishesData?.data || []
 
@@ -144,7 +147,10 @@ export function DishSimilarityMutateDrawer({
                         selectedValue={field.value}
                         onSelect={(dishId) => form.setValue('dish_id', dishId)}
                         placeholder='Search dish...'
-                        buttonText='Select dish'
+                        buttonText='Select a dish...'
+                        isMultiSelect={false}
+                        open={openPrimary}
+                        onOpenChange={setOpenPrimary}
                       />
                     </FormControl>
                     <FormMessage />
@@ -158,22 +164,6 @@ export function DishSimilarityMutateDrawer({
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
                     <FormLabel>Similar Dishes</FormLabel>
-                    <FormControl>
-                      <DishPopover
-                        dishes={searchDishes}
-                        selectedValue={field.value}
-                        onSelect={handleSelectSimilarDish}
-                        placeholder='Search similar dishes...'
-                        buttonText='Select similar dishes...'
-                        isMultiSelect
-                        isLoading={isSearching}
-                        enableSearch
-                        searchValue={searchQuery}
-                        onSearchChange={setSearchQuery}
-                        open={openSimilar}
-                        onOpenChange={setOpenSimilar}
-                      />
-                    </FormControl>
                     {field.value && field.value.length > 0 && (
                       <div className='flex flex-wrap gap-2 mt-2'>
                         {field.value.map((id) => (
@@ -194,6 +184,24 @@ export function DishSimilarityMutateDrawer({
                         ))}
                       </div>
                     )}
+
+                    <FormControl>
+                      <DishPopover
+                        dishes={searchDishes}
+                        selectedValue={field.value}
+                        onSelect={handleSelectSimilarDish}
+                        placeholder='Search similar dishes...'
+                        buttonText='Select similar dishes...'
+                        isMultiSelect
+                        isLoading={isSearching}
+                        enableSearch
+                        searchValue={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        open={openSimilar}
+                        onOpenChange={setOpenSimilar}
+                      />
+                    </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}

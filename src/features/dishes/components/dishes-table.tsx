@@ -189,6 +189,12 @@ export function DishesTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  onClick={() => {
+                    const event = new CustomEvent('edit-dish', {
+                      detail: row.original,
+                    })
+                    window.dispatchEvent(event)
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

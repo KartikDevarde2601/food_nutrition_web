@@ -82,7 +82,7 @@ export function DishPopover({
                     aria-expanded={open}
                     className={cn(
                         'w-full justify-between',
-                        !selectedValue && 'text-muted-foreground'
+                        (!selectedValue || (Array.isArray(selectedValue) && selectedValue.length === 0)) && 'text-muted-foreground'
                     )}
                 >
                     {getDisplayValue()}
@@ -118,7 +118,8 @@ export function DishPopover({
                                         value={enableSearch ? String(dish.dish_id) : dish.dish_name}
                                         onSelect={() => {
                                             onSelect(dish.dish_id)
-                                            if (onOpenChange) {
+                                            // Auto-close only for single select
+                                            if (!isMultiSelect && onOpenChange) {
                                                 onOpenChange(false)
                                             }
                                         }}

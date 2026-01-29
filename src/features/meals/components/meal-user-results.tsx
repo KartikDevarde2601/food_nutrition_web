@@ -330,7 +330,6 @@ export function MealResults({
                 <div className="flex justify-between gap-4">
                     <Button
                         type="button"
-                        variant="outline"
                         size="sm"
                         className="flex-1"
                         onClick={handleAddRow}
@@ -338,13 +337,7 @@ export function MealResults({
                         <Plus className="h-4 w-4 mr-2" />
                         Add Row
                     </Button>
-                    <Button
-                        type="submit"
-                        size="sm"
-                        className="flex-1"
-                    >
-                        Submit
-                    </Button>
+
                     <Button
                         type="button"
                         variant="outline"
@@ -353,6 +346,13 @@ export function MealResults({
                         onClick={() => form.reset()}
                     >
                         Reset
+                    </Button>
+                    <Button
+                        type="submit"
+                        size="sm"
+                        className="flex-1"
+                    >
+                        Submit
                     </Button>
                 </div>
             </form>
