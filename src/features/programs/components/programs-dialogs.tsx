@@ -27,7 +27,7 @@ export function ProgramsDialogs() {
             }, 500)
           }}
           handleConfirm={() => {
-            deleteMutation.mutate(currentRow.program_id)
+            deleteMutation.mutate(currentRow.id)
           }}
           className='max-w-md'
           title={`Delete this program: ${currentRow.name}?`}

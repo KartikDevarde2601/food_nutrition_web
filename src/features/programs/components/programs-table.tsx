@@ -152,10 +152,7 @@ export function ProgramsTable() {
         'flex flex-1 flex-col gap-4'
       )}
     >
-      <DataTableToolbar
-        table={table}
-        searchPlaceholder='Filter by name'
-      />
+      <DataTableToolbar table={table} searchPlaceholder='Filter by name' />
       <div className='overflow-hidden rounded-md border'>
         <Table>
           <TableHeader>
@@ -174,9 +171,9 @@ export function ProgramsTable() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   )
                 })}
@@ -195,7 +192,7 @@ export function ProgramsTable() {
                       key={cell.id}
                       className={cn(
                         cell.column.columnDef.meta?.className,
-                        cell.column.columnDef.meta?.tdClassName,
+                        cell.column.columnDef.meta?.tdClassName
                       )}
                     >
                       {flexRender(

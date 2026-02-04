@@ -2,6 +2,7 @@ import * as React from 'react'
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons'
 import { type Column } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
+import { useModelsQuery } from '@/hooks/programs/use-models-query'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,7 +26,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { useModelsQuery } from '@/hooks/programs/use-models-query'
 
 type FilterOperator = 'hasAnyOf' | 'hasNoneOf' | 'isEmpty' | 'isNotEmpty'
 
@@ -46,7 +46,9 @@ export function DataTableModelFilter<TData, TValue>({
   title = 'Models',
 }: DataTableModelFilterProps<TData, TValue>) {
   const [operator, setOperator] = React.useState<FilterOperator>('hasAnyOf')
-  const [selectedModels, setSelectedModels] = React.useState<Set<string>>(new Set())
+  const [selectedModels, setSelectedModels] = React.useState<Set<string>>(
+    new Set()
+  )
   const { data: models = [], isLoading } = useModelsQuery({})
 
   const showModelSelect = operator === 'hasAnyOf' || operator === 'hasNoneOf'
@@ -80,7 +82,7 @@ export function DataTableModelFilter<TData, TValue>({
           size='sm'
           className={cn(
             'h-8 border-dashed',
-            isFilterActive && 'border-solid bg-accent'
+            isFilterActive && 'bg-accent border-solid'
           )}
         >
           <PlusCircledIcon className='size-4' />
@@ -106,17 +108,22 @@ export function DataTableModelFilter<TData, TValue>({
                       </Badge>
                     ) : (
                       models
-                        .filter((model) => selectedModels.has(model.model_id))
+                        .filter((model) =>
+                          selectedModels.has(model.model_id.toString())
+                        )
                         .map((model) => (
-                          <div key={model.model_id} className="flex items-center gap-2">
+                          <div
+                            key={model.model_id}
+                            className='flex items-center gap-2'
+                          >
                             <Badge
-                              variant="secondary"
-                              className="rounded-sm px-1 font-normal"
+                              variant='secondary'
+                              className='rounded-sm px-1 font-normal'
                             >
                               {model.name}
                             </Badge>
 
-                            <Separator orientation="vertical" className="h-4" />
+                            <Separator orientation='vertical' className='h-4' />
                           </div>
                         ))
                     )}
@@ -160,7 +167,7 @@ export function DataTableModelFilter<TData, TValue>({
           {showModelSelect && (
             <div className='space-y-2'>
               <label className='text-sm font-medium'>Select models</label>
-              <Command className='border rounded-md'>
+              <Command className='rounded-md border'>
                 <CommandInput placeholder='Search models...' />
                 <CommandList>
                   {isLoading ? (
@@ -170,16 +177,18 @@ export function DataTableModelFilter<TData, TValue>({
                   ) : (
                     <CommandGroup>
                       {models.map((model) => {
-                        const isSelected = selectedModels.has(model.model_id)
+                        const isSelected = selectedModels.has(
+                          model.model_id.toString()
+                        )
                         return (
                           <CommandItem
                             key={model.model_id}
                             onSelect={() => {
                               const newSelected = new Set(selectedModels)
                               if (isSelected) {
-                                newSelected.delete(model.model_id)
+                                newSelected.delete(model.model_id.toString())
                               } else {
-                                newSelected.add(model.model_id)
+                                newSelected.add(model.model_id.toString())
                               }
                               setSelectedModels(newSelected)
                             }}
@@ -192,7 +201,9 @@ export function DataTableModelFilter<TData, TValue>({
                                   : 'opacity-50 [&_svg]:invisible'
                               )}
                             >
-                              <CheckIcon className={cn('text-background h-4 w-4')} />
+                              <CheckIcon
+                                className={cn('text-background h-4 w-4')}
+                              />
                             </div>
                             <span>{model.name}</span>
                           </CommandItem>

@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "type-check": "tsc -b",
+    "type-check:watch": "tsc --noEmit --watch",
     "preview": "vite preview",
     "format:check": "prettier --check .",
     "format": "prettier --write .",

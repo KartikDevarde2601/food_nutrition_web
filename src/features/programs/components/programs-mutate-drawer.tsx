@@ -82,7 +82,7 @@ export function ProgramsMutateDrawer({
       form.reset({
         name: currentRow?.name ?? '',
         description: currentRow?.description ?? '',
-        default_model_id: currentRow?.default_model_id,
+        default_model_id: currentRow?.defaultModel?.model_id ?? undefined,
       })
     }
   }, [open, currentRow, form])
@@ -95,7 +95,7 @@ export function ProgramsMutateDrawer({
     } as CreateProgramDto
     if (isUpdate && currentRow) {
       updateMutation.mutate({
-        id: currentRow.program_id,
+        id: currentRow.id,
         data: trasformdata,
       })
     } else {
@@ -116,7 +116,7 @@ export function ProgramsMutateDrawer({
         }
       }}
     >
-      <SheetContent className='flex flex-col w-[500px] sm:w-[600px] p-0 gap-4'>
+      <SheetContent className='flex w-[500px] flex-col gap-4 p-0 sm:w-[600px]'>
         <SheetHeader className='px-4'>
           <SheetTitle>{isUpdate ? 'Update' : 'Create'} Program</SheetTitle>
           <SheetDescription>
@@ -126,7 +126,7 @@ export function ProgramsMutateDrawer({
             Click save when you&apos;re done.
           </SheetDescription>
         </SheetHeader>
-        <div className="flex-1 min-h-0 bg-background/50">
+        <div className='bg-background/50 min-h-0 flex-1'>
           <Form {...form}>
             <form
               id='programs-form'
@@ -201,11 +201,19 @@ export function ProgramsMutateDrawer({
 
               <div className='flex gap-2'>
                 <SheetClose asChild>
-                  <Button variant='outline' disabled={isSubmitting} className='flex-1'>
+                  <Button
+                    variant='outline'
+                    disabled={isSubmitting}
+                    className='flex-1'
+                  >
                     Close
                   </Button>
                 </SheetClose>
-                <Button type='submit' disabled={isSubmitting} className='flex-1'>
+                <Button
+                  type='submit'
+                  disabled={isSubmitting}
+                  className='flex-1'
+                >
                   {isSubmitting ? 'Saving...' : 'Save changes'}
                 </Button>
               </div>

@@ -1,7 +1,8 @@
+import { format as formatDate } from 'date-fns'
 import { Link } from '@tanstack/react-router'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pencil } from 'lucide-react'
-import { format as formatDate } from 'date-fns'
+import { type ProgramResponse } from '@/lib/api/programs.api'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -10,7 +11,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
-import { type ProgramResponse } from '@/lib/api/programs.api'
 
 export const programsColumns: ColumnDef<ProgramResponse>[] = [
   {
@@ -24,8 +24,8 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
         <div className='flex space-x-2'>
           <Link
             to='/programs/$id'
-            params={{ id: String(program.program_id) }}
-            className='max-w-[500px] truncate font-medium hover:underline p-2'
+            params={{ id: String(program.id) }}
+            className='max-w-[500px] truncate p-2 font-medium hover:underline'
           >
             {row.getValue('name')}
           </Link>
@@ -41,7 +41,7 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
-          <span className='max-w-[500px] truncate font-medium p-2'>
+          <span className='max-w-[500px] truncate p-2 font-medium'>
             {row.getValue('description')}
           </span>
         </div>
@@ -49,15 +49,15 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
     },
   },
   {
-    accessorKey: 'default_model',
+    accessorKey: 'defaultModel.name',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Default Model' />
     ),
     cell: ({ row }) => {
-      const model = row.original.default_model
+      const model = row.original.defaultModel?.name
       return (
         <div className='flex w-[150px] items-center p-2'>
-          <span>{model?.name || 'N/A'}</span>
+          <span>{model || 'N/A'}</span>
         </div>
       )
     },
@@ -77,25 +77,25 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
   },
   {
     id: 'meals',
-    accessorFn: (row) => row._count?.meals ?? 0,
+    accessorFn: (row) => row.meals ?? 0,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Meals' />
     ),
     cell: ({ row }) => {
       return (
         <div className='flex w-[80px] items-center p-2'>
-          <span>{row.original._count?.meals || 0}</span>
+          <span>{row.original.meals || 0}</span>
         </div>
       )
     },
   },
   {
-    accessorKey: 'last_created_meal',
+    accessorKey: 'earliestDate',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Earliest Date' />
     ),
     cell: ({ row }) => {
-      const date = row.original.last_created_meal
+      const date = row.original.earliestDate
 
       if (!date) {
         return <div className='flex w-[150px] items-center p-2'>N/A</div>
@@ -109,12 +109,12 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
     },
   },
   {
-    accessorKey: 'last_updated_meal',
+    accessorKey: 'latestDate',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Latest Date' />
     ),
     cell: ({ row }) => {
-      const date = row.original.last_updated_meal
+      const date = row.original.latestDate
 
       if (!date) {
         return <div className='flex w-[150px] items-center p-2'>N/A</div>

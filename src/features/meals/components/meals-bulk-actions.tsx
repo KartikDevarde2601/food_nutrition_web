@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import { type Table } from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
 import { Play, ArrowDown01 } from 'lucide-react'
-
+import { useProgramQuery } from '@/hooks/programs'
+import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
@@ -11,10 +12,6 @@ import {
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Meal } from '../data/schema'
 import { MealsRunModelsDialog } from './meals-run-models-dialog'
-import { useNavigate } from '@tanstack/react-router'
-import { useProgramQuery } from '@/hooks/programs'
-
-
 
 type MealsBulkActionsProps<TData> = {
   table: Table<TData>
@@ -23,24 +20,28 @@ type MealsBulkActionsProps<TData> = {
 
 export function MealsBulkActions<TData extends Meal>({
   table,
-  program_id
+  program_id,
 }: MealsBulkActionsProps<TData>) {
   const navigate = useNavigate()
   const [showRunModelsDialog, setShowRunModelsDialog] = useState(false)
 
   // Memoize selected meal IDs - only recalculates when table selection changes
   const selectedMealIds = useMemo(
-    () => table.getFilteredSelectedRowModel().rows.map(({ original }) => original.mealId),
+    () =>
+      table
+        .getFilteredSelectedRowModel()
+        .rows.map(({ original }) => original.mealId),
     [table.getState().rowSelection]
   )
 
   const { data: program, isLoading } = useProgramQuery(program_id)
 
-  if (isLoading) return (
-    <div className='flex items-center justify-center h-full'>
-      <div>Loading</div>
-    </div>
-  )
+  if (isLoading)
+    return (
+      <div className='flex h-full items-center justify-center'>
+        <div>Loading</div>
+      </div>
+    )
 
   return (
     <>
@@ -68,20 +69,24 @@ export function MealsBulkActions<TData extends Meal>({
             <Button
               variant='outline'
               size='icon'
-              onClick={() => navigate({
-                to: `/programs/${program_id}/performance`,
-                search: {
-                  model_one: program?.default_model_id,
-                  model_two: program?.default_model_id === 2 ? 1 : 2,
-                  meal_ids: selectedMealIds
-                }
-              })}
+              onClick={() =>
+                navigate({
+                  to: `/programs/${program_id}/performance`,
+                  search: {
+                    model_one: program?.defaultModel?.model_id,
+                    model_two: program?.defaultModel?.model_id === 2 ? 1 : 2,
+                    meal_ids: selectedMealIds,
+                  },
+                })
+              }
               className='size-8'
               aria-label='Run performance metrics on selected meals'
               title='Run performance metrics on selected meals'
             >
               <ArrowDown01 />
-              <span className='sr-only'>Run performance metrics on selected meals</span>
+              <span className='sr-only'>
+                Run performance metrics on selected meals
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
