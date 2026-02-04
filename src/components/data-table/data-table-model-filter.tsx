@@ -74,6 +74,15 @@ export function DataTableModelFilter<TData, TValue>({
     }
   }, [operator, selectedModels, column])
 
+  // Sync internal state when column filter is externally cleared
+  React.useEffect(() => {
+    const filterValue = column?.getFilterValue()
+    if (filterValue === undefined && (operator !== 'hasAnyOf' || selectedModels.size > 0)) {
+      setOperator('hasAnyOf')
+      setSelectedModels(new Set())
+    }
+  }, [column?.getFilterValue()])
+
   return (
     <Popover>
       <PopoverTrigger asChild>

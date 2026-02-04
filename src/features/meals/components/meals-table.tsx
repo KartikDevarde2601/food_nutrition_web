@@ -243,6 +243,13 @@ export function MealsTable() {
             weightMax,
             onFilterChange: handleWeightFilterChange,
           }}
+          onReset={() => {
+            handleWeightFilterChange({
+              weightFilter: 'greater',
+              weightMin: 0,
+              weightMax: 2000,
+            })
+          }}
         />
         <Tabs
           value={view || "grid"}
