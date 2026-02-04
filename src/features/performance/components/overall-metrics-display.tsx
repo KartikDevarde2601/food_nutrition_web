@@ -31,13 +31,13 @@ const metricsConfig: MetricConfig[] = [
     {
         title: 'MAE',
         icon: Sigma,
-        getValue: (m) => m.MAE.toFixed(2),
+        getValue: (m) => m.MAE,
         description: 'Mean absolute error',
     },
     {
         title: 'RMSE',
         icon: Activity,
-        getValue: (m) => m.RMSE.toFixed(2),
+        getValue: (m) => m.RMSE,
         description: 'Root mean squared error',
     },
     {

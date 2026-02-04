@@ -66,7 +66,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             const value = row.getValue('MAE') as number | null
             return (
                 <div className='flex w-full items-center p-2'>
-                    <span>{value !== null ? Number.isInteger(value.toFixed(2)) ? value.toFixed(2) : value : 'N/A'}</span>
+                    <span>{value !== null ? value : 'N/A'}</span>
                 </div>
             )
         },
@@ -84,7 +84,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             const value = row.getValue('RMSE') as number | null
             return (
                 <div className='flex w-full items-center p-2'>
-                    <span>{value !== null ? Number.isInteger(value.toFixed(2)) ? value.toFixed(2) : value : 'N/A'}</span>
+                    <span>{value !== null ? value : 'N/A'}</span>
                 </div>
             )
         },

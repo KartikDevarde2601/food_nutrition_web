@@ -101,7 +101,7 @@ export function MetricMatrixTable() {
 
                         if (value === undefined) return <span>-</span>
 
-                        return <span>{typeof value === 'number' ? value.toFixed(2) : value}</span>
+                        return <span>{typeof value === 'number' ? value : value}</span>
                     },
                 })
             )
