@@ -1,4 +1,4 @@
-import { CheckCircle2, Percent, Sigma, Activity, Database } from 'lucide-react'
+import { CheckCircle2, Percent, Sigma, Activity, Database, Gauge } from 'lucide-react'
 import { MetricCard } from '@/components/metric-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { type OverallMetrics } from '../data/schema'
@@ -41,6 +41,12 @@ const metricsConfig: MetricConfig[] = [
         description: 'Root mean squared error',
     },
     {
+        title: 'MAPE',
+        icon: Gauge,
+        getValue: (m) => m.MAPE,
+        description: 'Mean absolute percentage error'
+    },
+    {
         title: 'Unique Dishes',
         icon: Database,
         getValue: (m) => m.totalUniqueDishes,
@@ -62,7 +68,7 @@ export function OverallMetricsDisplay({ metrics, isLoading }: OverallMetricsDisp
     }
 
     return (
-        <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5'>
+        <div className='grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6'>
             {metricsConfig.map((metric) => (
                 <MetricCard
                     key={metric.title}

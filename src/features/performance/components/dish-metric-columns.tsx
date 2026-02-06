@@ -94,6 +94,60 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
         },
     },
     {
+        accessorKey: 'MAPE',
+        header: ({ column }) => (
+            <DataTableColumnHeader
+                column={column}
+                title='MAPE'
+                className='w-full'
+            />
+        ),
+        cell: ({ row }) => {
+            const value = row.getValue('MAPE') as number | null
+            return (
+                <div className='flex w-full items-center p-2'>
+                    <span>{value !== null ? value : 'N/A'}</span>
+                </div>
+            )
+        },
+    },
+    {
+        accessorKey: 'm1AvgWeight',
+        header: ({ column }) => (
+            <DataTableColumnHeader
+                column={column}
+                title='m1AvgWeight'
+                className='w-full'
+            />
+        ),
+        cell: ({ row }) => {
+            const value = row.getValue('m1AvgWeight') as number | null
+            return (
+                <div className='flex w-full items-center p-2'>
+                    <span>{value !== null ? value : 'N/A'}</span>
+                </div>
+            )
+        },
+    },
+    {
+        accessorKey: 'm2AvgWeight',
+        header: ({ column }) => (
+            <DataTableColumnHeader
+                column={column}
+                title='m2AvgWeight'
+                className='w-full'
+            />
+        ),
+        cell: ({ row }) => {
+            const value = row.getValue('m2AvgWeight') as number | null
+            return (
+                <div className='flex w-full items-center p-2'>
+                    <span>{value !== null ? value : 'N/A'}</span>
+                </div>
+            )
+        },
+    },
+    {
         accessorKey: 'm1Occurrences',
         header: ({ column }) => (
             <DataTableColumnHeader
