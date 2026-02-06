@@ -5,7 +5,7 @@ import {
     SelectItem,
     SelectValue,
 } from '@/components/ui/select'
-import { usePerformance } from './performance-provider'
+import { usePerformance } from '../context/performance-provider'
 
 export function MetricSelector() {
     const { activeMetric, setActiveMetric } = usePerformance()

@@ -1,7 +1,9 @@
 import { Main } from '@/components/layout/main'
 import { DishMetric } from './components/dish-metric'
 import { MealMetric } from './components/meal-metric'
-import { PerformanceProvider } from './components/performance-provider'
+import { MealsDialog } from './components/meals-dailog'
+import { PerformanceProvider } from './context/performance-provider'
+import { MealDetailsProvider } from './context/meal-details-provider'
 
 function PerformanceContent() {
 
@@ -19,8 +21,11 @@ function PerformanceContent() {
 
 export function Performance() {
     return (
-        <PerformanceProvider>
-            <PerformanceContent />
-        </PerformanceProvider>
+        <MealDetailsProvider>
+            <PerformanceProvider>
+                <PerformanceContent />
+                <MealsDialog />
+            </PerformanceProvider>
+        </MealDetailsProvider>
     )
 }

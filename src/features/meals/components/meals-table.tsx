@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+
 import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
@@ -21,7 +22,7 @@ import { useDebounce } from '@/hooks/use-debounce'
 
 import { mealsColumns as columns } from './table-columns/meals-columns'
 import { useMeals } from '../context/meals-provider'
-import { MealCard } from './meal-card'
+import { MealCard } from '@/components/meal-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { MealDishesInfo } from './meal-dishes-info'
 import { Card } from '@/components/ui/card'
