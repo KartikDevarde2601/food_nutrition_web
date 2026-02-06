@@ -17,8 +17,8 @@ export function MetricSelector() {
                     <SelectValue placeholder='Select Metric' />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value='#cMeals'># Correct Meals</SelectItem>
-                    <SelectItem value='%cMeals'>% Correct Meals</SelectItem>
+                    <SelectItem value='#cMeals'># MEALS</SelectItem>
+                    <SelectItem value='%cMeals'>% DISHES MATCH</SelectItem>
                     <SelectItem value='MAE'>MAE</SelectItem>
                     <SelectItem value='RMSE'>RMSE</SelectItem>
                     <SelectItem value='MAPE'>MAPE</SelectItem>
