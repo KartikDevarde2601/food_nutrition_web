@@ -35,6 +35,27 @@ export const DataSchema = z.object({
   perDishMetrics: z.array(PerDishMetricSchema),
 })
 
+
+export const mergeDishes = z.object({
+  dishId: z.union([z.string(), z.number()]),
+  dishName: z.string(),
+  userWeight: z.union([z.string(), z.number()]).optional(),
+  modeloneWeight: z.union([z.string(), z.number()]).optional(),
+  modeltwoWeight: z.union([z.string(), z.number()]).optional(),
+  position: z.string().optional(),
+  tag: z.enum(['user', 'ai', 'both']).optional(),
+})
+
+export type MergeDish = z.infer<typeof mergeDishes>
+
+export const MealDetails = z.object({
+  mealId: z.number(),
+  image: z.string(),
+  dishes: z.array(mergeDishes)
+})
+
+export type MealDetail = z.infer<typeof MealDetails>
+
 /**
  * TypeScript types inferred from the schemas
  */

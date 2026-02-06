@@ -27,12 +27,16 @@ export const mealsApi = {
       min?: number
       max?: number
     }
+    dishName?: string
+    model_id?: number
   }): Promise<Meal[]> {
     const queryParams: Record<string, any> = {}
 
     if (params?.program_id) queryParams.programs = params.program_id
     if (params?.startDate) queryParams.startDate = params.startDate
     if (params?.endDate) queryParams.endDate = params.endDate
+    if (params?.dishName) queryParams.dishName = params.dishName
+    if (params?.model_id) queryParams.model_id = params.model_id
 
     // Weight filter with dot notation
     if (params?.weightFilter) {
