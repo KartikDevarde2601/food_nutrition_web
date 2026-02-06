@@ -10,6 +10,9 @@ export const PerDishMetricSchema = z.object({
   ['%dMatch']: z.number(),
   MAE: z.number().nullable(),
   RMSE: z.number().nullable(),
+  MAPE: z.number().nullable(),
+  m1AvgWeight: z.number().nullable(),
+  m2AvgWeight: z.number().nullable(),
   m1Occurrences: z.number().int().nonnegative(),
   m2Occurrences: z.number().int().nonnegative(),
 })
@@ -22,6 +25,7 @@ export const OverallMetricsSchema = z.object({
   ['%dMatch']: z.number(),
   MAE: z.number(),
   RMSE: z.number(),
+  MAPE: z.number(),
   totalUniqueDishes: z.number().int().nonnegative(),
 })
 

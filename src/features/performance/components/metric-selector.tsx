@@ -21,6 +21,7 @@ export function MetricSelector() {
                     <SelectItem value='%cMeals'>% Correct Meals</SelectItem>
                     <SelectItem value='MAE'>MAE</SelectItem>
                     <SelectItem value='RMSE'>RMSE</SelectItem>
+                    <SelectItem value='MAPE'>MAPE</SelectItem>
                     <SelectItem value='NMAE.protein'>NMAE (Protein)</SelectItem>
                     <SelectItem value='NMAE.fat'>NMAE (Fat)</SelectItem>
                     <SelectItem value='NMAE.carbs'>NMAE (Carbs)</SelectItem>
