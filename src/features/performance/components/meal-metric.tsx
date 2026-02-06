@@ -4,7 +4,7 @@ import { MetricMatrixTable } from './metric-matrix-table'
 import { MetricSelector } from './metric-selector'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { usePerformance } from './performance-provider'
+import { usePerformance } from '../context/performance-provider'
 
 const route = getRouteApi('/_authenticated/programs/$id/performance')
 
@@ -12,7 +12,6 @@ export function MealMetric() {
   const search = route.useSearch()
   const navigate = route.useNavigate()
   const { groupSimilarMeals, setGroupSimilarMeals } = usePerformance()
-
 
   const meal_ids_length = search.meal_ids.length
 

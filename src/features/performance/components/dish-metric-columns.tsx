@@ -1,6 +1,10 @@
 import { type ColumnDef } from '@tanstack/react-table'
+import { getRouteApi } from '@tanstack/react-router'
 import { DataTableColumnHeader } from '@/components/data-table'
 import { type PerDishMetric } from '../data/schema'
+import { useMealDetails } from '../context/meal-details-provider'
+
+const route = getRouteApi('/_authenticated/programs/$id/performance')
 
 export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
     {
@@ -99,9 +103,26 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             />
         ),
         cell: ({ row }) => {
+            const search = route.useSearch()
+            const { setSelectdishAndModels } = useMealDetails()
+            const dishName = row.getValue('dishName') as string
+
             return (
                 <div className='flex w-full items-center p-2'>
-                    <span>{row.getValue('m1Occurrences')}</span>
+                    <span
+                        className='cursor-pointer hover:underline transition-colors'
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectdishAndModels({
+                                dishName,
+                                modelOne: search.model_one,
+                                modelTwo: search.model_two,
+                                clickedModel: 1,
+                            })
+                        }}
+                    >
+                        {row.getValue('m1Occurrences')}
+                    </span>
                 </div>
             )
         },
@@ -116,9 +137,25 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             />
         ),
         cell: ({ row }) => {
+            const search = route.useSearch()
+            const { setSelectdishAndModels } = useMealDetails()
+            const dishName = row.getValue('dishName') as string
             return (
                 <div className='flex w-full items-center p-2'>
-                    <span>{row.getValue('m2Occurrences')}</span>
+                    <span
+                        className='cursor-pointer hover:underline transition-colors'
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectdishAndModels({
+                                dishName,
+                                modelOne: search.model_one,
+                                modelTwo: search.model_two,
+                                clickedModel: 2,
+                            })
+                        }}
+                    >
+                        {row.getValue('m2Occurrences')}
+                    </span>
                 </div>
             )
         },

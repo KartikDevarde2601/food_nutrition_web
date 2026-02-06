@@ -117,6 +117,8 @@ export function useMealsQuery(
       min?: number
       max?: number
     }
+    dishName?: string
+    model_id?: number
   },
   options?: Omit<UseQueryOptions<Meal[], Error>, 'queryKey' | 'queryFn'>
 ) {
@@ -127,6 +129,8 @@ export function useMealsQuery(
       params?.weightFilter?.mode,
       params?.weightFilter?.min,
       params?.weightFilter?.max,
+      params?.dishName,
+      params?.model_id,
     ] as const,
     queryFn: () => mealsApi.getMeals(params),
     ...options,

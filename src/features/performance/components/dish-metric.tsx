@@ -6,7 +6,7 @@ import { ModelSelector } from './model-selector'
 import { OverallMetricsDisplay } from './overall-metrics-display'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { usePerformance } from './performance-provider'
+import { usePerformance } from '../context/performance-provider'
 import { useDishMetricQuery } from '@/hooks/performance/use-performance-matrix-query'
 
 const route = getRouteApi('/_authenticated/programs/$id/performance')

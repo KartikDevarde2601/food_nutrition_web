@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/table'
 import { usePerformanceMatrixQuery } from '@/hooks/performance/use-performance-matrix-query'
 import { useModelsQuery } from '@/hooks/programs/use-models-query'
-import { usePerformance } from './performance-provider'
+import { usePerformance } from '../context/performance-provider'
 import { getRouteApi } from '@tanstack/react-router'
 
 
