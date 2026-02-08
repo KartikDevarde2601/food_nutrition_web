@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Loader2, LayoutGrid, LayoutList } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
@@ -77,7 +77,7 @@ export function MealsDialog() {
       if (!open) {
         setSelectdishAndModels(null)
 
-        setView('carousel') // Reset to carousel on close if desired, or keep state
+        setView('grid') // Reset to carousel on close if desired, or keep state
       }
     },
     [setSelectdishAndModels]
@@ -92,7 +92,6 @@ export function MealsDialog() {
   }
 
   const getModelName = (id: string | number | undefined) => {
-    console.log('getmodelname', id)
     if (!id) return 'Unknown'
     if (String(id) == String(1)) {
       return 'GT Model'
