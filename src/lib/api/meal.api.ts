@@ -1,6 +1,10 @@
-import { type Meal, type MealForm, type MealDetail } from '@/features/meals/data/schema'
-import { apiClient } from './client'
+import {
+  type Meal,
+  type MealForm,
+  type MealDetail,
+} from '@/features/meals/data/schema'
 import { MealCorrectionPayload } from '@/features/meals/data/schema'
+import { apiClient } from './client'
 
 // ---------- Helpers ----------
 function buildMealFormData(data: Partial<MealForm>) {
@@ -28,7 +32,9 @@ export const mealsApi = {
       max?: number
     }
     dishName?: string
-    model_id?: number
+    modelIdOne?: number
+    modelIdTwo?: number
+    selectedModel?: number
   }): Promise<Meal[]> {
     const queryParams: Record<string, any> = {}
 
@@ -36,7 +42,9 @@ export const mealsApi = {
     if (params?.startDate) queryParams.startDate = params.startDate
     if (params?.endDate) queryParams.endDate = params.endDate
     if (params?.dishName) queryParams.dishName = params.dishName
-    if (params?.model_id) queryParams.model_id = params.model_id
+    if (params?.modelIdOne) queryParams.modelIdOne = params.modelIdOne
+    if (params?.modelIdTwo) queryParams.modelIdTwo = params.modelIdTwo
+    if (params?.selectedModel) queryParams.selectedModel = params.selectedModel
 
     // Weight filter with dot notation
     if (params?.weightFilter) {
@@ -51,7 +59,9 @@ export const mealsApi = {
       }
     }
 
-    const response = await apiClient.get<Meal[]>('/meals', { params: queryParams })
+    const response = await apiClient.get<Meal[]>('/meals', {
+      params: queryParams,
+    })
     return response.data
   },
 
@@ -93,15 +103,19 @@ export const mealsApi = {
 
   // Run models on meals
   async runModels(mealIds: number[], modelIds: number[]): Promise<void> {
-    await apiClient.post('/meals/runmodel', { meals: mealIds, models: modelIds })
+    await apiClient.post('/meals/runmodel', {
+      meals: mealIds,
+      models: modelIds,
+    })
   },
 
   // Get meal details
   async getMealDetails(id: number | string): Promise<MealDetail[]> {
-    const response = await apiClient.get<MealDetail[]>(`/meals/details?meals=${id}`)
+    const response = await apiClient.get<MealDetail[]>(
+      `/meals/details?meals=${id}`
+    )
     return response.data
   },
-
 
   async correctMeal(payload: MealCorrectionPayload): Promise<any> {
     // Transform to backend-compatible payload
@@ -118,7 +132,10 @@ export const mealsApi = {
       feedback: payload.feedback,
     }
 
-    const response = await apiClient.post('meals/user-correction', backendPayload)
+    const response = await apiClient.post(
+      'meals/user-correction',
+      backendPayload
+    )
     return response.data
   },
 
@@ -129,7 +146,6 @@ export const mealsApi = {
     }
     const formData = new FormData()
 
-
     // Add image if provided
     if (data.image) {
       formData.append('image', data.image)
@@ -138,7 +154,6 @@ export const mealsApi = {
     // Add program_id
     formData.append('program_id', data.program_id.toString())
     formData.append('user_id', data?.user_id?.toString() || '')
-
 
     // Add feedback if provided
     if (data.feedback) {
@@ -156,5 +171,5 @@ export const mealsApi = {
     })
 
     return response.data
-  }
+  },
 }

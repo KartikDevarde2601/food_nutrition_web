@@ -10,50 +10,59 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-
+import { LayoutGrid, LayoutList } from 'lucide-react'
+import { tr } from 'zod/v4/locales'
 import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
-import { useTableUrlState } from '@/hooks/use-table-url-state'
-import { DataTableToolbar } from '@/components/data-table'
-import type { WeightFilterMode } from '@/components/data-table'
-import { Meal } from '../data/schema'
-import { MealsBulkActions } from './meals-bulk-actions'
 import { useDebounce } from '@/hooks/use-debounce'
-
-import { mealsColumns as columns } from './table-columns/meals-columns'
-import { useMeals } from '../context/meals-provider'
-import { MealCard } from '@/components/meal-card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { MealDishesInfo } from './meal-dishes-info'
+import { useTableUrlState } from '@/hooks/use-table-url-state'
 import { Card } from '@/components/ui/card'
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-
-
-} from "@/components/ui/tabs"
-import { LayoutGrid, LayoutList } from 'lucide-react'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { DataTableToolbar } from '@/components/data-table'
+import type { WeightFilterMode } from '@/components/data-table'
+import { MealCard } from '@/components/meal-card'
+import { useMeals } from '../context/meals-provider'
+import { Meal } from '../data/schema'
+import { MealDishesInfo } from './meal-dishes-info'
+import { MealsBulkActions } from './meals-bulk-actions'
+import { mealsColumns as columns } from './table-columns/meals-columns'
 
 const route = getRouteApi('/_authenticated/programs/$id/meals')
 
 export function MealsTable() {
   const { id } = route.useParams()
-  const { view, weightfilter = 'greater', weightMin = 0, weightMax = 10000 } = route.useSearch()
+  const {
+    view,
+    weightfilter = 'greater',
+    weightMin = 0,
+    weightMax = 10000,
+  } = route.useSearch()
   const navigate = route.useNavigate()
   const { setOpen, setCurrentRow } = useMeals()
 
   // Debounce weight filter values for API calls (500ms)
-  const weightFilterParams = useMemo(() => ({
-    mode: weightfilter as 'less' | 'greater' | 'between',
-    min: weightMin,
-    max: weightMax,
-  }), [weightfilter, weightMin, weightMax])
+  const weightFilterParams = useMemo(
+    () => ({
+      mode: weightfilter as 'less' | 'greater' | 'between',
+      min: weightMin,
+      max: weightMax,
+    }),
+    [weightfilter, weightMin, weightMax]
+  )
 
   const debouncedWeightFilter = useDebounce(weightFilterParams, 500)
 
-  const { data: meals = [], isLoading, isError } = useMealsQuery({
+  const {
+    data: meals = [],
+    isLoading,
+    isError,
+  } = useMealsQuery({
     program_id: Number(id),
     weightFilter: debouncedWeightFilter,
   })
@@ -74,15 +83,15 @@ export function MealsTable() {
     })
   }
 
-
-
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
   const [selectedMealId, setSelectedMealId] = useState<string | null>(null)
-  const [lastSelectedMealId, setLastSelectedMealId] = useState<string | null>(null)
+  const [lastSelectedMealId, setLastSelectedMealId] = useState<string | null>(
+    null
+  )
 
   // Synced with URL states (updated to match route search schema defaults)
   const {
@@ -125,10 +134,7 @@ export function MealsTable() {
     getFacetedUniqueValues: getFacetedUniqueValues(),
     onGlobalFilterChange,
     onColumnFiltersChange,
-
   })
-
-
 
   // Listen for delete meal events from action buttons
   useEffect(() => {
@@ -167,38 +173,39 @@ export function MealsTable() {
 
     return (
       <>
-        <TabsContent value="grid" className='flex-1 overflow-y-auto min-h-0'>
+        <TabsContent value='grid' className='min-h-0 flex-1 overflow-y-auto'>
           {table.getRowModel().rows?.length ? (
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-8 xl:grid-cols-8'>
               {table.getRowModel().rows.map((row) => (
                 <MealCard
+                  enableCheckbox={true}
                   key={row.id}
                   row={row}
                   onClick={() => setSelectedMealId(String(row.original.mealId))}
-                  isLastSelected={lastSelectedMealId === String(row.original.mealId)}
+                  isLastSelected={
+                    lastSelectedMealId === String(row.original.mealId)
+                  }
                 />
               ))}
             </div>
           ) : (
-            <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
+            <div className='text-muted-foreground flex h-24 items-center justify-center rounded-md border'>
               No results.
             </div>
           )}
         </TabsContent>
 
-        <TabsContent value="list" className='flex-1 overflow-y-auto min-h-0'>
+        <TabsContent value='list' className='min-h-0 flex-1 overflow-y-auto'>
           {table.getRowModel().rows?.length ? (
             <div className='flex flex-col gap-6'>
               {table.getRowModel().rows.map((row) => (
-                <Card key={row.id} className="overflow-hidden">
-                  <MealDishesInfo
-                    mealId={String(row.original.mealId)}
-                  />
+                <Card key={row.id} className='overflow-hidden'>
+                  <MealDishesInfo mealId={String(row.original.mealId)} />
                 </Card>
               ))}
             </div>
           ) : (
-            <div className='flex h-24 items-center justify-center border rounded-md text-muted-foreground'>
+            <div className='text-muted-foreground flex h-24 items-center justify-center rounded-md border'>
               No results.
             </div>
           )}
@@ -253,17 +260,19 @@ export function MealsTable() {
           }}
         />
         <Tabs
-          value={view || "grid"}
-          onValueChange={(value) => navigate({
-            search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
-          })}
+          value={view || 'grid'}
+          onValueChange={(value) =>
+            navigate({
+              search: (prev) => ({ ...prev, view: value as 'grid' | 'list' }),
+            })
+          }
         >
           <TabsList className='flex items-center gap-2'>
-            <TabsTrigger value="grid">
-              <LayoutGrid className="h-4 w-4" />
+            <TabsTrigger value='grid'>
+              <LayoutGrid className='h-4 w-4' />
             </TabsTrigger>
-            <TabsTrigger value="list">
-              <LayoutList className="h-4 w-4" />
+            <TabsTrigger value='list'>
+              <LayoutList className='h-4 w-4' />
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -271,31 +280,36 @@ export function MealsTable() {
 
       {/* Tabs content area with loading inside */}
       <Tabs
-        value={view || "grid"}
-        onValueChange={(value) => navigate({
-          search: (prev) => ({ ...prev, view: value as 'grid' | 'list' })
-        })}
-        className='flex-1 flex flex-col'
+        value={view || 'grid'}
+        onValueChange={(value) =>
+          navigate({
+            search: (prev) => ({ ...prev, view: value as 'grid' | 'list' }),
+          })
+        }
+        className='flex flex-1 flex-col'
       >
         {renderContent()}
       </Tabs>
       <MealsBulkActions table={table} program_id={Number(id)} />
 
-      <Dialog open={!!selectedMealId} onOpenChange={(open) => {
-        if (!open) {
-          setLastSelectedMealId(selectedMealId)
-          setSelectedMealId(null)
-        }
-      }}>
-        <DialogContent className='w-[95vw] max-w-[90vw] sm:max-w-[950vw] h-[90vh] max-h-[90vh] flex flex-col'>
+      <Dialog
+        open={!!selectedMealId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setLastSelectedMealId(selectedMealId)
+            setSelectedMealId(null)
+          }
+        }}
+      >
+        <DialogContent className='flex h-[90vh] max-h-[90vh] w-[95vw] max-w-[90vw] flex-col sm:max-w-[950vw]'>
           <DialogHeader>
             <DialogTitle>Meal Details with nutrition info</DialogTitle>
           </DialogHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className='min-h-0 flex-1 overflow-y-auto'>
             {selectedMealId && <MealDishesInfo mealId={selectedMealId} />}
           </div>
         </DialogContent>
       </Dialog>
-    </div >
+    </div>
   )
 }

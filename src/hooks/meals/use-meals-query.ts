@@ -1,15 +1,21 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { mealsApi } from '@/lib/api/meal.api'
-import { Meal, MealDetail, TransformedMealDetail, TransformedIdentifier, ModelAndUserIdentifier } from '@/features/meals/data/schema'
-
-
-
-
+import {
+  Meal,
+  MealDetail,
+  TransformedMealDetail,
+  TransformedIdentifier,
+  ModelAndUserIdentifier,
+} from '@/features/meals/data/schema'
 
 const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
   // Helper function to compute tag based on userWeight and aiWeight
-  const computeTag = (userWeight: string | number | undefined, aiWeight: string | number | undefined): 'user' | 'ai' | 'both' => {
-    const hasUser = userWeight !== undefined && userWeight !== 0 && userWeight !== ''
+  const computeTag = (
+    userWeight: string | number | undefined,
+    aiWeight: string | number | undefined
+  ): 'user' | 'ai' | 'both' => {
+    const hasUser =
+      userWeight !== undefined && userWeight !== 0 && userWeight !== ''
     const hasAi = aiWeight !== undefined && aiWeight !== 0 && aiWeight !== ''
     if (hasUser && hasAi) return 'both'
     if (hasUser) return 'user'
@@ -50,44 +56,50 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
     })
 
     // Step 2: For EACH model, create a separate union with model dishes
-    const mergedIdentifierIds: ModelAndUserIdentifier[] = meal.modelsResult.map((modelResult) => {
-      // Clone the base map for this model
-      const modelIdentifierMap = new Map<number, TransformedIdentifier>(baseIdentifierMap)
+    const mergedIdentifierIds: ModelAndUserIdentifier[] = meal.modelsResult.map(
+      (modelResult) => {
+        // Clone the base map for this model
+        const modelIdentifierMap = new Map<number, TransformedIdentifier>(
+          baseIdentifierMap
+        )
 
-      // Union with this model's dishes
-      modelResult.dishes.forEach((dish) => {
-        const dishIdKey = Number(dish.dish_id)
-        if (modelIdentifierMap.has(dishIdKey)) {
-          // Update existing entry with aiWeight from this model
-          const existing = modelIdentifierMap.get(dishIdKey)!
-          modelIdentifierMap.set(dishIdKey, {
-            ...existing,
-            aiWeight: dish.weight,
-            tag: 'both', // User already had this dish, now AI also has it
+        // Union with this model's dishes
+        modelResult.dishes.forEach((dish) => {
+          const dishIdKey = Number(dish.dish_id)
+          if (modelIdentifierMap.has(dishIdKey)) {
+            // Update existing entry with aiWeight from this model
+            const existing = modelIdentifierMap.get(dishIdKey)!
+            modelIdentifierMap.set(dishIdKey, {
+              ...existing,
+              aiWeight: dish.weight,
+              tag: 'both', // User already had this dish, now AI also has it
+            })
+          } else {
+            // Add new entry with aiWeight, userWeight = undefined
+            modelIdentifierMap.set(dishIdKey, {
+              dishId: dish.dish_id,
+              userWeight: 0,
+              aiWeight: dish.weight,
+              position: dish.position,
+              tag: 'ai', // Only AI has this dish
+            })
+          }
+        })
+
+        // Final pass: recompute tags for all dishes to ensure correctness
+        const dishesWithTags = Array.from(modelIdentifierMap.values()).map(
+          (dish) => ({
+            ...dish,
+            tag: computeTag(dish.userWeight, dish.aiWeight),
           })
-        } else {
-          // Add new entry with aiWeight, userWeight = undefined
-          modelIdentifierMap.set(dishIdKey, {
-            dishId: dish.dish_id,
-            userWeight: 0,
-            aiWeight: dish.weight,
-            position: dish.position,
-            tag: 'ai', // Only AI has this dish
-          })
+        )
+
+        return {
+          model_id: modelResult.model_id,
+          dishes: dishesWithTags,
         }
-      })
-
-      // Final pass: recompute tags for all dishes to ensure correctness
-      const dishesWithTags = Array.from(modelIdentifierMap.values()).map((dish) => ({
-        ...dish,
-        tag: computeTag(dish.userWeight, dish.aiWeight),
-      }))
-
-      return {
-        model_id: modelResult.model_id,
-        dishes: dishesWithTags,
       }
-    })
+    )
 
     return {
       mealId: meal.mealId,
@@ -98,7 +110,6 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
     }
   })
 }
-
 
 export const mealsKeys = {
   all: ['meals'] as const,
@@ -118,7 +129,9 @@ export function useMealsQuery(
       max?: number
     }
     dishName?: string
-    model_id?: number
+    modelIdOne?: number
+    modelIdTwo?: number
+    selectedModel?: number
   },
   options?: Omit<UseQueryOptions<Meal[], Error>, 'queryKey' | 'queryFn'>
 ) {
@@ -130,7 +143,9 @@ export function useMealsQuery(
       params?.weightFilter?.min,
       params?.weightFilter?.max,
       params?.dishName,
-      params?.model_id,
+      params?.modelIdOne,
+      params?.modelIdTwo,
+      params?.selectedModel,
     ] as const,
     queryFn: () => mealsApi.getMeals(params),
     ...options,
@@ -152,7 +167,10 @@ export function useMealQuery(
 
 export function useMealDetailsQuery(
   id: string | number,
-  options?: Omit<UseQueryOptions<MealDetail[], Error, TransformedMealDetail[]>, 'queryKey' | 'queryFn' | 'select'>
+  options?: Omit<
+    UseQueryOptions<MealDetail[], Error, TransformedMealDetail[]>,
+    'queryKey' | 'queryFn' | 'select'
+  >
 ) {
   return useQuery<MealDetail[], Error, TransformedMealDetail[]>({
     queryKey: mealsKeys.detail(id),
@@ -164,4 +182,3 @@ export function useMealDetailsQuery(
     ...options,
   })
 }
-
