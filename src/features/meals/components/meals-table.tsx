@@ -11,7 +11,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { LayoutGrid, LayoutList } from 'lucide-react'
-import { tr } from 'zod/v4/locales'
 import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
 import { useDebounce } from '@/hooks/use-debounce'

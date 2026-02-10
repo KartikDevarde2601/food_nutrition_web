@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Loader2, LayoutGrid, LayoutList } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'

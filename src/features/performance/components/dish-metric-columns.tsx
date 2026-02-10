@@ -60,7 +60,11 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
   {
     accessorKey: 'MAE',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='MAE' className='w-full' />
+      <DataTableColumnHeader
+        column={column}
+        title='MAE (g)'
+        className='w-full'
+      />
     ),
     cell: ({ row }) => {
       const value = row.getValue('MAE') as number | null
@@ -74,7 +78,11 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
   {
     accessorKey: 'RMSE',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='RMSE' className='w-full' />
+      <DataTableColumnHeader
+        column={column}
+        title='RMSE (g)'
+        className='w-full'
+      />
     ),
     cell: ({ row }) => {
       const value = row.getValue('RMSE') as number | null
@@ -88,7 +96,11 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
   {
     accessorKey: 'MAPE',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='MAPE' className='w-full' />
+      <DataTableColumnHeader
+        column={column}
+        title='MAPE (%)'
+        className='w-full'
+      />
     ),
     cell: ({ row }) => {
       const value = row.getValue('MAPE') as number | null
@@ -104,7 +116,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title='m1AvgWeight'
+        title='m1AvgWeight (g)'
         className='w-full'
       />
     ),
@@ -122,7 +134,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title='m2AvgWeight'
+        title='m2AvgWeight (g)'
         className='w-full'
       />
     ),
@@ -140,7 +152,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader
         column={column}
-        title='M2 Count'
+        title='M1 Count'
         className='w-full'
       />
     ),
