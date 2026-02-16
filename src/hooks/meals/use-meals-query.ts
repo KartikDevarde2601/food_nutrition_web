@@ -1,11 +1,11 @@
-import { UseQueryOptions, useQuery } from '@tanstack/react-query'
+import { type UseQueryOptions, useQuery } from '@tanstack/react-query'
 import { mealsApi } from '@/lib/api/meal.api'
 import {
-  Meal,
-  MealDetail,
-  TransformedMealDetail,
-  TransformedIdentifier,
-  ModelAndUserIdentifier,
+  type Meal,
+  type MealDetail,
+  type TransformedMealDetail,
+  type TransformedIdentifier,
+  type ModelAndUserIdentifier,
 } from '@/features/meals/data/schema'
 
 const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
@@ -33,7 +33,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
       if (!baseIdentifierMap.has(dishIdKey)) {
         baseIdentifierMap.set(dishIdKey, {
           dishId: identifier.dishId,
-          userWeight: identifier.weight || 0,
+          userWeight: identifier.weight || '',
           aiWeight: undefined,
           position: identifier.position,
           tag: 'user', // Initially set as user
@@ -47,7 +47,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
       if (!baseIdentifierMap.has(dishIdKey)) {
         baseIdentifierMap.set(dishIdKey, {
           dishId: identifier.dishId,
-          userWeight: identifier.weight || 0,
+          userWeight: identifier.weight || '',
           aiWeight: undefined,
           position: identifier.position,
           tag: 'user', // Initially set as user
@@ -78,7 +78,7 @@ const tranformation = (data: MealDetail[]): TransformedMealDetail[] => {
             // Add new entry with aiWeight, userWeight = undefined
             modelIdentifierMap.set(dishIdKey, {
               dishId: dish.dish_id,
-              userWeight: 0,
+              userWeight: '',
               aiWeight: dish.weight,
               position: dish.position,
               tag: 'ai', // Only AI has this dish

@@ -1,14 +1,12 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pencil, Trash2 } from 'lucide-react'
-
-import { DataTableColumnHeader } from '@/components/data-table'
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { DataTableColumnHeader } from '@/components/data-table'
 import { type Dish } from '../data/schema'
 
 export const dishesColumns: ColumnDef<Dish>[] = [
@@ -35,7 +33,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
-          <div className='max-w-[500px] truncate font-medium hover:underline p-2'>
+          <div className='max-w-[500px] truncate p-2 font-medium hover:underline'>
             {row.getValue('dish_name')}
           </div>
         </div>
@@ -50,7 +48,7 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex space-x-2'>
-          <span className='max-w-[500px] truncate font-medium p-2'>
+          <span className='max-w-[500px] truncate p-2 font-medium'>
             {row.getValue('description')}
           </span>
         </div>
@@ -104,51 +102,50 @@ export const dishesColumns: ColumnDef<Dish>[] = [
 
       return (
         <div className='flex items-center justify-center gap-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8 text-destructive hover:text-destructive'
-                  onClick={() => {
-                    const event = new CustomEvent('edit-dish', {
-                      detail: dish,
-                    })
-                    window.dispatchEvent(event)
-                  }}
-                >
-                  <Pencil className='h-4 w-4 text-primary' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit dish</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='text-destructive hover:text-destructive h-8 w-8'
+                onClick={() => {
+                  const event = new CustomEvent('edit-dish', {
+                    detail: dish,
+                  })
+                  window.dispatchEvent(event)
+                }}
+              >
+                <Pencil className='text-primary h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit dish</p>
+            </TooltipContent>
+          </Tooltip>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8 text-destructive hover:text-destructive'
-                  onClick={() => {
-                    const event = new CustomEvent('delete-dish', {
-                      detail: dish,
-                    })
-                    window.dispatchEvent(event)
-                  }}
-                >
-                  <Trash2 className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete dish</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='text-destructive hover:text-destructive h-8 w-8'
+                onClick={(e) => {
+                  const event = new CustomEvent('delete-dish', {
+                    detail: dish,
+                  })
+
+                  window.dispatchEvent(event)
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
+                <Trash2 className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete dish</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       )
     },
@@ -156,4 +153,3 @@ export const dishesColumns: ColumnDef<Dish>[] = [
     enableHiding: false,
   },
 ]
-

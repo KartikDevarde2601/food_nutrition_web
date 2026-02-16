@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableColumnHeader } from '@/components/data-table'
@@ -135,29 +134,27 @@ export const programsColumns: ColumnDef<ProgramResponse>[] = [
 
       return (
         <div className='flex items-center justify-center gap-2'>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-8 w-8'
-                  onClick={() => {
-                    // This will be handled by the ProgramsProvider context
-                    const event = new CustomEvent('edit-program', {
-                      detail: program,
-                    })
-                    window.dispatchEvent(event)
-                  }}
-                >
-                  <Pencil className='h-4 w-4' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit program</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-8 w-8'
+                onClick={() => {
+                  // This will be handled by the ProgramsProvider context
+                  const event = new CustomEvent('edit-program', {
+                    detail: program,
+                  })
+                  window.dispatchEvent(event)
+                }}
+              >
+                <Pencil className='h-4 w-4' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit program</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       )
     },

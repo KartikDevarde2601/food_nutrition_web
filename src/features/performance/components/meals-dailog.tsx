@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Loader2, LayoutGrid, LayoutList } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
@@ -19,26 +19,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { MealCard } from '@/components/meal-card'
 import { mealsColumns } from '@/features/meals/components/table-columns/meals-columns'
 import { useMealDetails } from '../context/meal-details-provider'
 import { MealCarouselItem } from './meal-carousel-item'
+import { ModelSelectorMealDialog } from './model-selection-meal-dailog'
 
 export function MealsDialog() {
   const { selectdishAndModels, setSelectdishAndModels } = useMealDetails()
-  // Local state for model selection
-  const [model1Id, setModel1Id] = useState<string>('2')
-  const [model2Id, setModel2Id] = useState<string>('3')
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
+
   const [view, setView] = useState<'grid' | 'carousel'>('grid')
   const [api, setApi] = useState<CarouselApi>()
+  const [currentMealIndex, setCurrentMealIndex] = useState<number>(0)
 
   // Retrieve models for selector
   const { data: models = [] } = useModelsQuery({ includeGT: false })
@@ -72,24 +66,63 @@ export function MealsDialog() {
     getCoreRowModel: getCoreRowModel(),
   })
 
+  useEffect(() => {
+    // We only run this if the dialog is open and we have the data
+    if (isOpen && selectdishAndModels) {
+      const id1 = String(selectdishAndModels.modelOne)
+      const id2 = String(selectdishAndModels.modelTwo)
+
+      const selection: string[] = []
+      if (id1 !== '1' && id2 !== '1') {
+        selection.push(id1)
+        selection.push(id2)
+        setSelectedModelIds(selection)
+        return
+      }
+      const actualModelId = id1 !== '1' ? id1 : id2
+
+      // 2. Start selection with the model that was Not GT
+      selection.push(actualModelId)
+
+      // 3. Find a partner model:
+      // Get the first model in our list that isn't the one we just added
+      const partner = models.find((m) => String(m.model_id) !== actualModelId)
+
+      if (partner) {
+        selection.push(String(partner.model_id))
+      }
+      setSelectedModelIds(selection)
+    }
+  }, [isOpen, models, selectdishAndModels])
+
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
         setSelectdishAndModels(null)
-
-        setView('grid') // Reset to carousel on close if desired, or keep state
+        setView('grid') // Reset to grid view on close
+        setCurrentMealIndex(0) // Reset index on close
       }
     },
     [setSelectdishAndModels]
   )
 
   const handleMealClick = (index: number) => {
-    setView('carousel')
-    // Give time for carousel to render
-    setTimeout(() => {
-      api?.scrollTo(index)
-    }, 50)
+    setCurrentMealIndex(index) // Set the index of the clicked meal
+    setView('carousel') // Switch to carousel view
+    // The actual scrolling will be handled by the useEffect
   }
+
+  // Effect to scroll to the specific meal when API is ready and view is carousel
+  useEffect(() => {
+    if (view === 'carousel' && api && currentMealIndex !== undefined) {
+      // Use a small timeout to ensure the carousel has fully rendered before scrolling
+      const timer = setTimeout(() => {
+        api.scrollTo(currentMealIndex)
+      }, 50) // 50ms should be enough
+
+      return () => clearTimeout(timer) // Cleanup the timeout
+    }
+  }, [view, api, currentMealIndex]) // Depend on view, api, and currentMealIndex
 
   const getModelName = (id: string | number | undefined) => {
     if (!id) return 'Unknown'
@@ -105,7 +138,7 @@ export function MealsDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className='flex h-[95vh] max-h-[95vh] w-[95vw] max-w-[95vw] flex-col p-6 sm:max-w-[95vw]'>
-        <DialogHeader className='flex flex-row items-center justify-between'>
+        <DialogHeader className='mx-6 flex flex-row items-center justify-between'>
           <div className='flex flex-col gap-1'>
             <DialogTitle>
               Identified Dish Name: {selectdishAndModels?.dishName}
@@ -138,34 +171,13 @@ export function MealsDialog() {
               </ToggleGroupItem>
             </ToggleGroup>
             {view === 'carousel' && (
-              <>
-                <div className='bg-border h-6 w-px' />
-                <Select value={model1Id} onValueChange={setModel1Id}>
-                  <SelectTrigger className='w-[180px]'>
-                    <SelectValue placeholder='Select Model 1' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models.map((m) => (
-                      <SelectItem key={m.model_id} value={String(m.model_id)}>
-                        {m.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <span className='text-muted-foreground font-medium'>vs</span>
-                <Select value={model2Id} onValueChange={setModel2Id}>
-                  <SelectTrigger className='w-[180px]'>
-                    <SelectValue placeholder='Select Model 2' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {models.map((m) => (
-                      <SelectItem key={m.model_id} value={String(m.model_id)}>
-                        {m.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
+              <ModelSelectorMealDialog
+                title='Choose 2 Models'
+                models={models}
+                selectedModels={selectedModelIds}
+                onSelectionChange={setSelectedModelIds}
+                isLoading={isLoading}
+              />
             )}
           </div>
         </DialogHeader>
@@ -204,10 +216,10 @@ export function MealsDialog() {
                       >
                         <MealCarouselItem
                           mealId={row.original.mealId}
-                          model1Id={model1Id}
-                          model2Id={model2Id}
-                          model1Name={getModelName(model1Id)}
-                          model2Name={getModelName(model2Id)}
+                          model1Id={selectedModelIds[0]}
+                          model2Id={selectedModelIds[1]}
+                          model1Name={getModelName(selectedModelIds[0])}
+                          model2Name={getModelName(selectedModelIds[1])}
                           allDishes={allDishes}
                         />
                       </CarouselItem>

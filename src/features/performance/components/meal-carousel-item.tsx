@@ -2,33 +2,35 @@ import { useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
 import { useDishesDetailsQuery } from '@/hooks/dishes/use-dish-query'
 import { useMealDetailsQuery } from '@/hooks/meals/use-meals-query'
-import { TransformedMealDetail } from '@/features/meals/data/schema'
-import { MealDetail, MergeDish } from '../data/schema'
+import { type Dish } from '@/features/dishes/data/schema'
+import { type TransformedMealDetail } from '@/features/meals/data/schema'
+import { type MealDetail, type MergeDish } from '../data/schema'
 import { MealDetailsTable } from './meal-details-table'
 import { MealNutritionComparison } from './meal-nutrition-comparison'
 
 // Helper to transform TransformedMealDetail to MealDetail for comparison
-export const transformToMealDetail = (
+const transformToMealDetail = (
   data: TransformedMealDetail,
   model1Id: string,
   model2Id: string,
-  allDishes: any[]
+  allDishes: Dish[]
 ): MealDetail => {
-  console.log('transformealdetails', data)
-  console.log(allDishes)
   const dishesMap = new Map<string, MergeDish>()
 
-  // Get dish name helper
+  // Helper to get dish name
   const getDishName = (dishId: string | number) => {
     const dish = allDishes.find((d) => String(d.dish_id) === String(dishId))
     if (dish) return dish.dish_name
 
-    // Fallback to searching in userIdentifiersNames
     const userDish = data.userIdentifiersNames.find(
       (d) => String(d.dishId) === String(dishId)
     )
     return userDish?.dishName || `Dish ${dishId}`
   }
+
+  // Helper to validate weights (allows 0, but replaces null/undefined/'' with 'N/A')
+  const formatWeight = (val: number | string | null | undefined) =>
+    val !== null && val !== undefined && val !== '' ? val : 'N/A'
 
   // Process Model 1
   const model1Result = data.mergedIdentifierIds.find(
@@ -37,19 +39,15 @@ export const transformToMealDetail = (
   if (model1Result) {
     model1Result.dishes.forEach((d) => {
       const dishId = String(d.dishId)
-      const existing = dishesMap.get(dishId) || {
+      dishesMap.set(dishId, {
         dishId,
         dishName: getDishName(dishId),
-        userWeight: d.userWeight,
-        modeloneWeight: d.aiWeight ? d.aiWeight : 'N/A',
-        modeltwoWeight: 'N/A',
+        userWeight: formatWeight(d.userWeight),
+        modeloneWeight: formatWeight(d.aiWeight),
+        modeltwoWeight: 'N/A', // Default for now
         position: d.position,
         tag: d.tag,
-      }
-      if (dishesMap.has(dishId)) {
-        existing.modeloneWeight = d.aiWeight
-      }
-      dishesMap.set(dishId, existing)
+      })
     })
   }
 
@@ -60,16 +58,17 @@ export const transformToMealDetail = (
   if (model2Result) {
     model2Result.dishes.forEach((d) => {
       const dishId = String(d.dishId)
-      if (dishesMap.has(dishId)) {
-        const existing = dishesMap.get(dishId)!
-        existing.modeltwoWeight = d.aiWeight
+      const existing = dishesMap.get(dishId)
+
+      if (existing) {
+        existing.modeltwoWeight = formatWeight(d.aiWeight)
       } else {
         dishesMap.set(dishId, {
           dishId,
           dishName: getDishName(dishId),
-          userWeight: d.userWeight ? d.userWeight : 'N/A',
+          userWeight: formatWeight(d.userWeight),
           modeloneWeight: 'N/A',
-          modeltwoWeight: d.aiWeight ? d.aiWeight : 'N/A',
+          modeltwoWeight: formatWeight(d.aiWeight),
           position: d.position,
           tag: d.tag,
         })
@@ -78,12 +77,10 @@ export const transformToMealDetail = (
   }
 
   return {
-    mealId: data.mealId,
-    image: data.image,
+    ...data,
     dishes: Array.from(dishesMap.values()),
   }
 }
-
 export function MealCarouselItem({
   mealId,
   model1Id,
@@ -97,7 +94,7 @@ export function MealCarouselItem({
   model2Id: string
   model1Name: string
   model2Name: string
-  allDishes: any[]
+  allDishes: Dish[]
 }) {
   const { data: mealDetailsData, isLoading: isMealLoading } =
     useMealDetailsQuery(mealId)
