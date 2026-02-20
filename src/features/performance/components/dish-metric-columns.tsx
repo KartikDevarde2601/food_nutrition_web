@@ -163,8 +163,9 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
 
       return (
         <div className='flex w-full items-center p-2'>
-          <span
-            className='cursor-pointer transition-colors hover:underline'
+          <a
+            href='javascript:void(0)'
+            className='cursor-pointer underline text-[#0000EE] visited:text-[#551A8B] active:text-[#EE0000] transition-colors'
             onClick={(e) => {
               e.stopPropagation()
               setSelectdishAndModels({
@@ -176,7 +177,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             }}
           >
             {row.getValue('m1Occurrences')}
-          </span>
+          </a>
         </div>
       )
     },
@@ -196,8 +197,9 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
       const dishName = row.getValue('dishName') as string
       return (
         <div className='flex w-full items-center p-2'>
-          <span
-            className='cursor-pointer transition-colors hover:underline'
+          <a
+            href='javascript:void(0)'
+            className='cursor-pointer underline text-[#0000EE] visited:text-[#551A8B] active:text-[#EE0000] transition-colors'
             onClick={(e) => {
               e.stopPropagation()
               setSelectdishAndModels({
@@ -209,7 +211,7 @@ export const dishMetricColumns: ColumnDef<PerDishMetric>[] = [
             }}
           >
             {row.getValue('m2Occurrences')}
-          </span>
+          </a>
         </div>
       )
     },

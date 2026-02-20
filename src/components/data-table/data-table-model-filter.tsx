@@ -46,7 +46,7 @@ export function DataTableModelFilter<TData, TValue>({
   title = 'Models',
 }: DataTableModelFilterProps<TData, TValue>) {
   const [operator, setOperator] = React.useState<FilterOperator>('hasAnyOf')
-  const [selectedModels, setSelectedModels] = React.useState<Set<string>>(
+  const [selectedModels, setSelectedModels] = React.useState<Set<number>>(
     new Set()
   )
   const { data: models = [], isLoading } = useModelsQuery({})
@@ -118,7 +118,7 @@ export function DataTableModelFilter<TData, TValue>({
                     ) : (
                       models
                         .filter((model) =>
-                          selectedModels.has(model.model_id.toString())
+                          selectedModels.has(model.model_id)
                         )
                         .map((model) => (
                           <div
@@ -187,7 +187,7 @@ export function DataTableModelFilter<TData, TValue>({
                     <CommandGroup>
                       {models.map((model) => {
                         const isSelected = selectedModels.has(
-                          model.model_id.toString()
+                          model.model_id
                         )
                         return (
                           <CommandItem
@@ -195,9 +195,9 @@ export function DataTableModelFilter<TData, TValue>({
                             onSelect={() => {
                               const newSelected = new Set(selectedModels)
                               if (isSelected) {
-                                newSelected.delete(model.model_id.toString())
+                                newSelected.delete(model.model_id)
                               } else {
-                                newSelected.add(model.model_id.toString())
+                                newSelected.add(model.model_id)
                               }
                               setSelectedModels(newSelected)
                             }}

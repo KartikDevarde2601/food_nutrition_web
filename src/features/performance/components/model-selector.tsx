@@ -1,7 +1,9 @@
 import { getRouteApi } from '@tanstack/react-router'
 import { toast } from 'sonner'
+import { ArrowLeftRight } from 'lucide-react'
 import { useModelsQuery } from '@/hooks/programs/use-models-query'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectTrigger,
@@ -40,6 +42,16 @@ export function ModelSelector() {
       })
     }
 
+  const handleSwapModels = () => {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        model_one: search.model_two,
+        model_two: search.model_one,
+      }),
+    })
+  }
+
   if (isLoading) {
     return (
       <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-4'>
@@ -75,6 +87,16 @@ export function ModelSelector() {
           </SelectContent>
         </Select>
       </div>
+
+      <Button
+        variant='outline'
+        size='icon'
+        onClick={handleSwapModels}
+        className='mb-0 self-end sm:mb-0'
+        aria-label='Swap models'
+      >
+        <ArrowLeftRight className='h-4 w-4' />
+      </Button>
 
       <div className='flex flex-col gap-2'>
         <Label htmlFor='model-two-select'>Model 2</Label>

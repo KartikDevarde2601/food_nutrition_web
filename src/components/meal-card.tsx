@@ -80,17 +80,22 @@ export const MealCard = memo(function MealCard({
           )}
 
           {/* Actual image */}
-          <img
-            src={meal.imageUrl}
-            alt={`Meal ${meal.mealId}`}
-            className={cn(
-              'h-full w-full object-cover transition-all duration-300 group-hover:scale-105',
-              !imageLoaded && 'opacity-0' // Fade in instead of hiding
-            )}
-            loading='lazy'
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageError(true)}
-          />
+          {!imageError && (
+            <img
+              src={meal.imageUrl}
+              alt={`Meal ${meal.mealId}`}
+              className={cn(
+                'h-full w-full object-cover transition-all duration-300 group-hover:scale-105',
+                !imageLoaded && 'opacity-0'
+              )}
+              loading='lazy'
+              onLoad={() => {
+                setImageLoaded(true)
+                setImageError(false)
+              }}
+              onError={() => setImageError(true)}
+            />
+          )}
         </div>
 
         {/* Gradient overlay for better visibility if we add text later, but user didn't ask for text yet */}

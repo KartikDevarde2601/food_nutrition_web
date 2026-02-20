@@ -25,8 +25,13 @@ import { mealsColumns } from '@/features/meals/components/table-columns/meals-co
 import { useMealDetails } from '../context/meal-details-provider'
 import { MealCarouselItem } from './meal-carousel-item'
 import { ModelSelectorMealDialog } from './model-selection-meal-dailog'
+import { getRouteApi } from '@tanstack/react-router'
+
+const route = getRouteApi('/_authenticated/programs/$id/performance')
 
 export function MealsDialog() {
+  const { id } = route.useParams()
+
   const { selectdishAndModels, setSelectdishAndModels } = useMealDetails()
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
 
@@ -36,7 +41,7 @@ export function MealsDialog() {
 
   // Retrieve models for selector
   const { data: models = [] } = useModelsQuery({ includeGT: false })
-  const { data: allDishesData } = useDishesQuery({ limit: 1000 }) // High limit to key names
+  const { data: allDishesData } = useDishesQuery({ limit: 100 }) // High limit to key names
   const allDishes = allDishesData?.data || []
 
   const isOpen = !!selectdishAndModels
@@ -47,6 +52,7 @@ export function MealsDialog() {
     error,
   } = useMealsQuery(
     {
+      program_id: Number(id),
       dishName: selectdishAndModels?.dishName,
       selectedModel:
         selectdishAndModels?.clickedModel === 1
@@ -112,17 +118,24 @@ export function MealsDialog() {
     // The actual scrolling will be handled by the useEffect
   }
 
-  // Effect to scroll to the specific meal when API is ready and view is carousel
+  // Scroll to the clicked meal when the carousel API is ready
   useEffect(() => {
-    if (view === 'carousel' && api && currentMealIndex !== undefined) {
-      // Use a small timeout to ensure the carousel has fully rendered before scrolling
-      const timer = setTimeout(() => {
-        api.scrollTo(currentMealIndex)
-      }, 50) // 50ms should be enough
+    if (view !== 'carousel' || !api || currentMealIndex === undefined) return
 
-      return () => clearTimeout(timer) // Cleanup the timeout
+    const scrollToTarget = () => api.scrollTo(currentMealIndex, true) // instant jump (no animation)
+
+    // If carousel is already initialized, scroll immediately
+    if (api.canScrollNext() || api.canScrollPrev() || meals.length <= 1) {
+      scrollToTarget()
     }
-  }, [view, api, currentMealIndex]) // Depend on view, api, and currentMealIndex
+
+    // Also listen for the 'init' event in case the carousel isn't ready yet
+    api.on('init', scrollToTarget)
+
+    return () => {
+      api.off('init', scrollToTarget)
+    }
+  }, [view, api, currentMealIndex, meals.length])
 
   const getModelName = (id: string | number | undefined) => {
     if (!id) return 'Unknown'

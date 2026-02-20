@@ -30,7 +30,7 @@ interface PerformanceProviderProps {
 
 export function PerformanceProvider({ children }: PerformanceProviderProps) {
     const [open, setOpen] = useState<PerformanceDialogType>(null)
-    const [activeMetric, setActiveMetric] = useState<string>('MAE')
+    const [activeMetric, setActiveMetric] = useState<string>('#cMeals')
     const currentYear = new Date().getFullYear()
     const [dateRange, setDateRange] = useState({
         startDate: `${currentYear}-01-01`,

@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { useMealsQuery } from '@/hooks/meals'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useTableUrlState } from '@/hooks/use-table-url-state'
-import { Card } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import {
   Dialog,
   DialogContent,
@@ -24,12 +24,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { DataTableToolbar } from '@/components/data-table'
-import type { WeightFilterMode } from '@/components/data-table'
+import { DataTableToolbar, type WeightFilterMode } from '@/components/data-table'
 import { MealCard } from '@/components/meal-card'
 import { useMeals } from '../context/meals-provider'
 import { useGridColumns } from '../context/use-grid-columns'
-import { Meal } from '../data/schema'
+import { type Meal } from '../data/schema'
 import { MealDishesInfo } from './meal-dishes-info'
 import { MealsBulkActions } from './meals-bulk-actions'
 import { mealsColumns as columns } from './table-columns/meals-columns'
@@ -173,8 +172,9 @@ export function MealsTable() {
   const listVirtualizer = useVirtualizer({
     count: activeView === 'list' ? rows.length : 0,
     getScrollElement: () => listParentRef.current,
-    estimateSize: useCallback(() => 800, []),
-    overscan: 10,
+    estimateSize: useCallback(() => 600, []),
+    measureElement: (element) => element.getBoundingClientRect().height,
+    overscan: 5,
   })
 
   // Show error state
@@ -338,19 +338,18 @@ export function MealsTable() {
                   <div
                     key={virtualRow.key}
                     data-index={virtualRow.index}
+                    ref={listVirtualizer.measureElement}
+                    className='pb-6'
                     style={{
                       position: 'absolute',
                       top: 0,
                       left: 0,
                       width: '100%',
-                      height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
-                      paddingBottom: '1.5rem',
                     }}
                   >
-                    <Card className='overflow-hidden'>
-                      <MealDishesInfo mealId={String(row.original.mealId)} />
-                    </Card>
+                    <MealDishesInfo mealId={String(row.original.mealId)} />
+                    <Separator className='mt-4' />
                   </div>
                 )
               })}

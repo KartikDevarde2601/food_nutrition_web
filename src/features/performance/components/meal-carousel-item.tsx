@@ -81,6 +81,7 @@ const transformToMealDetail = (
     dishes: Array.from(dishesMap.values()),
   }
 }
+
 export function MealCarouselItem({
   mealId,
   model1Id,
