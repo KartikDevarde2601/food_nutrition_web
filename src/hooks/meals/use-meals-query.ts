@@ -132,6 +132,7 @@ export function useMealsQuery(
     modelIdOne?: number
     modelIdTwo?: number
     selectedModel?: number
+    groupSimilar?: boolean
   },
   options?: Omit<UseQueryOptions<Meal[], Error>, 'queryKey' | 'queryFn'>
 ) {
@@ -146,6 +147,7 @@ export function useMealsQuery(
       params?.modelIdOne,
       params?.modelIdTwo,
       params?.selectedModel,
+      params?.groupSimilar
     ] as const,
     queryFn: () => mealsApi.getMeals(params),
     ...options,

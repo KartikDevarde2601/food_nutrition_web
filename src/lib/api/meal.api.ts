@@ -2,8 +2,8 @@ import {
   type Meal,
   type MealForm,
   type MealDetail,
+  type MealCorrectionPayload
 } from '@/features/meals/data/schema'
-import { MealCorrectionPayload } from '@/features/meals/data/schema'
 import { apiClient } from './client'
 
 // ---------- Helpers ----------
@@ -35,6 +35,7 @@ export const mealsApi = {
     modelIdOne?: number
     modelIdTwo?: number
     selectedModel?: number
+    groupSimilar?: boolean
   }): Promise<Meal[]> {
     const queryParams: Record<string, any> = {}
 
@@ -45,6 +46,7 @@ export const mealsApi = {
     if (params?.modelIdOne) queryParams.modelIdOne = params.modelIdOne
     if (params?.modelIdTwo) queryParams.modelIdTwo = params.modelIdTwo
     if (params?.selectedModel) queryParams.selectedModel = params.selectedModel
+    if (params?.groupSimilar !== undefined) queryParams.groupSimilar = params.groupSimilar
 
     // Weight filter with dot notation
     if (params?.weightFilter) {
