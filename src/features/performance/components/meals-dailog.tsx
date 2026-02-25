@@ -28,11 +28,16 @@ import { ModelSelectorMealDialog } from './model-selection-meal-dailog'
 import { getRouteApi } from '@tanstack/react-router'
 
 const route = getRouteApi('/_authenticated/programs/$id/performance')
+import { getRouteApi } from '@tanstack/react-router'
 
 export function MealsDialog() {
   const { id } = route.useParams()
   const { groupSimilarDishes } = route.useSearch()
 
+  const route = getRouteApi('/_authenticated/programs/$id/performance')
+
+    const search = route.useSearch()
+  
   const { selectdishAndModels, setSelectdishAndModels } = useMealDetails()
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
 
@@ -61,7 +66,8 @@ export function MealsDialog() {
           : selectdishAndModels?.modelTwo,
       modelIdOne: selectdishAndModels?.modelOne,
       modelIdTwo: selectdishAndModels?.modelTwo,
-      groupSimilar: groupSimilarDishes === 1,
+      includeMatchStatus: true, 
+      groupSimilar: search.groupSimilarDishes === 1,
     },
     {
       enabled: isOpen,
@@ -216,6 +222,7 @@ export function MealsDialog() {
                       row={row}
                       onClick={() => handleMealClick(index)}
                       isLastSelected={false}
+                      isMatched={row.original.matchStatus === 'matched'}
                     />
                   ))}
                 </div>

@@ -11,6 +11,7 @@ interface MealCardProps {
   onClick?: () => void
   isLastSelected?: boolean
   enableCheckbox?: boolean
+  isMatched?: boolean
 }
 
 export const MealCard = memo(function MealCard({
@@ -18,6 +19,7 @@ export const MealCard = memo(function MealCard({
   onClick,
   isLastSelected,
   enableCheckbox,
+  isMatched = false,
 }: MealCardProps) {
   const meal = row.original
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -48,7 +50,8 @@ export const MealCard = memo(function MealCard({
         onClick={onClick}
         className={cn(
           'group relative h-28 cursor-pointer overflow-hidden rounded-xl border-0 p-0 transition-all',
-          isLastSelected && 'ring-primary scale-95 ring ring-offset-2'
+          isLastSelected && 'ring-primary scale-95 ring ring-offset-2',
+          !isMatched && 'ring-red-500 scale-95 ring ring-offset-2'
         )}
       >
         {/* Checkbox → top-right */}
