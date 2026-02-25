@@ -27,16 +27,12 @@ import { MealCarouselItem } from './meal-carousel-item'
 import { ModelSelectorMealDialog } from './model-selection-meal-dailog'
 import { getRouteApi } from '@tanstack/react-router'
 
-const route = getRouteApi('/_authenticated/programs/$id/performance')
-import { getRouteApi } from '@tanstack/react-router'
+
 
 export function MealsDialog() {
-  const { id } = route.useParams()
-  const { groupSimilarDishes } = route.useSearch()
-
   const route = getRouteApi('/_authenticated/programs/$id/performance')
-
-    const search = route.useSearch()
+  const { id } = route.useParams()
+  const search = route.useSearch()
   
   const { selectdishAndModels, setSelectdishAndModels } = useMealDetails()
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
