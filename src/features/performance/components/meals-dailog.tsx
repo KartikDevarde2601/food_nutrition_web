@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
+import { getRouteApi } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { Loader2, LayoutGrid, LayoutList } from 'lucide-react'
 import { useDishesQuery } from '@/hooks/dishes'
@@ -25,15 +26,12 @@ import { mealsColumns } from '@/features/meals/components/table-columns/meals-co
 import { useMealDetails } from '../context/meal-details-provider'
 import { MealCarouselItem } from './meal-carousel-item'
 import { ModelSelectorMealDialog } from './model-selection-meal-dailog'
-import { getRouteApi } from '@tanstack/react-router'
-
-
 
 export function MealsDialog() {
   const route = getRouteApi('/_authenticated/programs/$id/performance')
   const { id } = route.useParams()
   const search = route.useSearch()
-  
+
   const { selectdishAndModels, setSelectdishAndModels } = useMealDetails()
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
 
@@ -62,7 +60,7 @@ export function MealsDialog() {
           : selectdishAndModels?.modelTwo,
       modelIdOne: selectdishAndModels?.modelOne,
       modelIdTwo: selectdishAndModels?.modelTwo,
-      includeMatchStatus: true, 
+      includeMatchStatus: true,
       groupSimilar: search.groupSimilarDishes === 1,
     },
     {
@@ -218,6 +216,7 @@ export function MealsDialog() {
                       row={row}
                       onClick={() => handleMealClick(index)}
                       isLastSelected={false}
+                      isMatchedEnabled={true}
                       isMatched={row.original.matchStatus === 'matched'}
                     />
                   ))}

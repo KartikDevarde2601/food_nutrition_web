@@ -16,7 +16,7 @@ export const MealSchema = z.object({
   imageUrl: z.string(),
   userId: z.number(),
   createdAt: z.string(),
-  matchStatus: z.enum(['matched', 'unmatched']),
+  matchStatus: z.enum(['matched', 'unmatched']).optional(),
   mealInferences: z.array(z.object({
     model: ModelSchema
   }))

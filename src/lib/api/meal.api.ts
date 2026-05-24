@@ -47,7 +47,7 @@ export const mealsApi = {
     if (params?.modelIdOne) queryParams.modelIdOne = params.modelIdOne
     if (params?.modelIdTwo) queryParams.modelIdTwo = params.modelIdTwo
     if (params?.selectedModel) queryParams.selectedModel = params.selectedModel
-    if(params?.includeMatchStatus) queryParams.includeMatchStatus = true
+    if (params?.includeMatchStatus) queryParams.includeMatchStatus = true
     if (params?.groupSimilar !== undefined) queryParams.groupSimilar = params.groupSimilar
 
     // Weight filter with dot notation

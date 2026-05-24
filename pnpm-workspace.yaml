@@ -1,0 +1,6 @@
+allowBuilds:
+  '@clerk/shared': false
+  '@swc/core': false
+  '@tailwindcss/oxide': false
+  electron: false
+  esbuild: false

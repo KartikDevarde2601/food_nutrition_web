@@ -1,7 +1,7 @@
 {
   "name": "shadcn-admin",
   "private": false,
-  "version": "1.5.0",
+  "version": "1.8.0",
   "homepage": "https://pl-app.iiit.ac.in/cdith/nutritionscanner",
   "type": "module",
   "scripts": {
@@ -53,6 +53,7 @@
     "@tanstack/react-router": "^1.132.47",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.18",
+    "@unpic/react": "^1.0.2",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

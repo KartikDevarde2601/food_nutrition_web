@@ -90,7 +90,7 @@ export function MealDishesInfo({ mealId }: MealDishesInfoProps) {
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-2'>
           {/* Left Column: Image + Nutrition Summaries */}
 
-          <div className='flex w-full items-center justify-center'>
+          <div className='mt-6 flex w-full items-start justify-center'>
             <img
               src={meal.image}
               alt={`Meal ${meal.mealId}`}

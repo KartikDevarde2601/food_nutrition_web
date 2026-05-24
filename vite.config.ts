@@ -6,7 +6,7 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/cdith/nutritionscanner/',
+  base: '/',
   plugins: [
     tanstackRouter({
       target: 'react',
@@ -25,11 +25,11 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     watch: {
-      usePolling: true
-    }
+      usePolling: true,
+    },
   },
   preview: {
     host: '0.0.0.0',
-    port: 5009
-  }
+    port: 5009,
+  },
 })
