@@ -2,7 +2,7 @@
   "name": "shadcn-admin",
   "private": false,
   "version": "1.8.0",
-  "homepage": "https://pl-app.iiit.ac.in/cdith/nutritionscanner",
+  "homepage": "https://fn-nutrition.cdith.com",
   "type": "module",
   "scripts": {
     "dev": "vite",

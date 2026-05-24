@@ -76,7 +76,7 @@ const queryClient = new QueryClient({
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  basepath: '/cdith/nutritionscanner',
+  basepath: '/',
   context: {
     queryClient,
     isAuthenticated: () => {
